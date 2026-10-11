@@ -1,7 +1,8 @@
 # 時屜（時間抽屜 App，專案資料夾 Time_APP）— 給 AI 助理的常駐指示
 
 - 回覆使用者用繁體中文。姊妹作是 `../Budget_APP`（細水長流），設計語言沿用它：字體、四色系 × 日夜、Tabler outline 圖示、元件樣式。
-- git 作者沿用細水長流的個人身分 `atw007wj`（已寫在本 repo 的 .git/config）。尚未建立 GitHub／Vercel，未 push。
+- 帳號一律個人：GitHub `wjwei0321/Time_APP`、Vercel team WEI／project time_app（正式網址 https://timeapp-wei.vercel.app）、Supabase 與細水長流共用 project Work&Life_Balance（ref `tbukohrgpxxhmtsqgzon`，時屜用 `shiti_*`）。git 作者 `atw007wj`；push 到 main 會自動部署。細節見 `DEPLOY.md`。
+- 不要用這台電腦 `~/.git-credentials` 裡的 SENSESOIL token。
 - 產品定義見 `PRODUCT.md`。
 
 ## 結構

@@ -1,5 +1,7 @@
 # 部署指示：時屜（Time_APP）→ GitHub + Supabase + Vercel
 
+> ✅ 已於 2026-10-11 完成：GitHub push、Vercel 自動部署、Supabase schema、正式網址 https://timeapp-wei.vercel.app 雲端同步實測成功。以下保留做為重建參考。
+
 > 個人專案，一律使用與細水長流（`../Budget_APP`）相同的個人帳號，不是公司「拾壤／SENSESOIL」帳號。
 > 這台電腦的 `~/.git-credentials` 裡只有 SENSESOIL 的 token，**不要用它推這個 repo**。
 
@@ -9,12 +11,13 @@
 | --- | --- |
 | 專案資料夾 | `C:\Users\User\.antigravity\Time_APP` |
 | GitHub 帳號 | **wjwei0321** |
-| GitHub repo | `https://github.com/wjwei0321/Time_APP`（**Private**） |
+| GitHub repo | `https://github.com/wjwei0321/Time_APP`（目前 Public；可在 Settings → General 改為 Private，不影響部署） |
 | 本機 git 身分 | `atw007wj <atw007wj@gmail.com>`（已寫進這個 repo 的 `.git/config`） |
 | remote | `origin = https://wjwei0321@github.com/wjwei0321/Time_APP.git`（已設定，推送時由 Git Credential Manager 使用 wjwei0321 的登入） |
 | 分支 | `main` |
 | Vercel | 帳號 atw007wj，team **WEI（wei-08fb）**，project **time_app**，連到上面的 repo |
-| Supabase | 帳號 wjwei0321，**與細水長流共用 project Budget_APP**（ref `tbukohrgpxxhmtsqgzon`，Tokyo）。時屜用 `shiti_doc`／`shiti_get`／`shiti_put`，與 `budget_*` 互不影響 |
+| 正式網址 | **https://timeapp-wei.vercel.app** |
+| Supabase | 帳號 wjwei0321，**與細水長流共用 project Work&Life_Balance**（原名 Budget_APP，ref `tbukohrgpxxhmtsqgzon`，Tokyo）。時屜用 `shiti_doc`／`shiti_get`／`shiti_put`，與 `budget_*` 互不影響 |
 
 ### 帳號檢查（每次推送前）
 
@@ -30,7 +33,7 @@ git remote -v             # 必須是 https://wjwei0321@github.com/wjwei0321/Tim
 
 ## 2. Supabase
 
-1. 不另開專案（免費方案有專案數上限），使用 Budget_APP：https://supabase.com/dashboard/project/tbukohrgpxxhmtsqgzon/sql/new
+1. 不另開專案（免費方案有專案數上限），使用 Work&Life_Balance：https://supabase.com/dashboard/project/tbukohrgpxxhmtsqgzon/sql/new
 2. SQL Editor 貼上 `supabase/schema.sql` → Run（顯示 `Success. No rows returned`）。
 3. `index.html` 的 `CONFIG` 已填入 Budget_APP 的網址與 publishable key。
 5. 驗證：
@@ -53,7 +56,7 @@ curl.exe -s -X POST "https://tbukohrgpxxhmtsqgzon.supabase.co/rest/v1/rpc/shiti_
 | Build / Output / Install Command | 全部留空 |
 | Environment Variables | 不需要 |
 
-push 到 `main` 就會自動部署。正式網址預計 `https://time-app-wei.vercel.app`（在 Project → Settings → Domains 設定）。
+push 到 `main` 就會自動部署。正式網址 `https://timeapp-wei.vercel.app`（Project → Settings → Domains）。注意 `time-app.vercel.app` 是別人的網站。
 
 ## 4. 驗收
 
