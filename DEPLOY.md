@@ -17,7 +17,7 @@
 | 分支 | `main` |
 | Vercel | 帳號 atw007wj，team **WEI（wei-08fb）**，project **time_app**，連到上面的 repo |
 | 正式網址 | **https://timeapp-wei.vercel.app** |
-| Supabase | 帳號 wjwei0321，**與細水長流共用 project Work&Life_Balance**（原名 Budget_APP，ref `tbukohrgpxxhmtsqgzon`，Tokyo）。時屜用 Supabase Auth（email＋密碼登入）與資料表 `shiti_user_doc`（RLS：只能讀寫自己那一筆），與 `budget_*` 互不影響 |
+| Supabase | 帳號 wjwei0321，**與細水長流共用 project Work&Life_Balance**（原名 Budget_APP，ref `tbukohrgpxxhmtsqgzon`，Tokyo）。時屜用 `shiti_doc`／`shiti_get`／`shiti_put`，與 `budget_*` 互不影響。同步以 email 當識別碼：id = SHA-256("shiti:"+小寫 email)，不寄信、不用密碼（使用者選擇的簡便做法；知道 email 的人理論上能讀寫這份資料） |
 
 ### 帳號檢查（每次推送前）
 
@@ -61,14 +61,6 @@ push 到 `main` 就會自動部署。正式網址 `https://timeapp-wei.vercel.ap
 ## 4. 驗收
 
 1. 打開正式網址 → 出現「時屜」歡迎畫面。
-2. 設定 → 雲端同步 → 輸入 8 字以上的同步密語 → 狀態變成「已同步」。
-3. 手機開同一網址、輸入同一組密語 → 裝置代碼相同、資料一致。
+2. 設定 → 資料 → 用 email 同步 → 輸入 email（第一次要按兩次確認）→ 狀態變成「已同步」。
+3. 手機開同一網址，在歡迎畫面按「已經在別台裝置用過？登入」→ 輸入同一個 email → 資料出現。
 4. 手機 Safari「分享 → 加入主畫面」。
-
-## 5. 登入設定（email 登入版，2026-10-11）
-
-1. SQL Editor 執行最新的 `supabase/schema.sql`（建立 `shiti_user_doc`、停用舊的同步密語函式）。
-2. Authentication → URL Configuration：Site URL 設為 `https://timeapp-wei.vercel.app`，Redirect URLs 加入 `https://timeapp-wei.vercel.app/**`（確認信、登入連結會回到這裡）。
-3. 在 App 裡「建立帳號」→ 收確認信、點連結。
-4. 自己的帳號建好後：Authentication → Sign In / Providers → 關閉「Allow new users to sign up」，這個 App 就只有你能登入（細水長流不用登入，不受影響）。
-5. 免費方案的預設寄信服務有每小時寄信上限，且 2026-06 起新專案不能自訂信件範本，所以採 email＋密碼登入，登入連結只當忘記密碼的備案。
