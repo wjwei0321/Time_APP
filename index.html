@@ -506,8 +506,8 @@ html[data-mode="light"] .toast button{color:var(--celadon)}
 .dawn-q .w.speaking{background:var(--pool);color:var(--pool-ink)}
 .dawn-tools{position:fixed;left:max(24px,calc(50% - 256px));bottom:calc(env(safe-area-inset-bottom) + 40px);display:flex;gap:8px;flex-wrap:wrap;max-width:calc(100% - 120px)}
 .dawn.in .dawn-tools{animation:rise .9s var(--ease) .55s both}
-.sayb{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13px;color:var(--ink-2);white-space:nowrap}
-.sayb .ti{width:17px;height:17px;color:var(--pool)}
+.sayb{display:inline-grid;place-items:center;width:48px;height:48px;padding:0;border-radius:50%;background:var(--surface);border:1px solid var(--line);font-size:13px;color:var(--ink-2);white-space:nowrap}
+.sayb .ti{width:22px;height:22px;color:var(--pool)}
 .sayb.on{background:var(--pool);border-color:var(--pool);color:var(--pool-ink)}
 .sayb.on .ti{color:var(--pool-ink)}
 .dawn-hint{font-size:12px;color:var(--ink-3);margin-top:14px}
@@ -1009,9 +1009,8 @@ function showDawn() {
   const enIdx = q[0] === 'en' ? 1 : 2, zhIdx = enIdx === 1 ? 2 : 1;
   const line = i => i === enIdx ? wordsHTML(q[i]) : (langOf(q, i) === 'en' ? esc(q[i]) : esc(q[i]).replace(/([。！？；])(?=.)/g, '$1<br>'));
   const canSay = true;
-  el.innerHTML = `<div class="dawn-in"><blockquote class="dawn-q"><p class="q1" lang="${langOf(q, 1)}">${line(1)}</p><p class="q2" lang="${langOf(q, 2)}">${line(2)}</p><footer>— ${quoteMeta(q)}</footer>
-      <p class="dawn-hint">點英文單字，可以看中文解釋和發音</p></blockquote></div>
-    ${canSay ? `<div class="dawn-tools"><button class="sayb" data-act="say" aria-label="播放英文發音">${ic('volume')}英文發音</button></div>` : ''}
+  el.innerHTML = `<div class="dawn-in"><blockquote class="dawn-q"><p class="q1" lang="${langOf(q, 1)}">${line(1)}</p><p class="q2" lang="${langOf(q, 2)}">${line(2)}</p><footer>— ${quoteMeta(q)}</footer></blockquote></div>
+    ${canSay ? `<div class="dawn-tools"><button class="sayb" data-act="say" aria-label="播放英文發音" title="英文發音">${ic('volume')}</button></div>` : ''}
     <button class="dawn-go" data-act="dawn-close" aria-label="進入時屜">${ic('chevron-right')}</button>`;
   el.dataset.en = q[enIdx]; delete el.dataset.audio;
   Voice.prep(q[enIdx]).then(src => { if (src && el.dataset.en === q[enIdx]) el.dataset.audio = src; });
