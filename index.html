@@ -1188,7 +1188,7 @@ function pageDrawers() {
     + `<section class="block"><h2>${UI.wkSel ? `週${WD[UI.wkSel]}的抽屜` : '每個抽屜'}${UI.wkSel ? `<button class="lk" data-act="wk" data-w="${UI.wkSel}">顯示全部</button>` : `<small>點上面的星期可以只看那天</small>`}</h2>
       ${list.length ? groups.map(([l, i, f]) => { const xs = list.filter(f); return xs.length ? `<div class="dgroup"><h3>${ic(i)}${l}<small>${xs.length} 個</small></h3>${xs.map(drawerRow).join('')}</div>` : ''; }).join('')
         : `<div class="panel empty"><div class="e-big">${UI.wkSel ? '這天沒有抽屜' : '還沒有抽屜'}</div>這一天全是留白。</div>`}
-      <div class="two-btn" style="margin-top:18px"><button class="btn ghost" data-act="new-drawer">${ic('plus')}新增抽屜</button><button class="btn ghost" data-act="ics">${ic('calendar-event')}匯出行事曆</button></div></section>`;
+      <div class="two-btn" style="margin-top:18px"><button class="btn ghost" data-act="new-drawer">${ic('plus')}新增抽屜</button><button class="btn ghost" data-act="ics">${ic('calendar-event')}訂閱行事曆</button></div></section>`;
 }
 
 /* ── 留白 ────────────────────────────────── */
@@ -1296,7 +1296,7 @@ function pageSettings() {
     + `<section class="block"><h2>提醒</h2><div class="rows">
       <button class="toggle" role="switch" aria-checked="${!!P.notify}" data-act="notify"><span>抽屜打開時通知<small>App 開著（或在背景）時有效</small></span><span class="sw"></span></button>
       ${sliderHTML('lead')}
-      <button class="set-row" data-act="ics"><span>匯出到手機行事曆<small>網頁無法在關閉後提醒；匯入 .ics 後由行事曆準時通知</small></span><span class="chev">${ic('chevron-right')}</span></button></div></section>`
+      <button class="set-row" data-act="ics"><span>訂閱到手機行事曆<small>App 關著也會準時提醒；抽屜改了會自動更新</small></span><span class="chev">${ic('chevron-right')}</span></button></div></section>`
     + `<section class="block"><h2>外觀</h2><div class="panel"><div class="swatches">${THEMES.map(([k, l, c]) => `<button class="sw-btn${(UIP.theme || 'celadon') === k ? ' on' : ''}" data-act="theme" data-v="${k}"><i style="background:${c}"></i>${l}</button>`).join('')}</div>
       <div class="seg wide" style="margin-top:16px">${[['auto', '跟系統'], ['light', '白天'], ['dark', '夜晚']].map(([k, l]) => `<button class="${(UIP.mode || 'auto') === k ? 'on' : ''}" data-act="mode" data-v="${k}">${l}</button>`).join('')}</div></div></section>`
     + `<section class="block"><h2>資料</h2><div class="rows">
@@ -1743,7 +1743,29 @@ function exportICS() {
       'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${e(`「${x.name}」打開了`)}`, `TRIGGER:${lead ? `-PT${lead}M` : 'PT0S'}`, 'END:VALARM', 'END:VEVENT');
   }
   L.push('END:VCALENDAR'); download('時屜.ics', L.join('\r\n'), 'text/calendar');
-  if (!window.__NO_DL) toast('已匯出。用行事曆打開就會每週準時提醒');
+  if (!window.__NO_DL) toast('已下載。用行事曆打開就會每週提醒（之後抽屜改了不會自動更新）');
+}
+/* 訂閱行事曆：由 /api/ics 依雲端同步的資料產生，抽屜改了行事曆會自動更新；App 關著也會準時提醒 */
+function calendarSheet() {
+  const standalone = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+  return {
+    html: () => {
+      if (!Sync.ready()) return `<div class="sh-head"><h3>訂閱到行事曆</h3></div>
+        <p class="note">行事曆會讀取雲端同步的那一份抽屜，所以要先用 email 同步。同步好之後回到這裡，就能訂閱。</p>
+        <button class="btn" data-act="sync" style="margin-top:16px">用 email 同步</button>
+        ${standalone || window.__NO_DL ? '' : `<button class="btn ghost" data-act="cal-file">先下載一次性的 .ics 檔</button>`}`;
+      const tz = (Intl.DateTimeFormat().resolvedOptions().timeZone) || 'Asia/Taipei';
+      const url = `${location.origin}/api/ics?id=${Sync.cfg().id}&tz=${encodeURIComponent(tz)}`, webcal = url.replace(/^https?:/, 'webcal:');
+      return `<div class="sh-head"><h3>訂閱到行事曆</h3></div>
+        <p class="note">訂閱後，每個抽屜打開時，手機行事曆會準時提醒你，App 關著也會。抽屜有改，行事曆幾小時內會自動更新。</p>
+        <a class="btn" href="${webcal}" style="margin-top:16px;text-decoration:none">${ic('calendar-event')}iPhone／Mac 行事曆訂閱</a>
+        <button class="btn ghost" data-act="cal-copy">${ic('download')}複製訂閱網址（Google 日曆用）</button>
+        <input class="input" id="calUrl" value="${esc(url)}" readonly style="margin-top:10px;font-size:13px">
+        <p class="note faint" style="font-size:12px;margin-top:10px">iPhone 按第一個按鈕後，選「訂閱」即可。Google 日曆：用電腦打開 Google 日曆 → 左邊「其他日曆」旁的＋ → 「透過網址新增」→ 貼上。</p>
+        ${standalone || window.__NO_DL ? '' : `<button class="btn ghost" data-act="cal-file" style="margin-top:6px">改下載一次性的 .ics 檔</button>`}`;
+    },
+    mount: () => { if (Sync.ready()) Sync.run(true); },
+  };
 }
 async function notify(title, body, tag) {
   try {
@@ -1841,7 +1863,9 @@ document.addEventListener('click', e => {
     }
     case 'close-day': D.prefs.closed[d] = now(); touchPrefs(); save(); UI.opened = true; render(); return toast('收好了。晚安');
     case 'wk': UI.wkSel = UI.wkSel === +el.dataset.w ? null : +el.dataset.w; return render();
-    case 'ics': return exportICS();
+    case 'ics': return openSheet(calendarSheet());
+    case 'cal-file': return exportICS();
+    case 'cal-copy': { const i = $('#calUrl'); try { navigator.clipboard.writeText(i.value).then(() => toast('已複製訂閱網址'), () => { i.select(); toast('已選取，請按複製'); }); } catch (e) { i.select(); } return; }
     case 'pk-min': $$('#pkMins .chip').forEach(b => b.classList.toggle('on', b === el)); return;
     case 'pk-add': return addPocket();
     case 'rv': UI.rvWeek = +el.dataset.v; return render();
