@@ -2,6 +2,28 @@
 
 > ✅ 已於 2026-10-11 完成：GitHub push、Vercel 自動部署、Supabase schema、正式網址 https://timeapp-wei.vercel.app 雲端同步實測成功。以下保留做為重建參考。
 
+## 目前狀態（給接手的 AI 助理，例如 Antigravity）— 2026-10-11
+
+**已全部上線，不需要重新部署或重跑 SQL。** push 到 `main` 就會自動部署。
+
+| 部分 | 現況 |
+| --- | --- |
+| 前端 | `index.html`＋`quotes.js`，靜態檔，Vercel 直接提供 |
+| 雲端同步 | **只輸入 email**（不用密碼、不寄信）。App 算 `SHA-256("shiti:" + 小寫 email)` 當 id，呼叫 Supabase RPC `shiti_get(p_id)`／`shiti_put(p_id, p_payload)`。資料在 `public.shiti_doc`（RLS 開、無 policy，只能經由這兩個函式） |
+| 行事曆 | Vercel 函式 `api/ics.js`：`/api/ics?id=<同上 id>&tz=Asia/Taipei` 回傳行事曆，App 用 `webcal://` 訂閱。id 沒有資料時回 404、格式錯回 400，屬正常 |
+| Supabase 物件 | 現存：`shiti_doc` 資料表、`shiti_get`、`shiti_put`。另有細水長流的 `budget_*`，不要動 |
+
+### 同步方式的歷程（看 git log 會看到這些，免得誤會）
+
+1. `2cb7498`：先做「同步密語」（使用者輸入一組密語）。資料庫部分就是現在的 `supabase/schema.sql`，**已在 Supabase 執行過**。
+2. `48aada2`：改成 Supabase Auth email＋密碼登入（資料表 `shiti_user_doc`）。**這版的 SQL 從來沒有在 Supabase 執行過**，使用者嫌確認信麻煩。
+3. `2d40fa0`：改回第 1 版的資料庫做法，只是把「密語」換成「email」。資料庫不用動。
+
+所以：
+- **不要**再執行 `48aada2` 版本的 SQL（會刪掉正在使用的 `shiti_get`／`shiti_put`）。
+- **不要**建立 `shiti_user_doc`、不要開 Supabase Auth 的設定，現在用不到。
+- `shiti_doc` 裡有幾筆部署測試資料（`deploy-check-…`、`sync-test-…@example.com`、`ics-test@example.com` 算出來的 id），沒有人會用到，可以留著。
+
 > 個人專案，一律使用與細水長流（`../Budget_APP`）相同的個人帳號，不是公司「拾壤／SENSESOIL」帳號。
 > 這台電腦的 `~/.git-credentials` 裡只有 SENSESOIL 的 token，**不要用它推這個 repo**。
 
@@ -35,8 +57,8 @@ git remote -v             # 必須是 https://wjwei0321@github.com/wjwei0321/Tim
 
 1. 不另開專案（免費方案有專案數上限），使用 Work&Life_Balance：https://supabase.com/dashboard/project/tbukohrgpxxhmtsqgzon/sql/new
 2. SQL Editor 貼上 `supabase/schema.sql` → Run（顯示 `Success. No rows returned`）。
-3. `index.html` 的 `CONFIG` 已填入 Budget_APP 的網址與 publishable key。
-5. 驗證：
+3. `index.html` 的 `CONFIG` 與 `api/ics.js` 已填入這個專案的網址與 publishable key。
+4. 驗證：
 
 ```powershell
 curl.exe -s -X POST "https://tbukohrgpxxhmtsqgzon.supabase.co/rest/v1/rpc/shiti_get" -H "apikey: KEY" -H "Content-Type: application/json" -d "{\"p_id\":\"0000000000000000000000000000000000000000000000000000000000000000\"}"
