@@ -14,7 +14,7 @@
 | remote | `origin = https://wjwei0321@github.com/wjwei0321/Time_APP.git`（已設定，推送時由 Git Credential Manager 使用 wjwei0321 的登入） |
 | 分支 | `main` |
 | Vercel | 帳號 atw007wj，team **WEI（wei-08fb）**，project **time_app**，連到上面的 repo |
-| Supabase | 帳號 wjwei0321，project **Time_APP**（Tokyo）。免費方案每個組織最多 2 個執行中的專案；若額度不夠，改在細水長流的專案（`tbukohrgpxxhmtsqgzon`）執行 `supabase/schema.sql`，資料表與函式名稱（`shiti_*`）不會互相衝突 |
+| Supabase | 帳號 wjwei0321，**與細水長流共用 project Budget_APP**（ref `tbukohrgpxxhmtsqgzon`，Tokyo）。時屜用 `shiti_doc`／`shiti_get`／`shiti_put`，與 `budget_*` 互不影響 |
 
 ### 帳號檢查（每次推送前）
 
@@ -30,14 +30,13 @@ git remote -v             # 必須是 https://wjwei0321@github.com/wjwei0321/Tim
 
 ## 2. Supabase
 
-1. 以 wjwei0321 登入 → New project → 名稱 `Time_APP`、Region **Northeast Asia (Tokyo)**。
+1. 不另開專案（免費方案有專案數上限），使用 Budget_APP：https://supabase.com/dashboard/project/tbukohrgpxxhmtsqgzon/sql/new
 2. SQL Editor 貼上 `supabase/schema.sql` → Run（顯示 `Success. No rows returned`）。
-3. Settings → API Keys → 複製 **Publishable key**（`sb_publishable_` 開頭，**不要用 secret／service_role**）。
-4. 填進 `index.html` 的 `CONFIG.SUPA_URL`、`CONFIG.SUPA_KEY`，commit。
+3. `index.html` 的 `CONFIG` 已填入 Budget_APP 的網址與 publishable key。
 5. 驗證：
 
 ```powershell
-curl.exe -s -X POST "https://<ref>.supabase.co/rest/v1/rpc/shiti_get" -H "apikey: KEY" -H "Content-Type: application/json" -d "{\"p_id\":\"0000000000000000000000000000000000000000000000000000000000000000\"}"
+curl.exe -s -X POST "https://tbukohrgpxxhmtsqgzon.supabase.co/rest/v1/rpc/shiti_get" -H "apikey: KEY" -H "Content-Type: application/json" -d "{\"p_id\":\"0000000000000000000000000000000000000000000000000000000000000000\"}"
 ```
 
 回傳 `null` 代表成功。

@@ -648,8 +648,8 @@ const nowMin = () => { const d = clock(); return d.getHours() * 60 + d.getMinute
 
 /* ── 雲端同步（與細水長流相同：Supabase＋同步密語）──────── */
 const CONFIG = {
-  SUPA_URL: '',  // Supabase 專案網址，例如 https://xxxx.supabase.co
-  SUPA_KEY: '',  // Publishable key（sb_publishable_ 開頭，公開也安全；資料只能透過 shiti_get/put 加密語 id 存取）
+  SUPA_URL: 'https://tbukohrgpxxhmtsqgzon.supabase.co',  // 與細水長流共用 Supabase 專案 Budget_APP（Tokyo），資料表為 shiti_doc
+  SUPA_KEY: 'sb_publishable_naaPTzV6pdPoiTctKsiShg_VJQqsXCs',  // Publishable key（公開也安全；資料只能透過 shiti_get/put 加密語 id 存取）
 };
 
 /* ── data ────────────────────────────────── */
