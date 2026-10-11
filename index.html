@@ -1,0 +1,1283 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" id="tc" content="#F1F4F0">
+<script>
+/* apply saved theme before first paint to avoid a flash */
+(function () { var u = {}; try { u = JSON.parse(localStorage.getItem('shiti.ui.v1')) || {}; } catch (e) {}
+  var r = document.documentElement, h = r.getAttribute('data-theme'), m = u.mode || 'auto';
+  if (m === 'auto') m = h === 'dark' || h === 'light' ? h : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  r.setAttribute('data-palette', u.theme || 'celadon'); document.documentElement.setAttribute('data-mode', m); })();
+</script>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="時屜">
+<meta name="description" content="時屜：每段時間都有它的抽屜，時間到了打開，抽屜之間留白。">
+<title>時屜</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png?v=1" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+html{
+  --kai:"LXGW WenKai TC","Kaiti TC","STKaiti","DFKai-SB",serif;
+  --num:system-ui,-apple-system,"SF Pro Display","Segoe UI","PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  --sans:system-ui,-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+/* 四種色系 × 白天／夜晚（與細水長流相同）。朱色＝超量／流失，金色＝用心留白 */
+html[data-mode="light"]{--vermilion:#C2412A;--vermilion-soft:#F7E0D9;--gold:#9A7522;--gold-soft:#F1E7CC;--scrim:rgba(14,22,28,.42);color-scheme:light;
+  --t-moss:#5E7F3A;--t-amber:#9A7522;--t-slate:#4E6385;--t-plum:#7D4F7A;--t-ink:#5B6470;--shade:rgba(20,30,28,.16)}
+html[data-mode="dark"]{--vermilion:#F0826B;--vermilion-soft:#3A201A;--gold:#DDBB62;--gold-soft:#30291A;--scrim:rgba(0,0,0,.55);color-scheme:dark;
+  --t-moss:#A8C77E;--t-amber:#DDBB62;--t-slate:#9DB2D8;--t-plum:#CFA0CB;--t-ink:#AEB6C0;--shade:rgba(0,0,0,.5)}
+/* 青瓷 celadon (default) */
+html[data-mode="light"]{
+  --paper:#F1F4F0;--surface:#FFFFFF;--surface-2:#E5ECE7;--ink:#1D2B28;--ink-2:#51625C;--ink-3:#6E7D78;--line:#DAE2DD;
+  --pool:#1F5F57;--pool-ink:#FFFFFF;--pool-soft:#D6E8E2;--celadon:#B4DCCE;--celadon-2:#86C4B0}
+html[data-mode="dark"]{
+  --paper:#0F1917;--surface:#15221F;--surface-2:#1C2C28;--ink:#E3EDE9;--ink-2:#A2B3AD;--ink-3:#7D8F89;--line:#24352F;
+  --pool:#79C9B1;--pool-ink:#0F1917;--pool-soft:#1D3530;--celadon:#2A6658;--celadon-2:#1F4F45}
+/* 靛藍 indigo */
+html[data-palette="indigo"][data-mode="light"]{
+  --paper:#F0F2F6;--surface:#FFFFFF;--surface-2:#E3E8F0;--ink:#1C2433;--ink-2:#4F5B70;--ink-3:#6E7A8F;--line:#D8DEE8;
+  --pool:#2C4A7C;--pool-ink:#FFFFFF;--pool-soft:#DCE4F2;--celadon:#BFD2EC;--celadon-2:#8EAEDB}
+html[data-palette="indigo"][data-mode="dark"]{
+  --paper:#0E1420;--surface:#151D2C;--surface-2:#1C2638;--ink:#E3E9F3;--ink-2:#A2AEC2;--ink-3:#7C88A2;--line:#233049;
+  --pool:#8FB3EC;--pool-ink:#0E1420;--pool-soft:#1D2B45;--celadon:#2B4A7A;--celadon-2:#213A62}
+/* 烏龍 oolong (gold shifts to olive so 留白 stays distinct from the amber accent) */
+html[data-palette="oolong"][data-mode="light"]{
+  --paper:#F3F1ED;--surface:#FFFFFF;--surface-2:#ECE6DC;--ink:#2A221A;--ink-2:#66594A;--ink-3:#847565;--line:#E2DACD;
+  --pool:#8A5A24;--pool-ink:#FFFFFF;--pool-soft:#F1E3CF;--celadon:#EBD3AE;--celadon-2:#DDB57C;--gold:#6F7A1E;--gold-soft:#E8EBCF;--t-amber:#A0701F}
+html[data-palette="oolong"][data-mode="dark"]{
+  --paper:#17120D;--surface:#201913;--surface-2:#2A2119;--ink:#F0E7DC;--ink-2:#BFAF9C;--ink-3:#93857A;--line:#352A20;
+  --pool:#E2B577;--pool-ink:#17120D;--pool-soft:#3A2C1C;--celadon:#6B4A22;--celadon-2:#553A1A;--gold:#C3CF6A;--gold-soft:#2C2E16}
+/* 紫藤 wisteria */
+html[data-palette="wisteria"][data-mode="light"]{
+  --paper:#F3F1F7;--surface:#FFFFFF;--surface-2:#E8E4F0;--ink:#26203A;--ink-2:#5C5476;--ink-3:#77708F;--line:#DDD8E8;
+  --pool:#5B4891;--pool-ink:#FFFFFF;--pool-soft:#E4DEF3;--celadon:#D5CCF0;--celadon-2:#B2A3E0}
+html[data-palette="wisteria"][data-mode="dark"]{
+  --paper:#13111C;--surface:#1B1827;--surface-2:#242033;--ink:#E9E5F4;--ink-2:#ACA5C4;--ink-3:#857F9F;--line:#2C2740;
+  --pool:#B6A6EE;--pool-ink:#13111C;--pool-soft:#2A2442;--celadon:#463A78;--celadon-2:#372D60}
+html{--t-pool:var(--pool)}
+[data-tone="pool"]{--tone:var(--pool)} [data-tone="moss"]{--tone:var(--t-moss)} [data-tone="amber"]{--tone:var(--t-amber)}
+[data-tone="slate"]{--tone:var(--t-slate)} [data-tone="plum"]{--tone:var(--t-plum)} [data-tone="ink"]{--tone:var(--t-ink)}
+[data-tone]{--tone-soft:color-mix(in srgb,var(--tone) 14%,var(--surface))}
+
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%;background:var(--paper)}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none;min-height:100dvh;transition:background-color .3s}
+::selection{background:color-mix(in srgb,var(--pool) 28%,transparent)}
+input,textarea{caret-color:var(--pool)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+:focus-visible{outline:2px solid var(--pool);outline-offset:2px;border-radius:8px}
+.num,.big,.tm,.pct{font-family:var(--num);font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum"}
+.muted{color:var(--ink-2)} .faint{color:var(--ink-3)}
+.ti{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;display:block;flex:none}
+
+#app{max-width:480px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(112px + env(safe-area-inset-bottom))}
+
+/* header */
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:4px 2px 16px}
+.head h1{font-family:var(--kai);font-weight:700;font-size:28px;line-height:1.1;letter-spacing:.02em}
+.head .sub{font-size:13px;color:var(--ink-2);margin-top:4px}
+.head-r{display:flex;gap:8px;align-items:center}
+.gear{width:38px;height:38px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-2);flex:none}
+.gear .ti{width:19px;height:19px}
+.back{display:inline-flex;align-items:center;gap:2px;color:var(--pool);font-size:15px;margin:0 0 6px -6px;padding:4px 6px}
+
+/* ── 此刻的抽屜（主視覺）──────────────────────── */
+.now{position:relative}
+.face{position:relative;z-index:2;background:var(--surface);border:1px solid var(--line);border-radius:30px;padding:20px 22px 26px;transition:background-color .3s}
+.f-top{display:flex;align-items:center;gap:12px}
+.f-top .ico{width:44px;height:44px;border-radius:15px}
+.f-when{font-size:13px;color:var(--ink-2);display:flex;align-items:center;gap:6px}
+.f-when .dot{width:7px;height:7px;border-radius:50%;background:var(--tone)}
+.f-name{font-family:var(--kai);font-size:27px;font-weight:700;line-height:1.15;letter-spacing:.02em}
+.f-left{display:flex;align-items:baseline;gap:4px;margin:18px 0 0}
+.f-left .big{font-size:64px;line-height:.95;font-weight:650;letter-spacing:-.02em}
+.f-left .u{font-size:17px;color:var(--ink-2);margin-right:6px}
+.f-sub{font-size:14px;color:var(--ink-2);margin-top:8px}
+.f-track{position:relative;height:6px;border-radius:9px;background:var(--surface-2);margin-top:16px;overflow:hidden}
+.f-track i{position:absolute;left:0;top:0;bottom:0;border-radius:9px;background:var(--tone);transition:width .6s var(--ease)}
+/* 把手：抽屜面板與內盒的接縫 */
+.pull{position:absolute;z-index:3;left:50%;bottom:-6px;width:68px;height:12px;margin-left:-34px;border-radius:9px;background:var(--tone);box-shadow:0 3px 6px -2px var(--shade)}
+.tray{position:relative;z-index:1;margin:-18px 12px 0;padding:30px 6px 8px;border-radius:0 0 26px 26px;background:color-mix(in srgb,var(--tone) 8%,var(--surface-2));box-shadow:inset 0 16px 14px -14px var(--shade)}
+.tray.opening{animation:pull-out .7s var(--ease) both}
+.tray.opening .it{animation:rise .5s var(--ease) both}
+.tray.opening .it:nth-child(2){animation-delay:.06s} .tray.opening .it:nth-child(3){animation-delay:.12s} .tray.opening .it:nth-child(4){animation-delay:.18s} .tray.opening .it:nth-child(n+5){animation-delay:.24s}
+@keyframes pull-out{from{clip-path:inset(0 0 100% 0 round 0 0 26px 26px);transform:translateY(-22px)}to{clip-path:inset(0 0 0 0 round 0 0 26px 26px);transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.tray-h{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-2);padding:0 12px 4px}
+.tray .add-in{display:flex;align-items:center;gap:8px;width:100%;padding:12px;color:var(--pool);font-size:14px;border-radius:14px}
+.tray .add-in .ti{width:18px;height:18px}
+.tray .note{padding:4px 12px 10px}
+/* 留白：沒有抽屜的空檔 */
+.now.gap .face{background:transparent;border:1.5px dashed color-mix(in srgb,var(--gold) 55%,var(--line))}
+.now.gap .f-name{color:var(--ink)}
+.now.gap .pull{display:none}
+.now.gap .tray{margin-top:10px;border-radius:24px;padding-top:8px;box-shadow:none;background:var(--surface);border:1px solid var(--line)}
+.now.gap.opening-gap .tray{animation:rise .6s var(--ease) both}
+.now.night .face{background:var(--surface-2);border-color:transparent}
+.now.night .pull{display:none}
+.chosen{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--gold);background:var(--gold-soft);border-radius:99px;padding:5px 12px;margin-top:12px}
+.chosen .ti{width:16px;height:16px}
+
+/* items */
+.it{position:relative;border-radius:14px;overflow:hidden;touch-action:pan-y}
+.it-row{position:relative;z-index:1;display:flex;align-items:center;gap:12px;padding:9px 12px;width:100%;text-align:left;background:inherit;transition:transform .22s var(--ease)}
+.tray .it-row{background:transparent}
+.it.drag .it-row{transition:none}
+.it-del{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;padding-right:18px;background:var(--vermilion);color:#fff;border-radius:14px;opacity:0;transition:opacity .15s}
+.it.drag .it-del{opacity:1}
+.it-del .ti{width:20px;height:20px}
+.tray .it-row,.rows .it-row{background:var(--surface)}
+.tray .it-row{background:transparent}
+.tray .it.drag .it-row{background:color-mix(in srgb,var(--tone) 8%,var(--surface-2))}
+.ck{flex:none;width:28px;height:28px;border-radius:50%;border:1.6px solid var(--ink-3);display:grid;place-items:center;color:transparent;transition:background-color .18s,border-color .18s,transform .18s}
+.ck .ti{width:16px;height:16px;stroke-width:2.6}
+.ck.on{background:var(--tone,var(--pool));border-color:var(--tone,var(--pool));color:var(--surface)}
+.ck.pop{animation:pop .32s var(--ease)}
+@keyframes pop{40%{transform:scale(1.18)}}
+.it .mid{flex:1;min-width:0}
+.it .t{font-size:15px;line-height:1.35;overflow-wrap:anywhere}
+.it .s{font-size:12px;color:var(--ink-3);line-height:1.4;margin-top:1px}
+.it.done .t{color:var(--ink-3);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--ink-3) 60%,transparent)}
+.it .mins{font-size:12px;color:var(--ink-2);white-space:nowrap}
+
+/* blocks */
+.block{margin-top:30px}
+.block > h2{font-family:var(--kai);font-size:19px;font-weight:700;margin:0 4px 10px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.block > h2 .lk{font-family:var(--sans);font-size:13px;font-weight:400;color:var(--pool);padding:4px 2px}
+.block > h2 small{font-family:var(--sans);font-size:13px;font-weight:400;color:var(--ink-3)}
+.panel{background:var(--surface);border-radius:22px;padding:18px;border:1px solid var(--line)}
+.panel + .panel{margin-top:10px}
+.rows{background:var(--surface);border-radius:22px;border:1px solid var(--line);overflow:hidden}
+.rows > * + *{border-top:1px solid var(--line)}
+.rows .it{border-radius:0}
+.rows .it-del{border-radius:0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 16px;width:100%;text-align:left}
+button.row:active{background:var(--surface-2)}
+.row .mid{flex:1;min-width:0}
+.mid > .t,.mid > .s{display:block}
+.cd .s{display:flex!important}
+.row .t{font-size:15px;line-height:1.3}
+.row .s{font-size:12px;color:var(--ink-3);line-height:1.45;margin-top:1px}
+.ico{width:40px;height:40px;flex:none;border-radius:14px;background:var(--tone-soft,var(--pool-soft));color:var(--tone,var(--pool));display:grid;place-items:center}
+.chev{color:var(--ink-3)}
+.chev .ti{width:18px;height:18px}
+.note{font-size:13px;color:var(--ink-2);line-height:1.6}
+.big-line{font-size:15px;line-height:1.65}
+.big-line strong{white-space:nowrap;font-weight:650;font-family:var(--num);font-variant-numeric:tabular-nums}
+.pill{white-space:nowrap;display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;background:var(--surface-2);color:var(--ink-2);vertical-align:1px;font-weight:500}
+.pill.hot{background:var(--vermilion-soft);color:var(--vermilion)}
+.pill.warn{background:var(--gold-soft);color:var(--gold)}
+.pill.ok{background:var(--pool-soft);color:var(--pool)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 13px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:14px;white-space:nowrap;transition:background-color .15s,color .15s,border-color .15s}
+.chip .ti{width:16px;height:16px}
+.chip.on{background:var(--pool);color:var(--pool-ink);border-color:var(--pool);font-weight:600}
+.chip.tone.on{background:var(--tone);border-color:var(--tone);color:var(--surface)}
+.chip.streak{background:var(--gold-soft);border-color:transparent;color:var(--ink)}
+.chip.streak .ti{color:var(--gold)}
+.scroll-x{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px}
+.scroll-x::-webkit-scrollbar{display:none}
+.seg{display:inline-flex;background:var(--surface-2);border-radius:999px;padding:3px}
+.seg button{padding:5px 13px;border-radius:999px;font-size:13px;color:var(--ink-2);transition:background-color .2s,color .2s}
+.seg button.on{background:var(--pool);color:var(--pool-ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.seg.wide{display:flex;width:100%}
+.seg.wide button{flex:1;padding:8px 6px;font-size:14px}
+
+/* check-in */
+.ask{margin-top:12px;padding:16px 16px 14px}
+.ask-q{font-family:var(--kai);font-size:18px;line-height:1.4}
+.ask-q + .s{font-size:12px;color:var(--ink-3);margin:2px 0 12px}
+.ask .chips{gap:6px}
+.ask .chip{height:38px}
+.ask .chip.leak{color:var(--vermilion)}
+.ask{position:relative}
+.ask .skip{position:absolute;top:10px;right:10px;font-size:13px;color:var(--ink-3);padding:6px 8px}
+.ask .ask-q{padding-right:44px}
+
+/* 今天的節奏：一條橫向的日帶 */
+.ribbon{position:relative;height:34px;border-radius:12px;background:var(--surface-2)}
+.ribbon i{position:absolute;top:4px;bottom:4px;border-radius:6px;background:var(--tone)}
+.ribbon i.past{opacity:.38}
+.ribbon .nowl{position:absolute;top:-5px;bottom:-5px;width:2px;margin-left:-1px;border-radius:2px;background:var(--ink)}
+.rib-ax{position:relative;height:16px;margin-top:6px;font-size:11px;color:var(--ink-3)}
+.rib-ax span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.rib-ax span:first-child{transform:none} .rib-ax span:last-child{transform:translateX(-100%)}
+.meter .big-line{margin-top:12px}
+.meter .pill{margin-left:4px}
+
+/* 今天的櫃子 */
+.cab{display:flex;flex-direction:column}
+.cseg{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px}
+.cseg .tm{font-size:12px;color:var(--ink-3);text-align:right;padding-top:15px;line-height:1}
+.cd{position:relative;display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin:4px 0;padding:12px 30px 12px 12px;background:var(--surface);border:1px solid var(--line);border-radius:18px;transition:transform .35s var(--ease),box-shadow .35s var(--ease),opacity .3s}
+.cd::after{content:"";position:absolute;right:12px;top:50%;width:5px;height:24px;margin-top:-12px;border-radius:5px;background:color-mix(in srgb,var(--tone) 45%,var(--surface-2))}
+.cd .t{font-size:15px;line-height:1.3;font-weight:500}
+.cd .s{font-size:12px;color:var(--ink-3);margin-top:2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.cd.cur{transform:translateX(10px);border-color:transparent;box-shadow:0 10px 22px -12px var(--shade),0 2px 6px -3px var(--shade)}
+.cd.cur::after{background:var(--tone)}
+.cd.past{opacity:.62}
+.cd:active{transform:scale(.985)}
+.cd.cur:active{transform:translateX(10px) scale(.985)}
+.cgap{display:flex;align-items:center;gap:6px;margin:3px 0;padding:0 14px;border:1.5px dashed var(--line);border-radius:14px;font-size:12px;color:var(--ink-3);min-height:28px}
+.cgap.cur{border-color:color-mix(in srgb,var(--gold) 60%,var(--line));color:var(--gold);background:color-mix(in srgb,var(--gold-soft) 50%,transparent)}
+.cgap.leak{color:var(--vermilion)} .cgap.rest{color:var(--gold)}
+.cgap .ti{width:14px;height:14px}
+.cend .tm{padding-top:4px}
+.cend .lbl{font-size:12px;color:var(--ink-3);padding-top:3px}
+
+/* close the day */
+.close-card{margin-top:12px}
+.close-card .ask-q{margin-bottom:4px}
+.close-card .rows{margin-top:12px}
+.mini-acts{display:flex;gap:6px;flex:none}
+.mini-acts button{height:32px;padding:0 10px;border-radius:10px;background:var(--surface-2);font-size:12px;color:var(--ink-2)}
+.mini-acts button.go{background:var(--pool-soft);color:var(--pool);font-weight:600}
+
+/* drawers tab: 一週的櫃子 */
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.wk button{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.wk .col{position:relative;width:100%;height:150px;border-radius:12px;background:var(--surface-2);overflow:hidden;transition:box-shadow .2s}
+.wk .col i{position:absolute;left:4px;right:4px;border-radius:4px;background:var(--tone);min-height:3px}
+.wk .d{font-size:13px;color:var(--ink-2)}
+.wk .p{font-size:11px;color:var(--ink-3)}
+.wk .p.hot{color:var(--vermilion);font-weight:600}
+.wk .today .d{color:var(--ink);font-weight:700}
+.wk .sel .col{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--pool)}
+.wk-note{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-3);margin:10px 2px 0}
+
+/* review */
+.say{font-family:var(--kai);font-size:21px;line-height:1.6}
+.say b{white-space:nowrap;font-family:var(--num);font-weight:650;font-variant-numeric:tabular-nums;font-size:.95em}
+.say .k-leak{color:var(--vermilion)} .say .k-rest{color:var(--gold)} .say .k-plan{color:var(--pool)}
+.stack{display:flex;gap:8px;align-items:flex-end;height:150px;margin-top:6px}
+.stack .c{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;min-width:0}
+.stack .bar{flex:1;width:100%;max-width:34px;display:flex;flex-direction:column-reverse;gap:2px;justify-content:flex-start}
+.stack .bar i{display:block;width:100%;border-radius:4px;transition:height .5s var(--ease)}
+.stack .c span{font-size:11px;color:var(--ink-3);line-height:1}
+.stack .c.today span{color:var(--ink);font-weight:700}
+.k-plan-bg{background:var(--pool)} .k-rest-bg{background:var(--gold)} .k-other-bg{background:color-mix(in srgb,var(--ink-3) 55%,var(--surface-2))} .k-leak-bg{background:var(--vermilion)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--ink-2);margin-top:14px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:9px;height:9px;border-radius:3px;display:inline-block}
+.hours{display:grid;gap:3px;margin-top:4px}
+.hours i{display:block;height:30px;border-radius:6px;background:var(--surface-2)}
+.hours-ax{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);margin-top:6px}
+.an-row{display:flex;gap:12px;align-items:center;padding:12px 16px}
+.an-row .mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.an-row .kv{display:flex;justify-content:space-between;gap:10px;font-size:15px}
+.an-track{display:block;height:7px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.an-track i{display:block;height:100%;border-radius:99px;background:var(--tone)}
+.ins p{font-size:14px;line-height:1.65}
+.ins p + p{margin-top:8px}
+.ins p .ti{display:inline-block;width:16px;height:16px;vertical-align:-3px;margin-right:6px;color:var(--pool)}
+.stat-line{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* empty */
+.empty{text-align:center;padding:30px 18px;color:var(--ink-2);font-size:14px;line-height:1.7}
+.empty .e-big{font-family:var(--kai);font-size:20px;color:var(--ink);margin-bottom:4px}
+.empty .btn{margin-top:16px}
+
+/* tab bar */
+body::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:var(--paper);z-index:19;pointer-events:none}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:0 12px env(safe-area-inset-bottom);background:color-mix(in srgb,var(--paper) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.tabs .in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 84px 1fr 1fr;align-items:center;height:64px}
+.tabs .tb{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--ink-3);padding:6px 0;transition:color .2s}
+.tabs .tb .ti{width:23px;height:23px}
+.tabs .tb.on{color:var(--pool);font-weight:600}
+.fab{justify-self:center;width:62px;height:62px;border-radius:24px;background:var(--pool);color:var(--pool-ink);display:grid;place-items:center;transform:translateY(-14px);box-shadow:0 8px 20px -6px color-mix(in srgb,var(--pool) 70%,transparent);transition:transform .15s}
+.fab:active{transform:translateY(-14px) scale(.94)}
+.fab .ti{width:28px;height:28px;stroke-width:2.4}
+
+/* sheets */
+.scrim{position:fixed;inset:0;background:var(--scrim);opacity:0;pointer-events:none;transition:opacity .28s;z-index:50}
+.scrim.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:480px;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain;background:var(--paper);border-radius:30px 30px 0 0;transform:translateY(105%);transition:transform .38s var(--ease);z-index:51;padding:0 16px calc(18px + env(safe-area-inset-bottom));scrollbar-width:none}
+.sheet::-webkit-scrollbar{display:none}
+.sheet.open{transform:none}
+.grab{display:block;width:100%;padding:10px 0 8px;position:sticky;top:0;background:var(--paper);z-index:2}
+.grab::before{content:"";display:block;width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto}
+.sh-head{display:flex;align-items:center;gap:12px;margin:2px 0 6px}
+.sh-head h3{font-family:var(--kai);font-size:22px;font-weight:700;flex:1;min-width:0}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:52px;border-radius:18px;background:var(--pool);color:var(--pool-ink);font-size:16px;font-weight:600;transition:transform .1s,background-color .2s}
+.btn:active{transform:scale(.985)}
+.btn:disabled{background:var(--surface-2);color:var(--ink-3);cursor:default}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line);font-weight:500}
+.btn.danger{background:var(--vermilion-soft);color:var(--vermilion)}
+.btn .ti{width:20px;height:20px}
+.btn + .btn{margin-top:10px}
+.two-btn{display:flex;gap:10px} .two-btn > *{flex:1} .two-btn .btn + .btn{margin-top:0}
+.field{display:block;margin-top:16px}
+.field > span{display:block;font-size:13px;color:var(--ink-2);margin:0 4px 7px}
+.input{width:100%;height:50px;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:0 14px;font-size:17px;outline:none;transition:border-color .15s}
+.input:focus{border-color:var(--pool)}
+.input::placeholder{color:var(--ink-3)}
+.input.kai{font-family:var(--kai);font-size:21px;font-weight:700}
+.times{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
+.times .input{font-family:var(--num);font-size:19px;padding:0 8px;text-align:center;font-variant-numeric:tabular-nums;display:flex;align-items:center;justify-content:center}
+.times .input::-webkit-calendar-picker-indicator{display:none}
+.times .input::-webkit-datetime-edit{padding:0;flex:none}
+.times .to{color:var(--ink-3);font-size:14px}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.days button{height:42px;border-radius:13px;background:var(--surface);border:1px solid var(--line);font-size:15px;color:var(--ink-2)}
+.days button.on{background:var(--tone,var(--pool));border-color:transparent;color:var(--surface);font-weight:600}
+.tones{display:flex;gap:12px}
+.tones button{width:36px;height:36px;border-radius:50%;background:var(--tone);box-shadow:0 0 0 1px var(--line)}
+.tones button.on{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:4px;max-height:200px;overflow-y:auto;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:8px;scrollbar-width:none}
+.igrid button{aspect-ratio:1;border-radius:12px;display:grid;place-items:center;color:var(--ink-2)}
+.igrid button.on{background:var(--tone);color:var(--surface)}
+.dr-head{display:flex;gap:10px;align-items:center}
+.dr-head .ebtn{width:56px;height:56px;border-radius:18px;flex:none;background:var(--tone-soft);color:var(--tone);display:grid;place-items:center}
+.dr-head .ebtn .ti{width:28px;height:28px}
+.checks{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.checks p{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.5;padding:9px 12px;border-radius:12px}
+.checks p .ti{width:17px;height:17px;margin-top:1px}
+.checks .hot{background:var(--vermilion-soft);color:var(--vermilion)}
+.checks .warn{background:var(--gold-soft);color:var(--gold)}
+.checks .ok{background:var(--pool-soft);color:var(--pool)}
+.qa-in{display:flex;gap:8px;align-items:center}
+.qa-in .input{flex:1;min-width:0}
+.mic{width:50px;height:50px;border-radius:16px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;color:var(--pool);flex:none;position:relative}
+.mic.on{background:var(--pool);color:var(--pool-ink);border-color:var(--pool)}
+.mic.on::before{content:"";position:absolute;inset:-6px;border-radius:20px;border:2px solid var(--pool);animation:ring 1.2s ease-out infinite}
+@keyframes ring{from{transform:scale(.94);opacity:.7}to{transform:scale(1.16);opacity:0}}
+.parsed{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;min-height:0}
+.pc{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:10px;background:var(--pool-soft);color:var(--ink);font-size:13px}
+.pc .ti{width:15px;height:15px;color:var(--pool)}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;width:100%;text-align:left;font-size:15px}
+.toggle .sw{flex:none;width:46px;height:28px;border-radius:99px;background:var(--surface-2);position:relative;transition:background .2s}
+.toggle .sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s var(--ease)}
+.toggle[aria-checked="true"] .sw{background:var(--pool)}
+.toggle[aria-checked="true"] .sw::after{transform:translateX(18px)}
+.toggle small,.set-row small{display:block;font-size:12px;color:var(--ink-3);margin-top:2px}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;width:100%;text-align:left;font-size:15px}
+.set-row .r{font-size:14px;color:var(--ink-2);display:flex;align-items:center;gap:4px}
+.set-row input[type=time]{border:0;background:var(--surface-2);border-radius:10px;height:36px;padding:0 10px;font-family:var(--num);font-variant-numeric:tabular-nums}
+.set-row.col{flex-direction:column;align-items:stretch}
+.swatches{display:flex;gap:14px}
+.sw-btn{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:12px;color:var(--ink-2)}
+.sw-btn i{width:36px;height:36px;border-radius:50%;display:block;box-shadow:0 0 0 1px var(--line)}
+.sw-btn.on{color:var(--ink);font-weight:600}
+.sw-btn.on i{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}
+.about{display:flex;gap:14px;align-items:center}
+.about svg{width:56px;height:56px;border-radius:14px;flex:none}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:calc(98px + env(safe-area-inset-bottom));width:max-content;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:60;background:var(--ink);color:var(--paper);border-radius:16px;padding:11px 8px 11px 16px;font-size:14px;display:flex;align-items:center;gap:12px;transition:opacity .25s,transform .25s var(--ease);max-width:calc(100% - 32px);box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
+.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{color:var(--celadon);font-weight:600;padding:2px 8px;white-space:nowrap;flex:none}
+html[data-mode="light"] .toast button{color:var(--celadon)}
+.toast:not(.has-act){padding-right:16px}
+
+/* onboarding */
+.ob{position:fixed;inset:0;z-index:70;background:var(--paper);overflow-y:auto;padding:calc(env(safe-area-inset-top) + 28px) 20px calc(28px + env(safe-area-inset-bottom))}
+.ob-in{max-width:440px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+.ob .mark{width:88px;height:88px;border-radius:22px;box-shadow:0 14px 30px -14px var(--shade)}
+.ob h1{font-family:var(--kai);font-size:34px;font-weight:700;margin-top:22px;letter-spacing:.03em}
+.ob h2{font-family:var(--kai);font-size:26px;font-weight:700;line-height:1.3}
+.ob .lead{font-size:16px;color:var(--ink-2);margin-top:6px;line-height:1.6}
+.ob-pts{margin:28px 0 8px;display:flex;flex-direction:column;gap:16px}
+.ob-pts div{display:flex;gap:14px;align-items:flex-start}
+.ob-pts .ico{width:42px;height:42px}
+.ob-pts b{display:block;font-size:15px;font-weight:600}
+.ob-pts span{font-size:13px;color:var(--ink-2)}
+.ob-foot{margin-top:auto;padding-top:24px}
+.ob-step{font-size:13px;color:var(--ink-3);margin-bottom:8px}
+.tpl{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.tpl button{display:block;text-align:left;padding:14px 16px;border-radius:20px;background:var(--surface);border:1px solid var(--line);transition:border-color .15s,box-shadow .15s}
+.tpl button.on{border-color:var(--pool);box-shadow:0 0 0 1px var(--pool)}
+.tpl b{display:block;font-size:16px;font-weight:600}
+.tpl .s{display:block}
+.tpl .s{font-size:13px;color:var(--ink-2);margin:2px 0 10px}
+.tpl .ribbon{height:18px;border-radius:7px}
+.tpl .ribbon i{top:3px;bottom:3px;border-radius:3px}
+.tpl .blank .ribbon{display:none}
+.tpl .blank .s{margin-bottom:0}
+
+input,select,textarea{font-size:max(16px,1em)}
+input[type="time"]{-webkit-appearance:none;appearance:none;min-width:0}
+html{overscroll-behavior:none;scrollbar-width:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}
+html,body{overflow-x:clip}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+}
+@media (min-width:720px){ #app{padding-top:36px} }
+</style>
+</head>
+<body>
+<main id="app" aria-live="polite"></main>
+
+<nav class="tabs" aria-label="主要導覽"><div class="in">
+  <button class="tb" data-tab="today"></button>
+  <button class="tb" data-tab="drawers"></button>
+  <button class="fab" id="fab" aria-label="放一件事進抽屜（長按用說的）"></button>
+  <button class="tb" data-tab="pocket"></button>
+  <button class="tb" data-tab="review"></button>
+</div></nav>
+
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="面板"></section>
+<div class="toast" id="toast" role="status"><span></span><button hidden></button></div>
+<div class="ob" id="ob" hidden></div>
+
+<script>
+'use strict';
+const ICONS = {"settings":"<path d=\"M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065\"/><path d=\"M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/>","check":"<path d=\"M5 12l5 5l10 -10\"/>","plus":"<path d=\"M12 5l0 14\"/><path d=\"M5 12l14 0\"/>","x":"<path d=\"M18 6l-12 12\"/><path d=\"M6 6l12 12\"/>","chevron-left":"<path d=\"M15 6l-6 6l6 6\"/>","chevron-right":"<path d=\"M9 6l6 6l-6 6\"/>","chevron-down":"<path d=\"M6 9l6 6l6 -6\"/>","clock":"<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0\"/><path d=\"M12 7v5l3 3\"/>","bell":"<path d=\"M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6\"/><path d=\"M9 17v1a3 3 0 0 0 6 0v-1\"/>","bell-off":"<path d=\"M9.346 5.353c.21 -.129 .428 -.246 .654 -.353a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3m-1 3h-13a4 4 0 0 0 2 -3v-3a6.996 6.996 0 0 1 1.273 -3.707\"/><path d=\"M9 17v1a3 3 0 0 0 6 0v-1\"/><path d=\"M3 3l18 18\"/>","bell-ringing":"<path d=\"M10 5a2 2 0 0 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6\"/><path d=\"M9 17v1a3 3 0 0 0 6 0v-1\"/><path d=\"M21 6.727a11.05 11.05 0 0 0 -2.794 -3.727\"/><path d=\"M3 6.727a11.05 11.05 0 0 1 2.792 -3.727\"/>","calendar-event":"<path d=\"M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12\"/><path d=\"M16 3l0 4\"/><path d=\"M8 3l0 4\"/><path d=\"M4 11l16 0\"/><path d=\"M8 15h2v2h-2l0 -2\"/>","calendar-plus":"<path d=\"M12.5 21h-6.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v5\"/><path d=\"M16 3v4\"/><path d=\"M8 3v4\"/><path d=\"M4 11h16\"/><path d=\"M16 19h6\"/><path d=\"M19 16v6\"/>","calendar":"<path d=\"M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12\"/><path d=\"M16 3v4\"/><path d=\"M8 3v4\"/><path d=\"M4 11h16\"/><path d=\"M11 15h1\"/><path d=\"M12 15v3\"/>","microphone":"<path d=\"M9 5a3 3 0 0 1 3 -3a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3a3 3 0 0 1 -3 -3l0 -5\"/><path d=\"M5 10a7 7 0 0 0 14 0\"/><path d=\"M8 21l8 0\"/><path d=\"M12 17l0 4\"/>","trash":"<path d=\"M4 7l16 0\"/><path d=\"M10 11l0 6\"/><path d=\"M14 11l0 6\"/><path d=\"M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12\"/><path d=\"M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3\"/>","pencil":"<path d=\"M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4\"/><path d=\"M13.5 6.5l4 4\"/>","dots":"<path d=\"M4 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M18 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/>","arrow-right":"<path d=\"M5 12l14 0\"/><path d=\"M13 18l6 -6\"/><path d=\"M13 6l6 6\"/>","player-play":"<path d=\"M7 4v16l13 -8l-13 -8\"/>","refresh":"<path d=\"M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4\"/><path d=\"M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4\"/>","download":"<path d=\"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2\"/><path d=\"M7 11l5 5l5 -5\"/><path d=\"M12 4l0 12\"/>","upload":"<path d=\"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2\"/><path d=\"M7 9l5 -5l5 5\"/><path d=\"M12 4l0 12\"/>","sun":"<path d=\"M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\"/><path d=\"M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7\"/>","moon":"<path d=\"M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008\"/>","sparkles":"<path d=\"M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2m0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2m-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6\"/>","inbox":"<path d=\"M4 6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12\"/><path d=\"M4 13h3l3 3h4l3 -3h3\"/>","archive":"<path d=\"M3 6a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2\"/><path d=\"M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10\"/><path d=\"M10 12l4 0\"/>","layout-rows":"<path d=\"M4 6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12\"/><path d=\"M4 12l16 0\"/>","chart-bar":"<path d=\"M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6\"/><path d=\"M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10\"/><path d=\"M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14\"/><path d=\"M4 20h14\"/>","leaf":"<path d=\"M5 21c.5 -4.5 2.5 -8 7 -10\"/><path d=\"M9 18c6.218 0 10.5 -3.288 11 -12v-2h-4.014c-9 0 -11.986 4 -12 9c0 1 0 3 2 5h3l.014 0\"/>","feather":"<path d=\"M4 20l10 -10m0 -5v5h5m-9 -1v5h5m-9 -1v5h5m-5 -5l4 -4l4 -4\"/><path d=\"M19 10c.638 -.636 1 -1.515 1 -2.486a3.515 3.515 0 0 0 -3.517 -3.514c-.97 0 -1.847 .367 -2.483 1m-3 13l4 -4l4 -4\"/>","hourglass":"<path d=\"M6.5 7h11\"/><path d=\"M6.5 17h11\"/><path d=\"M6 20v-2a6 6 0 1 1 12 0v2a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1\"/><path d=\"M6 4v2a6 6 0 1 0 12 0v-2a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1\"/>","hourglass-low":"<path d=\"M6.5 17h11\"/><path d=\"M6 20v-2a6 6 0 1 1 12 0v2a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1\"/><path d=\"M6 4v2a6 6 0 1 0 12 0v-2a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1\"/>","circle":"<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/>","circle-check":"<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/><path d=\"M9 12l2 2l4 -4\"/>","square-check":"<path d=\"M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14\"/><path d=\"M9 12l2 2l4 -4\"/>","arrow-back-up":"<path d=\"M9 14l-4 -4l4 -4\"/><path d=\"M5 10h11a4 4 0 1 1 0 8h-1\"/>","arrow-forward-up":"<path d=\"M15 14l4 -4l-4 -4\"/><path d=\"M19 10h-11a4 4 0 1 0 0 8h1\"/>","corner-down-right":"<path d=\"M6 6v6a3 3 0 0 0 3 3h10l-4 -4m0 8l4 -4\"/>","sunrise":"<path d=\"M3 17h1m16 0h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7m-9.7 5.7a4 4 0 0 1 8 0\"/><path d=\"M3 21l18 0\"/><path d=\"M12 9v-6l3 3m-6 0l3 -3\"/>","sunset":"<path d=\"M3 17h1m16 0h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7m-9.7 5.7a4 4 0 0 1 8 0\"/><path d=\"M3 21l18 0\"/><path d=\"M12 3v6l3 -3m-6 0l3 3\"/>","coffee":"<path d=\"M3 14c.83 .642 2.077 1.017 3.5 1c1.423 .017 2.67 -.358 3.5 -1c.83 -.642 2.077 -1.017 3.5 -1c1.423 -.017 2.67 .358 3.5 1\"/><path d=\"M8 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2\"/><path d=\"M12 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2\"/><path d=\"M3 10h14v5a6 6 0 0 1 -6 6h-2a6 6 0 0 1 -6 -6v-5\"/><path d=\"M16.746 16.726a3 3 0 1 0 .252 -5.555\"/>","briefcase":"<path d=\"M3 9a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2l0 -9\"/><path d=\"M8 7v-2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v2\"/><path d=\"M12 12l0 .01\"/><path d=\"M3 13a20 20 0 0 0 18 0\"/>","brain":"<path d=\"M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8\"/><path d=\"M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8\"/><path d=\"M17.5 16a3.5 3.5 0 0 0 0 -7h-.5\"/><path d=\"M19 9.3v-2.8a3.5 3.5 0 0 0 -7 0\"/><path d=\"M6.5 16a3.5 3.5 0 0 1 0 -7h.5\"/><path d=\"M5 9.3v-2.8a3.5 3.5 0 0 1 7 0v10\"/>","book":"<path d=\"M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0\"/><path d=\"M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0\"/><path d=\"M3 6l0 13\"/><path d=\"M12 6l0 13\"/><path d=\"M21 6l0 13\"/>","book-2":"<path d=\"M19 4v16h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12\"/><path d=\"M19 16h-12a2 2 0 0 0 -2 2\"/><path d=\"M9 8h6\"/>","school":"<path d=\"M22 9l-10 -4l-10 4l10 4l10 -4v6\"/><path d=\"M6 10.6v5.4a6 3 0 0 0 12 0v-5.4\"/>","barbell":"<path d=\"M2 12h1\"/><path d=\"M6 8h-2a1 1 0 0 0 -1 1v6a1 1 0 0 0 1 1h2\"/><path d=\"M6 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1\"/><path d=\"M9 12h6\"/><path d=\"M15 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1\"/><path d=\"M18 8h2a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-2\"/><path d=\"M22 12h-1\"/>","run":"<path d=\"M11.007 5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M4 17l5 1l.75 -1.5\"/><path d=\"M15 21v-4l-4 -3l1 -6\"/><path d=\"M7 12v-3l5 -1l3 3l3 1\"/>","yoga":"<path d=\"M4 20h4l1.5 -3\"/><path d=\"M17 20l-1 -5h-5l1 -7\"/><path d=\"M4 10l4 -1l4 -1l4 1.5l4 1.5\"/><path d=\"M10.007 5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/>","heart":"<path d=\"M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572\"/>","home":"<path d=\"M5 12l-2 0l9 -9l9 9l-2 0\"/><path d=\"M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7\"/><path d=\"M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6\"/>","users":"<path d=\"M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\"/><path d=\"M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/><path d=\"M21 21v-2a4 4 0 0 0 -3 -3.85\"/>","baby-carriage":"<path d=\"M6 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M16 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M2 5h2.5l1.632 4.897a6 6 0 0 0 5.693 4.103h2.675a5.5 5.5 0 0 0 0 -11h-.5v6\"/><path d=\"M6 9h14\"/><path d=\"M9 17l1 -3\"/><path d=\"M16 14l1 3\"/>","tools-kitchen-2":"<path d=\"M19 3v12h-5c-.023 -3.681 .184 -7.406 5 -12m0 12v6h-1v-3m-10 -14v17m-3 -17v3a3 3 0 1 0 6 0v-3\"/>","bowl":"<path d=\"M4 8h16a1 1 0 0 1 1 1v.5c0 1.5 -2.517 5.573 -4 6.5v1a1 1 0 0 1 -1 1h-8a1 1 0 0 1 -1 -1v-1c-1.687 -1.054 -4 -5 -4 -6.5v-.5a1 1 0 0 1 1 -1\"/>","bed":"<path d=\"M5 9a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M22 17v-3h-20\"/><path d=\"M2 8v9\"/><path d=\"M12 14h10v-2a3 3 0 0 0 -3 -3h-7v5\"/>","device-laptop":"<path d=\"M3 19l18 0\"/><path d=\"M5 7a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v8a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1l0 -8\"/>","code":"<path d=\"M7 8l-4 4l4 4\"/><path d=\"M17 8l4 4l-4 4\"/><path d=\"M14 4l-4 16\"/>","palette":"<path d=\"M12 21a9 9 0 0 1 0 -18c4.97 0 9 3.582 9 8c0 1.06 -.474 2.078 -1.318 2.828c-.844 .75 -1.989 1.172 -3.182 1.172h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25\"/><path d=\"M7.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M11.5 7.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M15.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/>","music":"<path d=\"M3 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/><path d=\"M13 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/><path d=\"M9 17v-13h10v13\"/><path d=\"M9 8h10\"/>","plant":"<path d=\"M7 15h10v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2v-4\"/><path d=\"M12 9a6 6 0 0 0 -6 -6h-3v2a6 6 0 0 0 6 6h3\"/><path d=\"M12 11a6 6 0 0 1 6 -6h3v1a6 6 0 0 1 -6 6h-3\"/><path d=\"M12 15l0 -6\"/>","walk":"<path d=\"M12 4a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M7 21l3 -4\"/><path d=\"M16 21l-2 -4l-3 -3l1 -6\"/><path d=\"M6 12l2 -3l4 -1l3 3l3 1\"/>","bike":"<path d=\"M2 18a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/><path d=\"M16 18a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/><path d=\"M12 19v-4l-3 -3l5 -4l2 3h3\"/><path d=\"M13.007 5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/>","car":"<path d=\"M5 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M15 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 -6h15m-6 0v-5\"/>","shopping-cart":"<path d=\"M4 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M15 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M17 17h-11v-14h-2\"/><path d=\"M6 5l14 1l-1 7h-13\"/>","mail":"<path d=\"M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10\"/><path d=\"M3 7l9 6l9 -6\"/>","phone":"<path d=\"M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2\"/>","message":"<path d=\"M8 9h8\"/><path d=\"M8 13h6\"/><path d=\"M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12\"/>","wallet":"<path d=\"M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12\"/><path d=\"M20 12v4h-4a2 2 0 0 1 0 -4h4\"/>","target":"<path d=\"M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0\"/><path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/>","focus-2":"<path d=\"M11.5 12a.5 .5 0 1 0 1 0a.5 .5 0 1 0 -1 0\" fill=\"currentColor\"/><path d=\"M5 12a7 7 0 1 0 14 0a7 7 0 1 0 -14 0\"/><path d=\"M12 3l0 2\"/><path d=\"M3 12l2 0\"/><path d=\"M12 19l0 2\"/><path d=\"M19 12l2 0\"/>","bulb":"<path d=\"M3 12h1m8 -9v1m8 8h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7\"/><path d=\"M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0 -1 3a2 2 0 0 1 -4 0a3.5 3.5 0 0 0 -1 -3\"/><path d=\"M9.7 17l4.6 0\"/>","notebook":"<path d=\"M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-11a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1m3 0v18\"/><path d=\"M13 8l2 0\"/><path d=\"M13 12l2 0\"/>","dog":"<path d=\"M11 5h2\"/><path d=\"M19 12c-.667 5.333 -2.333 8 -5 8h-4c-2.667 0 -4.333 -2.667 -5 -8\"/><path d=\"M11 16c0 .667 .333 1 1 1s1 -.333 1 -1h-2\"/><path d=\"M12 18v2\"/><path d=\"M10 11v.01\"/><path d=\"M14 11v.01\"/><path d=\"M5 4l6 .97l-6.238 6.688a1.021 1.021 0 0 1 -1.41 .111a.953 .953 0 0 1 -.327 -.954l1.975 -6.815\"/><path d=\"M19 4l-6 .97l6.238 6.688c.358 .408 .989 .458 1.41 .111a.953 .953 0 0 0 .327 -.954l-1.975 -6.815\"/>","first-aid-kit":"<path d=\"M8 8v-2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v2\"/><path d=\"M4 10a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -8\"/><path d=\"M10 14h4\"/><path d=\"M12 12v4\"/>","pill":"<path d=\"M4.5 12.5l8 -8a4.94 4.94 0 0 1 7 7l-8 8a4.94 4.94 0 0 1 -7 -7\"/><path d=\"M8.5 8.5l7 7\"/>","bath":"<path d=\"M4 12h16a1 1 0 0 1 1 1v3a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-3a1 1 0 0 1 1 -1\"/><path d=\"M6 12v-7a2 2 0 0 1 2 -2h3v2.25\"/><path d=\"M4 21l1 -1.5\"/><path d=\"M20 21l-1 -1.5\"/>","clipboard-list":"<path d=\"M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2\"/><path d=\"M9 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2\"/><path d=\"M9 12l.01 0\"/><path d=\"M13 12l2 0\"/><path d=\"M9 16l.01 0\"/><path d=\"M13 16l2 0\"/>","checklist":"<path d=\"M9.615 20h-2.615a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8\"/><path d=\"M14 19l2 2l4 -4\"/><path d=\"M9 8h4\"/><path d=\"M9 12h2\"/>","stretching":"<path d=\"M15 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M5 20l5 -.5l1 -2\"/><path d=\"M18 20v-5h-5.5l2.5 -6.5l-5.5 1l1.5 2\"/>","headphones":"<path d=\"M4 15a2 2 0 0 1 2 -2h1a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-1a2 2 0 0 1 -2 -2l0 -3\"/><path d=\"M15 15a2 2 0 0 1 2 -2h1a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-1a2 2 0 0 1 -2 -2l0 -3\"/><path d=\"M4 15v-3a8 8 0 0 1 16 0v3\"/>","device-tv":"<path d=\"M3 9a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2l0 -9\"/><path d=\"M16 3l-4 4l-4 -4\"/>","device-gamepad-2":"<path d=\"M12 5h3.5a5 5 0 0 1 0 10h-5.5l-4.015 4.227a2.3 2.3 0 0 1 -3.923 -2.035l1.634 -8.173a5 5 0 0 1 4.904 -4.019h3.4\"/><path d=\"M14 15l4.07 4.284a2.3 2.3 0 0 0 3.925 -2.023l-1.6 -8.232\"/><path d=\"M8 9v2\"/><path d=\"M7 10h2\"/><path d=\"M14 10h2\"/>","device-mobile":"<path d=\"M6 5a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-14\"/><path d=\"M11 4h2\"/><path d=\"M12 17v.01\"/>","armchair":"<path d=\"M5 11a2 2 0 0 1 2 2v2h10v-2a2 2 0 1 1 4 0v4a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-4a2 2 0 0 1 2 -2\"/><path d=\"M5 11v-5a3 3 0 0 1 3 -3h8a3 3 0 0 1 3 3v5\"/><path d=\"M6 19v2\"/><path d=\"M18 19v2\"/>","mood-smile":"<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/><path d=\"M9 10l.01 0\"/><path d=\"M15 10l.01 0\"/><path d=\"M9.5 15a3.5 3.5 0 0 0 5 0\"/>","users-group":"<path d=\"M10 13a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\"/><path d=\"M8 21v-1a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v1\"/><path d=\"M15 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\"/><path d=\"M17 10h2a2 2 0 0 1 2 2v1\"/><path d=\"M5 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\"/><path d=\"M3 13v-1a2 2 0 0 1 2 -2h2\"/>","pray":"<path d=\"M11 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M7 20h8l-4 -4v-7l4 3l2 -2\"/>","map-2":"<path d=\"M12 18.5l-3 -1.5l-6 3v-13l6 -3l6 3l6 -3v7.5\"/><path d=\"M9 4v13\"/><path d=\"M15 7v5.5\"/><path d=\"M21.121 20.121a3 3 0 1 0 -4.242 0c.418 .419 1.125 1.045 2.121 1.879c1.051 -.89 1.759 -1.516 2.121 -1.879\"/><path d=\"M19 18v.01\"/>","tree":"<path d=\"M12 13l-2 -2\"/><path d=\"M12 12l2 -2\"/><path d=\"M12 21v-13\"/><path d=\"M9.824 16a3 3 0 0 1 -2.743 -3.69a3 3 0 0 1 .304 -4.833a3 3 0 0 1 4.615 -3.707a3 3 0 0 1 4.614 3.707a3 3 0 0 1 .305 4.833a3 3 0 0 1 -2.919 3.695h-4l-.176 -.005\"/>","cup":"<path d=\"M5 11h14v-3h-14l0 3\"/><path d=\"M17.5 11l-1.5 10h-8l-1.5 -10\"/><path d=\"M6 8v-1a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v1\"/><path d=\"M15 5v-2\"/>","sofa":"<path d=\"M4 11a2 2 0 0 1 2 2v1h12v-1a2 2 0 1 1 4 0v5a1 1 0 0 1 -1 1h-18a1 1 0 0 1 -1 -1v-5a2 2 0 0 1 2 -2\"/><path d=\"M4 11v-3a3 3 0 0 1 3 -3h10a3 3 0 0 1 3 3v3\"/><path d=\"M12 5v9\"/>","writing":"<path d=\"M20 17v-12c0 -1.121 -.879 -2 -2 -2s-2 .879 -2 2v12l2 2l2 -2\"/><path d=\"M16 7h4\"/><path d=\"M18 19h-13a2 2 0 1 1 0 -4h4a2 2 0 1 0 0 -4h-3\"/>","ballpen":"<path d=\"M14 6l7 7l-4 4\"/><path d=\"M5.828 18.172a2.828 2.828 0 0 0 4 0l10.586 -10.586a2 2 0 0 0 0 -2.829l-1.171 -1.171a2 2 0 0 0 -2.829 0l-10.586 10.586a2.828 2.828 0 0 0 0 4\"/><path d=\"M4 20l1.768 -1.768\"/>","calculator":"<path d=\"M4 5a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -14\"/><path d=\"M8 8a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1l0 -1\"/><path d=\"M8 14l0 .01\"/><path d=\"M12 14l0 .01\"/><path d=\"M16 14l0 .01\"/><path d=\"M8 17l0 .01\"/><path d=\"M12 17l0 .01\"/><path d=\"M16 17l0 .01\"/>","brush":"<path d=\"M3 21v-4a4 4 0 1 1 4 4h-4\"/><path d=\"M21 3a16 16 0 0 0 -12.8 10.2\"/><path d=\"M21 3a16 16 0 0 1 -10.2 12.8\"/><path d=\"M10.6 9a9 9 0 0 1 4.4 4.4\"/>","camera":"<path d=\"M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2\"/><path d=\"M9 13a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/>","presentation":"<path d=\"M3 4l18 0\"/><path d=\"M4 4v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-10\"/><path d=\"M12 16l0 4\"/><path d=\"M9 20l6 0\"/><path d=\"M8 12l3 -3l2 2l3 -3\"/>","report-analytics":"<path d=\"M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2\"/><path d=\"M9 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2\"/><path d=\"M9 17v-5\"/><path d=\"M12 17v-1\"/><path d=\"M15 17v-3\"/>","droplet":"<path d=\"M7.502 19.423c2.602 2.105 6.395 2.105 8.996 0c2.602 -2.105 3.262 -5.708 1.566 -8.546l-4.89 -7.26c-.42 -.625 -1.287 -.803 -1.936 -.397a1.376 1.376 0 0 0 -.41 .397l-4.893 7.26c-1.695 2.838 -1.035 6.441 1.567 8.546\"/>","salad":"<path d=\"M4 11h16a1 1 0 0 1 1 1v.5c0 1.5 -2.517 5.573 -4 6.5v1a1 1 0 0 1 -1 1h-8a1 1 0 0 1 -1 -1v-1c-1.687 -1.054 -4 -5 -4 -6.5v-.5a1 1 0 0 1 1 -1\"/><path d=\"M18.5 11c.351 -1.017 .426 -2.236 .5 -3.714v-1.286h-2.256c-2.83 0 -4.616 .804 -5.64 2.076\"/><path d=\"M5.255 11.008a12.204 12.204 0 0 1 -.255 -2.008v-1h1.755c.98 0 1.801 .124 2.479 .35\"/><path d=\"M8 8l1 -4l4 2.5\"/><path d=\"M13 11v-.5a2.5 2.5 0 1 0 -5 0v.5\"/>","soup":"<path d=\"M4 11h16a1 1 0 0 1 1 1v.5c0 1.5 -2.517 5.573 -4 6.5v1a1 1 0 0 1 -1 1h-8a1 1 0 0 1 -1 -1v-1c-1.687 -1.054 -4 -5 -4 -6.5v-.5a1 1 0 0 1 1 -1\"/><path d=\"M12 4a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2\"/><path d=\"M16 4a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2\"/><path d=\"M8 4a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2\"/>","glass":"<path d=\"M8 21h8\"/><path d=\"M12 16v5\"/><path d=\"M17 5l1 6c0 3.012 -2.686 5 -6 5s-6 -1.988 -6 -5l1 -6\"/><path d=\"M7 5a5 2 0 1 0 10 0a5 2 0 1 0 -10 0\"/>","bucket":"<path d=\"M4 7a8 4 0 1 0 16 0a8 4 0 1 0 -16 0\"/><path d=\"M4 7c0 .664 .088 1.324 .263 1.965l2.737 10.035c.5 1.5 2.239 2 5 2s4.5 -.5 5 -2c.333 -1 1.246 -4.345 2.737 -10.035a7.45 7.45 0 0 0 .263 -1.965\"/>","wash":"<path d=\"M3.486 8.965c.168 .02 .34 .033 .514 .035c.79 .009 1.539 -.178 2 -.5c.461 -.32 1.21 -.507 2 -.5c.79 -.007 1.539 .18 2 .5c.461 .322 1.21 .509 2 .5c.79 .009 1.539 -.178 2 -.5c.461 -.32 1.21 -.507 2 -.5c.79 -.007 1.539 .18 2 .5c.461 .322 1.21 .509 2 .5c.17 0 .339 -.014 .503 -.034\"/><path d=\"M3 6l1.721 10.329a2 2 0 0 0 1.973 1.671h10.612a2 2 0 0 0 1.973 -1.671l1.721 -10.329\"/>","spray":"<path d=\"M4 12a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-4a2 2 0 0 1 -2 -2l0 -7\"/><path d=\"M6 10v-4a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v4\"/><path d=\"M15 7h.01\"/><path d=\"M18 9h.01\"/><path d=\"M18 5h.01\"/><path d=\"M21 3h.01\"/><path d=\"M21 7h.01\"/><path d=\"M21 11h.01\"/><path d=\"M10 7h1\"/>","meat":"<path d=\"M13.62 8.382l1.966 -1.967a2 2 0 1 1 3.414 -1.415a2 2 0 1 1 -1.413 3.414l-1.82 1.821\"/><path d=\"M5.904 18.596c2.733 2.734 5.9 4 7.07 2.829c1.172 -1.172 -.094 -4.338 -2.828 -7.071c-2.733 -2.734 -5.9 -4 -7.07 -2.829c-1.172 1.172 .094 4.338 2.828 7.071\"/><path d=\"M7.5 16l1 1\"/><path d=\"M12.975 21.425c3.905 -3.906 4.855 -9.288 2.121 -12.021c-2.733 -2.734 -8.115 -1.784 -12.02 2.121\"/>","stretching-2":"<path d=\"M6.5 21l3.5 -5\"/><path d=\"M5 11l7 -2\"/><path d=\"M16 21l-4 -7v-5l7 -4\"/><path d=\"M9.007 6a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/>","swimming":"<path d=\"M15 9a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M6 11l4 -2l3.5 3l-1.5 2\"/><path d=\"M3 16.75a2.4 2.4 0 0 0 1 .25a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 1 -.25\"/>","tent":"<path d=\"M11 14l4 6h6l-9 -16l-9 16h6l4 -6\"/>","ear":"<path d=\"M6 10a7 7 0 1 1 13 3.6a10 10 0 0 1 -2 2a8 8 0 0 0 -2 3a4.5 4.5 0 0 1 -6.8 1.4\"/><path d=\"M10 10a3 3 0 1 1 5 2.2\"/>","mood-happy":"<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/><path d=\"M9 9l.01 0\"/><path d=\"M15 9l.01 0\"/><path d=\"M8 13a4 4 0 1 0 8 0h-8\"/>","hand-stop":"<path d=\"M8 13v-7.5a1.5 1.5 0 0 1 3 0v6.5\"/><path d=\"M11 5.5v-2a1.5 1.5 0 1 1 3 0v8.5\"/><path d=\"M14 5.5a1.5 1.5 0 0 1 3 0v6.5\"/><path d=\"M17 7.5a1.5 1.5 0 0 1 3 0v8.5a6 6 0 0 1 -6 6h-2h.208a6 6 0 0 1 -5.012 -2.7a69.74 69.74 0 0 1 -.196 -.3c-.312 -.479 -1.407 -2.388 -3.286 -5.728a1.5 1.5 0 0 1 .536 -2.022a1.867 1.867 0 0 1 2.28 .28l1.47 1.47\"/>","eye-off":"<path d=\"M10.585 10.587a2 2 0 0 0 2.829 2.828\"/><path d=\"M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87\"/><path d=\"M3 3l18 18\"/>","zzz":"<path d=\"M4 12h6l-6 8h6\"/><path d=\"M14 4h6l-6 8h6\"/>","anchor":"<path d=\"M12 9v12m-8 -8a8 8 0 0 0 16 0m1 0h-2m-14 0h-2\"/><path d=\"M9 6a3 3 0 1 0 6 0a3 3 0 1 0 -6 0\"/>","tag":"<path d=\"M6.5 7.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M3 6v5.172a2 2 0 0 0 .586 1.414l7.71 7.71a2.41 2.41 0 0 0 3.408 0l5.592 -5.592a2.41 2.41 0 0 0 0 -3.408l-7.71 -7.71a2 2 0 0 0 -1.414 -.586h-5.172a3 3 0 0 0 -3 3\"/>","box":"<path d=\"M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5\"/><path d=\"M12 12l8 -4.5\"/><path d=\"M12 12l0 9\"/><path d=\"M12 12l-8 -4.5\"/>"};
+const LOGO = `<svg viewBox="0 0 1024 1024" aria-hidden="true"><defs><linearGradient id="lg-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#24695F"/><stop offset="1" stop-color="#174842"/></linearGradient></defs><rect width="1024" height="1024" fill="url(#lg-bg)"/><rect x="236" y="232" width="552" height="150" rx="44" fill="#9FD1C0" opacity=".5"/><rect x="452" y="296" width="120" height="22" rx="11" fill="#174842" opacity=".55"/><rect x="236" y="642" width="552" height="150" rx="44" fill="#9FD1C0" opacity=".5"/><rect x="452" y="706" width="120" height="22" rx="11" fill="#174842" opacity=".55"/><rect x="190" y="420" width="644" height="186" rx="50" fill="#0B2622" opacity=".28" transform="translate(0 24)"/><rect x="190" y="414" width="644" height="186" rx="50" fill="#F4F7F3"/><rect x="427" y="492" width="170" height="30" rx="15" fill="#D9B45A"/></svg>`;
+
+/* ── helpers ─────────────────────────────── */
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const ic = n => `<svg class="ti" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ICONS.circle}</svg>`;
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const now = () => Date.now();
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseYmd = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const addDays = (s, n) => { const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); };
+const dow = s => parseYmd(s).getDay() || 7;            // 1=週一 … 7=週日
+const toMin = t => { const [h, m] = String(t).split(':').map(Number); return h * 60 + (m || 0); };
+const hm = m => `${pad(Math.floor(m / 60) % 24)}:${pad(Math.round(m) % 60)}`;
+const WD = ['', '一', '二', '三', '四', '五', '六', '日'];
+const live = a => (a || []).filter(x => !x.del);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+function dur(m) { m = Math.max(0, Math.round(m)); if (m < 60) return `${m} 分`; const h = Math.floor(m / 60), r = m % 60; return r ? `${h} 小時 ${r} 分` : `${h} 小時`; }
+function durShort(m) { m = Math.max(0, Math.round(m)); if (m < 60) return `${m}分`; const h = Math.floor(m / 60), r = m % 60; return r ? `${h}時${r}分` : `${h}小時`; }
+function daysLabel(days) {
+  const s = [...days].sort((a, b) => a - b).join('');
+  if (s === '1234567') return '每天'; if (s === '12345') return '平日'; if (s === '67') return '週末';
+  if (s.length >= 3 && '1234567'.includes(s)) return `週${WD[s[0]]}至${WD[s[s.length - 1]]}`;
+  return '週' + [...s].map(x => WD[x]).join('、');
+}
+const capName = c => ({ 60: '六分滿', 70: '七分滿', 80: '八分滿' }[c] || `${c}%`);
+
+/* 測試用：?at=HH:MM 把時鐘撥到指定時間，?day=YYYY-MM-DD 撥到指定日期 */
+const QS = new URLSearchParams(location.search), AT = QS.get('at'), DAY = QS.get('day'), T0 = Date.now();
+function clock() {
+  if (!AT && !DAY) return new Date();
+  const b = new Date();
+  if (DAY && /^\d{4}-\d{2}-\d{2}$/.test(DAY)) { const [y, mo, d] = DAY.split('-').map(Number); b.setFullYear(y, mo - 1, d); }
+  if (AT && /^\d{1,2}:\d{2}$/.test(AT)) { const [h, m] = AT.split(':').map(Number); b.setHours(h, m, 0, 0); }
+  return new Date(b.getTime() + (Date.now() - T0));
+}
+const today = () => ymd(clock());
+const nowMin = () => { const d = clock(); return d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60; };
+
+/* ── data ────────────────────────────────── */
+const KEY = 'shiti.data.v1', UIKEY = 'shiti.ui.v1';
+let D = null;
+try { const d = JSON.parse(localStorage.getItem(KEY)); if (d && d.v === 1) D = d; } catch (e) {}
+let UIP = {}; try { UIP = JSON.parse(localStorage.getItem(UIKEY)) || {}; } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} };
+const saveUI = () => { try { localStorage.setItem(UIKEY, JSON.stringify(UIP)); } catch (e) {} };
+const UI = { tab: 'today', cabDay: 0, wkSel: null, rvWeek: 0, opened: false, lastSeg: undefined };
+
+function fresh() { return { v: 1, prefs: { wake: '07:00', sleep: '23:00', buffer: 10, cap: 70, notify: false, lead: 5, closed: {} }, drawers: [], items: [], logs: [], skips: {} }; }
+
+const wakeM = () => toMin(D.prefs.wake);
+const sleepM = () => { const s = toMin(D.prefs.sleep); return s <= wakeM() ? s + 1440 : s; };
+const drawersOnDow = w => live(D.drawers).filter(x => x.days.includes(w)).sort((a, b) => toMin(a.start) - toMin(b.start));
+const drawersOn = d => drawersOnDow(dow(d));
+const drawerById = id => D.drawers.find(x => x.id === id);
+const lenOf = x => toMin(x.end) - toMin(x.start);
+
+function segsOn(d) {
+  const W = wakeM(), S = sleepM(), out = []; let t = W;
+  for (const x of drawersOn(d)) {
+    const a = toMin(x.start), b = toMin(x.end);
+    if (a > t) out.push({ type: 'gap', start: t, end: a, key: 'g' + t });
+    out.push({ type: 'drawer', start: a, end: b, dr: x, key: x.id });
+    t = Math.max(t, b);
+  }
+  if (S > t) out.push({ type: 'gap', start: t, end: S, key: 'g' + t });
+  return out;
+}
+function loadOfDow(w) { const sum = drawersOnDow(w).reduce((s, x) => s + lenOf(x), 0), awake = sleepM() - wakeM(); return { sum, awake, pct: awake > 0 ? sum / awake : 0 }; }
+const loadOf = d => loadOfDow(dow(d));
+
+/* 事項：when = 'every' 每次打開都做｜'next' 下次打開時｜'YYYY-MM-DD' 指定那天 */
+function showsOn(it, d) { if (it.when === 'every') return true; if (it.when === 'next') return !it.doneAt || it.doneOn === d; return it.when === d; }
+const isDone = (it, d) => it.when === 'every' ? !!(it.doneDates && it.doneDates[d]) : !!it.doneAt;
+const itemsIn = (id, d) => live(D.items).filter(it => it.drawer === id && showsOn(it, d)).sort((a, b) => (isDone(a, d) - isDone(b, d)) || (a.c - b.c));
+function whenLabel(it) {
+  if (it.when === 'every') return it.drawer === 'pocket' ? '常備' : '每次';
+  if (it.when === 'next') return it.rolled ? '延到這次' : (it.drawer === 'pocket' ? '一次' : '下次打開');
+  const t = today(); if (it.when === t) return '今天'; if (it.when === addDays(t, 1)) return '明天';
+  const d = parseYmd(it.when); return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+function toggleDone(it, d) {
+  if (it.when === 'every') { it.doneDates = it.doneDates || {}; if (it.doneDates[d]) delete it.doneDates[d]; else it.doneDates[d] = now(); }
+  else if (it.doneAt) { it.doneAt = null; it.doneOn = null; } else { it.doneAt = now(); it.doneOn = d; }
+  it.u = now(); save();
+}
+/* 過了那天還沒做的事，自動放回抽屜（下次打開時），不堆積 */
+function rollOver() {
+  const t = today(); let n = 0;
+  for (const it of live(D.items)) if (/^\d{4}-/.test(it.when) && it.when < t && !it.doneAt) { it.when = 'next'; it.rolled = 1; it.u = now(); n++; }
+  if (n) save();
+}
+
+const logFor = (d, key) => live(D.logs).find(l => l.d === d && l.key === key);
+function addLog(d, seg, kind) {
+  const old = logFor(d, seg.key); if (old) { old.del = 1; old.u = now(); }
+  const l = { id: uid(), d, key: seg.key, start: seg.start, end: seg.end, kind, dr: seg.dr ? seg.dr.id : null, u: now() };
+  D.logs.push(l); save(); return l;
+}
+function curSeg(d = today(), n = nowMin()) { return segsOn(d).find(s => s.start <= n && n < s.end) || null; }
+function pendingAsk() {
+  const d = today(), n = nowMin();
+  // 只問最近結束的那一段；答過或略過就不再往回追問
+  const s = segsOn(d).filter(s => s.end <= n && s.end - s.start >= 15).pop();
+  return s && s.end > n - 240 && !logFor(d, s.key) && !D.skips[d + s.key] ? s : null;
+}
+
+/* ── templates（範本內容為示範，可自由修改）──────── */
+const TPL = {
+  work: { name: '上班族', sub: '週末多留一點白', wake: '07:00', sleep: '23:00', d: [
+    ['晨間', 'sunrise', 'moss', '07:00', '07:40', [1, 2, 3, 4, 5, 6, 7], [['喝一杯溫水', 'every', 2], ['伸展 10 分鐘', 'every', 10]]],
+    ['通勤閱讀', 'book', 'slate', '08:10', '08:50', [1, 2, 3, 4, 5], [['讀完《原子習慣》第 3 章', 'next', 30]]],
+    ['深度工作', 'focus-2', 'pool', '09:30', '11:30', [1, 2, 3, 4, 5], [['手機調成勿擾', 'every', 1], ['寫季度報告草稿', 'next', 90]]],
+    ['午餐散步', 'walk', 'moss', '12:10', '13:00', [1, 2, 3, 4, 5], []],
+    ['溝通與會議', 'message', 'slate', '14:00', '16:00', [1, 2, 3, 4, 5], [['清空收件匣', 'every', 20], ['回覆設計稿意見', 'next', 15]]],
+    ['收尾', 'checklist', 'amber', '17:30', '18:00', [1, 2, 3, 4, 5], [['寫下明天最重要的三件事', 'every', 5]]],
+    ['運動', 'run', 'moss', '19:30', '20:15', [1, 3, 5], [['慢跑 5 公里', 'every', 40]]],
+    ['家人時間', 'heart', 'plum', '20:30', '21:30', [1, 2, 3, 4, 5, 6, 7], [['陪孩子讀繪本', 'every', 20]]],
+    ['睡前放鬆', 'moon', 'plum', '22:15', '22:45', [1, 2, 3, 4, 5, 6, 7], [['手機放到客廳充電', 'every', 1]]],
+    ['家務', 'home', 'amber', '10:00', '11:00', [6, 7], [['換床單', 'next', 15]]],
+    ['出門走走', 'tree', 'moss', '14:00', '17:00', [6, 7], []]] },
+  free: { name: '自由工作', sub: '上午創作、下午處理雜事', wake: '07:30', sleep: '23:30', d: [
+    ['晨間', 'coffee', 'moss', '07:30', '08:10', [1, 2, 3, 4, 5, 6, 7], [['手沖一杯咖啡', 'every', 10]]],
+    ['創作', 'palette', 'pool', '09:00', '12:00', [1, 2, 3, 4, 5], [['完成提案第二版', 'next', 120]]],
+    ['午餐', 'bowl', 'amber', '12:30', '13:30', [1, 2, 3, 4, 5, 6, 7], []],
+    ['行政雜事', 'clipboard-list', 'slate', '14:00', '15:00', [1, 2, 3, 4, 5], [['開發票、對帳', 'next', 30], ['回覆客戶信', 'every', 20]]],
+    ['學習', 'school', 'plum', '15:30', '17:00', [1, 2, 3, 4], [['線上課程一個單元', 'every', 45]]],
+    ['運動', 'barbell', 'moss', '18:00', '19:00', [2, 4, 6], []],
+    ['晚餐與家人', 'heart', 'plum', '19:15', '20:30', [1, 2, 3, 4, 5, 6, 7], []],
+    ['睡前閱讀', 'book-2', 'slate', '22:30', '23:00', [1, 2, 3, 4, 5, 6, 7], []]] },
+  student: { name: '學生', sub: '上課以外的時間也有抽屜', wake: '06:30', sleep: '23:00', d: [
+    ['晨讀', 'book', 'moss', '06:50', '07:20', [1, 2, 3, 4, 5], [['背 20 個單字', 'every', 15]]],
+    ['上午課', 'school', 'slate', '08:00', '12:00', [1, 2, 3, 4, 5], []],
+    ['午休', 'bed', 'plum', '12:20', '13:00', [1, 2, 3, 4, 5], []],
+    ['下午課', 'school', 'slate', '13:20', '16:30', [1, 2, 3, 4, 5], []],
+    ['社團／運動', 'run', 'moss', '17:00', '18:00', [2, 4], []],
+    ['自習', 'notebook', 'pool', '19:30', '21:00', [1, 2, 3, 4, 5, 7], [['數學講義第 4 回', 'next', 60], ['整理今天的筆記', 'every', 20]]],
+    ['睡前', 'moon', 'plum', '22:30', '22:50', [1, 2, 3, 4, 5, 6, 7], []]] },
+  blank: { name: '從空白開始', sub: '自己一格一格放', wake: '07:00', sleep: '23:00', d: [] },
+};
+const POCKET = [['伸展脖子和肩膀', 5, 'every'], ['喝水、看看窗外', 2, 'every'], ['閉眼休息', 10, 'every'], ['寫三行日記', 5, 'every'], ['整理桌面', 10, 'every'], ['回一則擱著的訊息', 5, 'next'], ['讀一章書', 15, 'every'], ['到樓下走一圈', 15, 'every'], ['打電話給爸媽', 20, 'next']];
+
+function applyTemplate(key, wake, sleep) {
+  const T = TPL[key], t = now();
+  D = fresh(); D.prefs.wake = wake || T.wake; D.prefs.sleep = sleep || T.sleep;
+  T.d.forEach(([name, icon, tone, start, end, days, items], i) => {
+    const id = uid() + i; D.drawers.push({ id, name, icon, tone, start, end, days, order: i, c: t + i, u: t });
+    items.forEach(([title, when, mins], j) => D.items.push({ id: uid() + i + j, title, drawer: id, when, mins, c: t + i * 10 + j, u: t }));
+  });
+  POCKET.forEach(([title, mins, when], j) => D.items.push({ id: uid() + 'p' + j, title, drawer: 'pocket', when, mins, c: t + 500 + j, u: t }));
+  save();
+}
+/* 示範紀錄：標記 demo，可在設定一鍵清除 */
+function seedDemo() {
+  let s = 20261011; const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const t = today();
+  for (let k = 6; k >= 1; k--) {
+    const d = addDays(t, -k);
+    for (const g of segsOn(d)) {
+      if (g.end - g.start < 15) continue;
+      const x = r(), late = g.start >= 20 * 60 + 30, push = (start, end, kind) => D.logs.push({ id: uid() + k + g.key + kind, d, key: g.key, start, end, kind, dr: g.dr ? g.dr.id : null, demo: 1, u: now() });
+      if (g.type === 'drawer') { push(g.start, g.end, x < .82 ? 'plan' : x < .94 ? 'other' : 'leak'); continue; }
+      // 留白：一部分用心、一部分不知不覺滑掉（晚上滑掉的比例高一些）
+      const lk = r() < (late ? .85 : .3) ? Math.round((g.end - g.start) * (late ? .4 + r() * .3 : .1 + r() * .15)) : 0;
+      if (g.end - g.start - lk > 0) push(g.start, g.end - lk, r() < .75 ? 'rest' : 'other');
+      if (lk) push(g.end - lk, g.end, 'leak');
+    }
+    for (const it of live(D.items)) if (it.when === 'every' && it.drawer !== 'pocket' && drawersOn(d).some(x => x.id === it.drawer) && r() < .78) { it.doneDates = it.doneDates || {}; it.doneDates[d] = -1; }
+    if (k <= 3 || r() < .5) D.prefs.closed[d] = -1;
+  }
+  D.demo = 1; save();
+}
+function clearDemo() {
+  D.logs = D.logs.filter(l => !l.demo);
+  for (const it of D.items) if (it.doneDates) for (const k in it.doneDates) if (it.doneDates[k] === -1) delete it.doneDates[k];
+  for (const k in D.prefs.closed) if (D.prefs.closed[k] === -1) delete D.prefs.closed[k];
+  delete D.demo; save();
+}
+
+/* ── shell ───────────────────────────────── */
+const TABS = { today: ['今天', 'clock'], drawers: ['抽屜', 'layout-rows'], pocket: ['留白', 'leaf'], review: ['回顧', 'chart-bar'] };
+for (const b of $$('.tb')) { const [l, i] = TABS[b.dataset.tab]; b.innerHTML = `${ic(i)}<span>${l}</span>`; }
+$('#fab').innerHTML = ic('plus');
+
+function head(title, sub, extra = '', gear = true) {
+  return `<header class="head"><div><h1>${title}</h1>${sub ? `<div class="sub">${sub}</div>` : ''}</div><div class="head-r">${extra}${gear ? `<button class="gear" data-act="settings" aria-label="設定">${ic('settings')}</button>` : ''}</div></header>`;
+}
+function render() {
+  if (!D) return;
+  const app = $('#app');
+  app.innerHTML = UI.tab === 'today' ? pageToday() : UI.tab === 'drawers' ? pageDrawers() : UI.tab === 'pocket' ? pagePocket() : UI.tab === 'review' ? pageReview() : pageSettings();
+  for (const b of $$('.tb')) { const on = b.dataset.tab === UI.tab; b.classList.toggle('on', on); b.setAttribute('aria-current', on ? 'page' : 'false'); }
+}
+function go(tab) { if (sheetOpen()) { STACK.length = 0; $('#sheet').classList.remove('open'); $('#scrim').classList.remove('open'); stopVoice(); } UI.tab = tab; render(); window.scrollTo(0, 0); }
+
+/* ── 今天 ────────────────────────────────── */
+function itemRow(it, d, opts = {}) {
+  const done = isDone(it, d), dr = drawerById(it.drawer);
+  const meta = [opts.showDrawer && dr ? dr.name : '', whenLabel(it)].filter(Boolean).join(' · ');
+  return `<div class="it${done ? ' done' : ''}" data-id="${it.id}"${dr ? ` data-tone="${dr.tone}"` : ''}>
+    <span class="it-del" aria-hidden="true">${ic('trash')}</span>
+    <div class="it-row"><button class="ck${done ? ' on' : ''}" data-act="tick" data-id="${it.id}" data-d="${d}" aria-pressed="${done}" aria-label="${done ? '標回未完成' : '完成'}：${esc(it.title)}">${ic('check')}</button>
+    <button class="mid" data-act="item" data-id="${it.id}" style="text-align:left"><span class="t">${esc(it.title)}</span><span class="s">${esc(meta)}</span></button>
+    ${it.mins ? `<span class="mins num">${it.mins} 分</span>` : ''}</div></div>`;
+}
+function bigLeft(m) {
+  m = Math.max(0, Math.ceil(m));
+  if (m < 60) return `<b class="big">${m}</b><span class="u">分</span>`;
+  const h = Math.floor(m / 60), r = m % 60;
+  return `<b class="big">${h}</b><span class="u">小時</span>${r ? `<b class="big">${r}</b><span class="u">分</span>` : ''}`;
+}
+function heroHTML() {
+  const d = today(), n = nowMin(), segs = segsOn(d), cur = segs.find(s => s.start <= n && n < s.end);
+  const anim = !UI.opened;
+  if (!live(D.drawers).length) return `<section class="now night" id="hero"><div class="face"><div class="empty" style="padding:8px 4px">
+      <div class="e-big">還沒有抽屜</div>把一天分成幾段，例如「晨間」「深度工作」「收尾」。<br>時間到了，抽屜會打開提醒你。
+      <button class="btn" data-act="new-drawer">${ic('plus')}放第一個抽屜</button></div></div></section>`;
+  if (!cur) {
+    const late = n >= sleepM(), nd = late ? addDays(d, 1) : d, first = drawersOn(nd)[0];
+    return `<section class="now night" id="hero"><div class="face">
+      <div class="f-top"><span class="ico" data-tone="slate">${ic(late ? 'moon' : 'sunrise')}</span><div><div class="f-when">${late ? '就寢時間到了' : '還沒起床的時段'}</div><div class="f-name">${late ? '把今天收好，去睡吧' : '早安，慢慢來'}</div></div></div>
+      <p class="f-sub" style="margin-top:14px">${first ? `${late ? '明天' : '今天'}第一個抽屜是「${esc(first.name)}」，${first.start} 打開。` : `${late ? '明天' : '今天'}沒有抽屜，整天都是留白。`}</p></div></section>`;
+  }
+  if (cur.type === 'drawer') {
+    const dr = cur.dr, items = itemsIn(dr.id, d), left = cur.end - n, p = clamp((n - cur.start) / (cur.end - cur.start), 0, 1);
+    const doneN = items.filter(it => isDone(it, d)).length;
+    return `<section class="now" id="hero" data-tone="${dr.tone}">
+      <button class="face" data-act="drawer" data-id="${dr.id}" style="display:block;width:100%;text-align:left" aria-label="打開「${esc(dr.name)}」的設定">
+        <div class="f-top"><span class="ico">${ic(dr.icon)}</span><div><div class="f-when"><span class="dot"></span>此刻 · ${dr.start}–${dr.end}</div><div class="f-name">${esc(dr.name)}</div></div></div>
+        <div class="f-left">${bigLeft(left)}</div>
+        <div class="f-sub">${dr.end} 關上${items.length ? ` · 裡面 ${items.length} 件事，做完 ${doneN} 件` : ''}</div>
+        <div class="f-track" role="progressbar" aria-label="抽屜時間經過" aria-valuenow="${Math.round(p * 100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${(p * 100).toFixed(1)}%"></i></div>
+        <span class="pull" aria-hidden="true"></span>
+      </button>
+      <div class="tray${anim ? ' opening' : ''}">
+        ${items.map(it => itemRow(it, d)).join('') || `<p class="note">抽屜是空的。這段時間就專心做「${esc(dr.name)}」這件事本身。</p>`}
+        <button class="add-in" data-act="add" data-drawer="${dr.id}">${ic('plus')}放一件事進來</button>
+      </div></section>`;
+  }
+  // 留白
+  const left = cur.end - n, next = segs.find(s => s.type === 'drawer' && s.start >= cur.end), lg = logFor(d, cur.key);
+  const fit = live(D.items).filter(it => it.drawer === 'pocket' && showsOn(it, d) && !isDone(it, d) && (it.mins || 5) <= left).sort((a, b) => (b.mins || 0) - (a.mins || 0));
+  const pick = [], seen = new Set(); for (const it of fit) { if (!seen.has(it.mins) || fit.length <= 3) { pick.push(it); seen.add(it.mins); } if (pick.length === 3) break; }
+  return `<section class="now gap${anim ? ' opening-gap' : ''}" id="hero">
+    <div class="face">
+      <div class="f-top"><span class="ico" style="background:var(--gold-soft);color:var(--gold)">${ic('leaf')}</span><div><div class="f-when">此刻 · ${hm(cur.start)}–${hm(cur.end)}</div><div class="f-name">留白</div></div></div>
+      <div class="f-left">${bigLeft(left)}</div>
+      <div class="f-sub">${next ? `${next.dr.start} 打開「${esc(next.dr.name)}」` : '今天的抽屜都關上了'}</div>
+      ${lg && lg.kind === 'rest' ? `<span class="chosen">${ic('check')}這段留白是你選的</span>` : ''}
+    </div>
+    <div class="tray">
+      <div class="tray-h"><span>剛好放得下的小事</span><button class="lk" data-act="tab" data-tab="pocket" style="color:var(--pool);font-size:12px">留白清單</button></div>
+      ${pick.map(it => itemRow(it, d)).join('') || `<p class="note">清單裡沒有 ${Math.ceil(left)} 分鐘內做得完的事。</p>`}
+      ${lg && lg.kind === 'rest' ? '' : `<button class="add-in" data-act="rest-now" data-key="${cur.key}" style="color:var(--gold)">${ic('feather')}什麼都不做，就讓它空著</button>`}
+    </div></section>`;
+}
+function askHTML() {
+  const s = pendingAsk(); if (!s) return '';
+  const d = today(), isDr = s.type === 'drawer';
+  const q = isDr ? `剛剛的「${esc(s.dr.name)}」，過得如何？` : '剛剛那段留白，過得如何？';
+  const opts = isDr ? [['plan', '照計畫'], ['other', '做了別的'], ['leak', '不知不覺滑掉了']] : [['rest', '好好休息'], ['other', '做了別的'], ['leak', '不知不覺滑掉了']];
+  return `<section class="panel ask" id="ask"><div class="ask-q">${q}</div><div class="s num">${hm(s.start)}–${hm(s.end)} · ${dur(s.end - s.start)}</div>
+    <div class="chips">${opts.map(([k, l]) => `<button class="chip${k === 'leak' ? ' leak' : ''}" data-act="log" data-key="${s.key}" data-kind="${k}">${l}</button>`).join('')}<button class="skip" data-act="skip" data-key="${s.key}">略過</button></div></section>`;
+}
+function ribbonHTML(d, withNow) {
+  const W = wakeM(), S = sleepM(), span = S - W, n = nowMin(), pos = m => clamp((m - W) / span * 100, 0, 100);
+  const blocks = drawersOn(d).map(x => { const a = pos(toMin(x.start)), b = pos(toMin(x.end)); return `<i data-tone="${x.tone}" class="${withNow && toMin(x.end) <= n ? 'past' : ''}" style="left:${a}%;width:${Math.max(.8, b - a)}%"></i>`; }).join('');
+  return `<div class="ribbon" aria-hidden="true">${blocks}${withNow && n >= W && n <= S ? `<span class="nowl" style="left:${pos(n)}%"></span>` : ''}</div>`;
+}
+function meterHTML(d) {
+  const L = loadOf(d), cap = D.prefs.cap, over = L.pct * 100 > cap, W = wakeM(), S = sleepM();
+  const span = S - W, marks = [W, ...[12, 18].map(h => h * 60).filter(m => m > W + span * .15 && m < S - span * .15), S];
+  return `<section class="panel meter" id="meter">${ribbonHTML(d, true)}
+    <div class="rib-ax num">${marks.map(m => `<span style="left:${(m - W) / (S - W) * 100}%">${hm(m)}</span>`).join('')}</div>
+    <p class="big-line">排了 <strong>${dur(L.sum)}</strong>，留白 <strong>${dur(L.awake - L.sum)}</strong>。<span class="pill ${over ? 'hot' : 'ok'}">${over ? `超過${capName(cap)}` : `${capName(cap)}以內`} · ${Math.round(L.pct * 100)}%</span></p></section>`;
+}
+function closeHTML() {
+  const d = today(), n = nowMin();
+  if (D.prefs.closed[d] || n < sleepM() - 120 || !live(D.drawers).length) return '';
+  const left = live(D.items).filter(it => it.when === d && !isDone(it, d));
+  let doneN = 0; for (const it of live(D.items)) if ((it.doneDates && it.doneDates[d]) || it.doneOn === d) doneN++;
+  return `<section class="panel close-card"><div class="ask-q">收抽屜</div>
+    <p class="note">${doneN ? `今天勾掉了 <b class="num">${doneN}</b> 件事。` : '今天沒有勾掉什麼事，也沒關係。'}${left.length ? '這些還沒做，要放到哪裡？' : '沒有要移到明天的事。'}</p>
+    ${left.length ? `<div class="rows">${left.map(it => `<div class="row"><div class="mid"><span class="t">${esc(it.title)}</span><span class="s">${esc(drawerById(it.drawer)?.name || '')}</span></div>
+      <div class="mini-acts"><button class="go" data-act="move" data-id="${it.id}" data-to="tomorrow">明天</button><button data-act="move" data-id="${it.id}" data-to="next">放回抽屜</button></div></div>`).join('')}</div>` : ''}
+    <button class="btn" data-act="close-day" style="margin-top:14px">${ic('moon')}收好了，晚安</button></section>`;
+}
+function cabinetHTML() {
+  const t = today(), d = UI.cabDay ? addDays(t, 1) : t, n = UI.cabDay ? -1 : nowMin(), segs = segsOn(d);
+  if (!segs.some(s => s.type === 'drawer')) return `<div class="panel empty"><div class="e-big">${UI.cabDay ? '明天' : '今天'}沒有抽屜</div>整天都是留白。想安排什麼，到「抽屜」加一格。</div>`;
+  const out = segs[0].type === 'gap' ? [`<div class="cseg cend"><span class="tm">${D.prefs.wake}</span><span class="lbl">起床</span></div>`] : [];
+  for (const s of segs) {
+    const cur = s.start <= n && n < s.end, past = n >= s.end, lg = UI.cabDay ? null : logFor(d, s.key);
+    if (s.type === 'gap') {
+      const h = clamp((s.end - s.start) * .45, 28, 76);
+      const tag = lg ? ({ rest: ' · 好好休息', leak: ' · 滑掉了', other: ' · 做了別的' }[lg.kind] || '') : cur ? ' · 此刻' : '';
+      out.push(`<div class="cseg"><span class="tm"></span><div class="cgap${cur ? ' cur' : ''}${lg ? ' ' + lg.kind : ''}" style="min-height:${h}px">${ic('leaf')}留白 ${dur(s.end - s.start)}${tag}</div></div>`);
+    } else {
+      const x = s.dr, items = itemsIn(x.id, d), dn = items.filter(it => isDone(it, d)).length;
+      const badge = lg ? ({ plan: '<span class="pill ok">照計畫</span>', other: '<span class="pill">做了別的</span>', leak: '<span class="pill hot">滑掉了</span>' }[lg.kind] || '') : cur ? '<span class="pill ok">此刻</span>' : '';
+      out.push(`<div class="cseg"><span class="tm">${x.start}</span><button class="cd${cur ? ' cur' : ''}${past ? ' past' : ''}" data-tone="${x.tone}" data-act="drawer" data-id="${x.id}">
+        <span class="ico">${ic(x.icon)}</span><span class="mid"><span class="t">${esc(x.name)}</span><span class="s"><span class="num">${x.start}–${x.end}</span>${items.length ? `<span>· ${dn}/${items.length} 件</span>` : ''}${badge}</span></span></button></div>`);
+    }
+  }
+  out.push(`<div class="cseg cend"><span class="tm">${D.prefs.sleep}</span><span class="lbl">就寢</span></div>`);
+  return `<div class="cab">${out.join('')}</div>`;
+}
+function pageToday() {
+  const t = clock();
+  return head('時屜', `${t.getMonth() + 1} 月 ${t.getDate()} 日 · 週${WD[t.getDay() || 7]}`) + heroHTML() + askHTML() + closeHTML()
+    + `<section class="block"><h2>今天的節奏</h2>${meterHTML(today())}</section>`
+    + `<section class="block"><h2>${UI.cabDay ? '明天的櫃子' : '今天的櫃子'}<span class="seg"><button class="${UI.cabDay ? '' : 'on'}" data-act="cab" data-v="0">今天</button><button class="${UI.cabDay ? 'on' : ''}" data-act="cab" data-v="1">明天</button></span></h2>${cabinetHTML()}</section>`;
+}
+/* 每分鐘只更新主視覺的數字，不重畫整頁 */
+function refreshLive() {
+  if (UI.tab !== 'today' || sheetOpen()) return;
+  const seg = curSeg(), k = seg ? seg.key : 'none';
+  if (k !== UI.lastSeg) { const first = UI.lastSeg === undefined; UI.lastSeg = k; if (!first) { UI.opened = false; render(); UI.opened = true; return; } }
+  const h = $('#hero'); if (h) { const tmp = document.createElement('div'); UI.opened = true; tmp.innerHTML = heroHTML(); const nh = tmp.firstElementChild;
+    const a = $('.f-left', h), b = $('.f-left', nh); if (a && b) a.innerHTML = b.innerHTML;
+    const ta = $('.f-track i', h), tb = $('.f-track i', nh); if (ta && tb) ta.style.width = tb.style.width; }
+  const m = $('#meter'); if (m) m.outerHTML = meterHTML(today());
+  const ask = askHTML(), cur = $('#ask'); if (ask && !cur) { const h2 = $('#hero'); h2 && h2.insertAdjacentHTML('afterend', ask); }
+}
+
+/* ── 抽屜 ────────────────────────────────── */
+function pageDrawers() {
+  const ds = live(D.drawers), W = wakeM(), S = sleepM(), span = S - W, tw = dow(today()), cap = D.prefs.cap;
+  const wkLoad = [1, 2, 3, 4, 5].map(loadOfDow), avg = wkLoad.reduce((s, x) => s + x.pct, 0) / 5;
+  const cols = [1, 2, 3, 4, 5, 6, 7].map(w => {
+    const L = loadOfDow(w), over = L.pct * 100 > cap;
+    const bl = drawersOnDow(w).map(x => `<i data-tone="${x.tone}" style="top:${(toMin(x.start) - W) / span * 100}%;height:${lenOf(x) / span * 100}%"></i>`).join('');
+    return `<button class="${w === tw ? 'today' : ''}${UI.wkSel === w ? ' sel' : ''}" data-act="wk" data-w="${w}" aria-pressed="${UI.wkSel === w}" aria-label="週${WD[w]}，排了 ${Math.round(L.pct * 100)}%"><span class="col">${bl}</span><span class="d">${WD[w]}</span><span class="p num${over ? ' hot' : ''}">${Math.round(L.pct * 100)}%</span></button>`;
+  }).join('');
+  const list = (UI.wkSel ? drawersOnDow(UI.wkSel) : [...ds].sort((a, b) => toMin(a.start) - toMin(b.start) || a.order - b.order));
+  return head('抽屜', ds.length ? `${ds.length} 個抽屜 · 平日平均排 ${Math.round(avg * 100)}%` : '把一天分成幾段')
+    + `<section class="panel"><div class="wk">${cols}</div><div class="wk-note"><span>${D.prefs.wake} 起床</span><span>上限 ${capName(cap)}（${cap}%）</span><span>${D.prefs.sleep} 就寢</span></div></section>`
+    + `<section class="block"><h2>${UI.wkSel ? `週${WD[UI.wkSel]}的抽屜` : '全部抽屜'}${UI.wkSel ? `<button class="lk" data-act="wk" data-w="${UI.wkSel}">顯示全部</button>` : ''}</h2>
+      ${list.length ? `<div class="rows">${list.map(x => { const k = live(D.items).filter(it => it.drawer === x.id).length;
+        return `<button class="row" data-tone="${x.tone}" data-act="drawer" data-id="${x.id}"><span class="ico">${ic(x.icon)}</span><span class="mid"><span class="t">${esc(x.name)}</span><span class="s"><span class="num">${x.start}–${x.end}</span> · ${daysLabel(x.days)} · ${dur(lenOf(x))}${k ? ` · ${k} 件事` : ''}</span></span><span class="chev">${ic('chevron-right')}</span></button>`; }).join('')}</div>`
+        : `<div class="panel empty"><div class="e-big">${UI.wkSel ? '這天沒有抽屜' : '還沒有抽屜'}</div>這一天全是留白。</div>`}
+      <button class="btn ghost" data-act="new-drawer" style="margin-top:12px">${ic('plus')}新增抽屜</button>
+      <button class="btn ghost" data-act="ics">${ic('calendar-event')}匯出到手機行事曆</button></section>`;
+}
+
+/* ── 留白 ────────────────────────────────── */
+function pagePocket() {
+  const d = today(), all = live(D.items).filter(it => it.drawer === 'pocket' && showsOn(it, d));
+  const groups = [['5 分鐘內', it => (it.mins || 5) <= 5], ['15 分鐘內', it => it.mins > 5 && it.mins <= 15], ['半小時以上', it => it.mins > 15]];
+  return head('留白', '空出來的時間，不必填滿')
+    + `<section class="panel"><p class="say" style="font-size:19px">留白不是剩下的時間，<br>是你選擇空下來的時間。</p>
+      <p class="note" style="margin-top:8px">兩個抽屜之間的空檔，可以從這裡挑一件小事；什麼都不做也很好。只要是你選的，就不算流失。</p></section>`
+    + `<section class="block"><h2>放一件小事</h2><div class="panel" style="padding:12px">
+      <div class="qa-in"><input class="input" id="pkText" placeholder="例如：伸展、回一則訊息" maxlength="40" enterkeyhint="done"><button class="mic" data-act="pk-add" aria-label="加入留白清單">${ic('plus')}</button></div>
+      <div class="chips" id="pkMins" style="margin-top:10px">${[2, 5, 10, 15, 30].map(m => `<button class="chip${m === 5 ? ' on' : ''}" data-act="pk-min" data-m="${m}">${m} 分</button>`).join('')}</div></div></section>`
+    + groups.map(([l, f]) => { const xs = all.filter(f).sort((a, b) => (isDone(a, d) - isDone(b, d)) || (a.mins || 0) - (b.mins || 0)); return xs.length ? `<section class="block"><h2>${l}<small>${xs.length} 件</small></h2><div class="rows">${xs.map(it => itemRow(it, d)).join('')}</div></section>` : ''; }).join('')
+    + (all.length ? `<p class="note faint" style="margin:14px 6px 0;font-size:12px">往左滑可以刪除。「常備」的事每天都會回來。</p>` : `<div class="panel empty" style="margin-top:20px"><div class="e-big">清單是空的</div>放幾件 5 到 15 分鐘的小事，留白時就不必拿起手機想。</div>`);
+}
+
+/* ── 回顧 ────────────────────────────────── */
+function weekDays(off) { const t = today(), mon = addDays(t, -(dow(t) - 1) + off * 7); return [0, 1, 2, 3, 4, 5, 6].map(i => addDays(mon, i)); }
+function pageReview() {
+  const days = weekDays(UI.rvWeek), t = today(), set = new Set(days), logs = live(D.logs).filter(l => set.has(l.d));
+  const seg = `<span class="seg"><button class="${UI.rvWeek === 0 ? 'on' : ''}" data-act="rv" data-v="0">本週</button><button class="${UI.rvWeek === -1 ? 'on' : ''}" data-act="rv" data-v="-1">上週</button></span>`;
+  const range = `${parseYmd(days[0]).getMonth() + 1}/${parseYmd(days[0]).getDate()}–${parseYmd(days[6]).getMonth() + 1}/${parseYmd(days[6]).getDate()}`;
+  if (!logs.length) return head('回顧', range, seg) + `<div class="panel empty"><div class="e-big">這週還沒有紀錄</div>每段時間結束後，「今天」頁會問一句：剛剛過得如何？<br>點一下就好。幾天後，這裡會告訴你時間都去哪了。</div>`;
+  const tot = { plan: 0, rest: 0, other: 0, leak: 0 }, byDay = {}, hours = {};
+  for (const l of logs) { const m = l.end - l.start; tot[l.kind] += m; (byDay[l.d] = byDay[l.d] || { plan: 0, rest: 0, other: 0, leak: 0 })[l.kind] += m;
+    if (l.kind === 'leak') for (let h = Math.floor(l.start / 60); h * 60 < l.end; h++) hours[h] = (hours[h] || 0) + Math.min(l.end, (h + 1) * 60) - Math.max(l.start, h * 60); }
+  const maxDay = Math.max(60, ...days.map(d => { const x = byDay[d]; return x ? x.plan + x.rest + x.other + x.leak : 0; }));
+  const bars = days.map(d => { const x = byDay[d] || {}; const H = k => ((x[k] || 0) / maxDay * 100).toFixed(1);
+    return `<div class="c${d === t ? ' today' : ''}"><div class="bar">${['plan', 'rest', 'other', 'leak'].map(k => x[k] ? `<i class="k-${k}-bg" style="height:${H(k)}%"></i>` : '').join('')}</div><span>${WD[dow(d)]}</span></div>`; }).join('');
+  // 流失熱區
+  const h0 = Math.floor(wakeM() / 60), h1 = Math.ceil(sleepM() / 60), hs = []; for (let h = h0; h < h1; h++) hs.push(h);
+  const hMax = Math.max(1, ...hs.map(h => hours[h] || 0));
+  let best = h0, bestV = -1; for (let h = h0; h < h1 - 1; h++) { const v = (hours[h] || 0) + (hours[h + 1] || 0); if (v > bestV) { bestV = v; best = h; } }
+  // 抽屜守時
+  const per = {}; for (const l of logs) if (l.dr) { const p = per[l.dr] = per[l.dr] || { plan: 0, all: 0 }; p.all += l.end - l.start; if (l.kind === 'plan') p.plan += l.end - l.start; }
+  const drs = Object.keys(per).map(id => ({ dr: drawerById(id), ...per[id] })).filter(x => x.dr && !x.dr.del).sort((a, b) => b.plan / b.all - a.plan / a.all);
+  // 做完的事、收抽屜連續天數
+  let doneN = 0; for (const it of live(D.items)) { if (it.doneDates) for (const k in it.doneDates) if (set.has(k)) doneN++; if (it.doneOn && set.has(it.doneOn)) doneN++; }
+  let streak = 0; for (let d = D.prefs.closed[t] ? t : addDays(t, -1); D.prefs.closed[d]; d = addDays(d, -1)) streak++;
+  const drL = logs.filter(l => l.dr), drAll = drL.reduce((s, l) => s + l.end - l.start, 0);
+  const keep = drAll ? Math.round(drL.filter(l => l.kind === 'plan').reduce((s, l) => s + l.end - l.start, 0) / drAll * 100) : 0;
+  const dayScore = days.filter(d => byDay[d]).map(d => ({ d, leak: byDay[d].leak, plan: byDay[d].plan })).sort((a, b) => a.leak - b.leak || b.plan - a.plan);
+  const ins = [];
+  if (bestV > 0) ins.push(`${ic('clock')}最容易流失的時段是 <b class="num">${pad(best)}:00–${pad(best + 2)}:00</b>。在那裡放一個小抽屜，或先把手機放遠一點。`);
+  if (tot.rest >= tot.leak) ins.push(`${ic('leaf')}用心留白比流失多，這是很好的節奏。`); else ins.push(`${ic('leaf')}流失比用心留白多 ${dur(tot.leak - tot.rest)}。下次空檔時，先看一眼留白清單。`);
+  if (dayScore.length > 1) ins.push(`${ic('sparkles')}週${WD[dow(dayScore[0].d)]}最從容${dayScore[0].leak ? `，只流失 ${dur(dayScore[0].leak)}` : '，沒有流失'}。`);
+  return head('回顧', range + (D.demo && logs.some(l => l.demo) ? ' · 含示範紀錄' : ''), seg)
+    + `<section class="panel"><p class="say">這週有 <b class="k-rest">${dur(tot.rest)}</b> 是用心留白，<b class="k-leak">${dur(tot.leak)}</b> 不知不覺流失了。抽屜照計畫走了 <b class="k-plan">${keep}%</b>。</p>
+      <div class="stat-line"><span class="chip">${ic('check')}做完 <b class="num">${doneN}</b> 件事</span>${streak ? `<span class="chip streak">${ic('moon')}連續收抽屜 <b class="num">${streak}</b> 天</span>` : ''}</div></section>`
+    + `<section class="block"><h2>每天的時間去哪了</h2><div class="panel"><div class="stack">${bars}</div>
+      <div class="legend"><span><i class="k-plan-bg"></i>照計畫</span><span><i class="k-rest-bg"></i>用心留白</span><span><i class="k-other-bg"></i>做了別的</span><span><i class="k-leak-bg"></i>滑掉了</span></div></div></section>`
+    + `<section class="block"><h2>流失熱區<small>每小時累計</small></h2><div class="panel"><div class="hours" style="grid-template-columns:repeat(${hs.length},1fr)">${hs.map(h => { const v = hours[h] || 0; return `<i title="${pad(h)}:00 流失 ${Math.round(v)} 分" style="background:${v ? `color-mix(in srgb,var(--vermilion) ${Math.round(18 + v / hMax * 82)}%,var(--surface-2))` : 'var(--surface-2)'}"></i>`; }).join('')}</div>
+      <div class="hours-ax num"><span>${pad(h0)}:00</span><span>12:00</span><span>${pad(h1 % 24)}:00</span></div></div></section>`
+    + (drs.length ? `<section class="block"><h2>抽屜守時</h2><div class="rows">${drs.map(x => { const p = Math.round(x.plan / x.all * 100);
+        return `<div class="an-row" data-tone="${x.dr.tone}"><span class="ico">${ic(x.dr.icon)}</span><div class="mid"><div class="kv"><span>${esc(x.dr.name)}</span><span class="num" style="font-weight:600">${p}%</span></div><span class="an-track"><i style="width:${p}%"></i></span></div></div>`; }).join('')}</div></section>` : '')
+    + `<section class="block"><h2>給下週的你</h2><div class="panel ins">${ins.map(x => `<p>${x}</p>`).join('')}</div></section>`;
+}
+
+/* ── 設定 ────────────────────────────────── */
+const THEMES = [['celadon', '青瓷', '#1F5F57'], ['indigo', '靛藍', '#2C4A7C'], ['oolong', '烏龍', '#8A5A24'], ['wisteria', '紫藤', '#5B4891']];
+function pageSettings() {
+  const P = D.prefs, segBtns = (act, vals, cur, fmt) => vals.map(v => `<button class="${v === cur ? 'on' : ''}" data-act="${act}" data-v="${v}">${fmt(v)}</button>`).join('');
+  return `<button class="back" data-act="tab" data-tab="today">${ic('chevron-left')}今天</button>` + head('設定', '', '', false)
+    + `<section class="block" style="margin-top:14px"><h2>一天</h2><div class="rows">
+      <label class="set-row"><span>起床</span><input type="time" value="${P.wake}" data-pref="wake"></label>
+      <label class="set-row"><span>就寢</span><input type="time" value="${P.sleep}" data-pref="sleep"></label>
+      <div class="set-row col"><span>抽屜之間至少留<small>太緊的安排會提醒你</small></span><div class="seg wide" style="margin-top:10px">${segBtns('buffer', [0, 5, 10, 15], P.buffer, v => v ? `${v} 分` : '不限')}</div></div>
+      <div class="set-row col"><span>每天最多排<small>超過時，抽屜與今天頁會用朱色提醒</small></span><div class="seg wide" style="margin-top:10px">${segBtns('cap', [60, 70, 80], P.cap, v => `${capName(v)} ${v}%`)}</div></div></div></section>`
+    + `<section class="block"><h2>提醒</h2><div class="rows">
+      <button class="toggle" role="switch" aria-checked="${!!P.notify}" data-act="notify"><span>抽屜打開時通知<small>App 開著（或在背景）時有效</small></span><span class="sw"></span></button>
+      <div class="set-row col"><span>提早提醒</span><div class="seg wide" style="margin-top:10px">${segBtns('lead', [0, 5, 10], P.lead, v => v ? `${v} 分鐘前` : '準時')}</div></div>
+      <button class="set-row" data-act="ics"><span>匯出到手機行事曆<small>網頁無法在關閉後提醒；匯入 .ics 後由行事曆準時通知</small></span><span class="chev">${ic('chevron-right')}</span></button></div></section>`
+    + `<section class="block"><h2>外觀</h2><div class="panel"><div class="swatches">${THEMES.map(([k, l, c]) => `<button class="sw-btn${(UIP.theme || 'celadon') === k ? ' on' : ''}" data-act="theme" data-v="${k}"><i style="background:${c}"></i>${l}</button>`).join('')}</div>
+      <div class="seg wide" style="margin-top:16px">${[['auto', '跟系統'], ['light', '白天'], ['dark', '夜晚']].map(([k, l]) => `<button class="${(UIP.mode || 'auto') === k ? 'on' : ''}" data-act="mode" data-v="${k}">${l}</button>`).join('')}</div></div></section>`
+    + `<section class="block"><h2>資料</h2><div class="rows">
+      <button class="set-row" data-act="export"><span>匯出備份<small>資料只存在這台裝置</small></span>${ic('download')}</button>
+      <label class="set-row" style="cursor:pointer"><span>匯入備份</span>${ic('upload')}<input type="file" accept="application/json,.json" data-act="import" hidden></label>
+      ${D.demo ? `<button class="set-row" data-act="clear-demo"><span>清除示範紀錄<small>只刪掉範例回顧資料，抽屜與事項都留著</small></span>${ic('trash')}</button>` : `<button class="set-row" data-act="seed-demo"><span>放入一週示範紀錄<small>看看回顧頁的樣子，之後可清除</small></span>${ic('sparkles')}</button>`}
+      <button class="set-row" data-act="reset" style="color:var(--vermilion)"><span>全部重來</span>${ic('refresh')}</button></div></section>`
+    + `<section class="block"><div class="panel about">${LOGO}<div><div style="font-family:var(--kai);font-size:20px;font-weight:700">時屜</div><p class="note">每段時間，都有它的抽屜。<br>與「細水長流」同一個家族。</p></div></div></section>`;
+}
+function applyTheme() {
+  const host = document.documentElement.getAttribute('data-theme'), m = UIP.mode || 'auto';
+  const mode = m !== 'auto' ? m : host === 'dark' || host === 'light' ? host : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-palette', UIP.theme || 'celadon'); document.documentElement.setAttribute('data-mode', mode);
+  requestAnimationFrame(() => { const tc = $('#tc'); if (tc) tc.content = getComputedStyle(document.documentElement).getPropertyValue('--paper').trim(); });
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if ((UIP.mode || 'auto') === 'auto') applyTheme(); });
+/* 嵌在別的頁面時，「跟系統」也跟著外層的 data-theme（light／dark）走 */
+new MutationObserver(() => { if ((UIP.mode || 'auto') === 'auto') applyTheme(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+/* ── sheets ──────────────────────────────── */
+const STACK = [];
+const sheetOpen = () => STACK.length > 0;
+function openSheet(fn) { STACK.push(fn); drawSheet(); }
+function drawSheet() {
+  const sh = $('#sheet'), top = STACK[STACK.length - 1];
+  sh.innerHTML = `<button class="grab" data-act="close-sheet" aria-label="關閉面板"></button>` + top.html();
+  sh.classList.add('open'); $('#scrim').classList.add('open'); sh.scrollTop = 0;
+  top.mount && top.mount(sh);
+}
+function closeSheet(all) {
+  if (all) STACK.length = 0; else STACK.pop();
+  if (STACK.length) return drawSheet();
+  $('#sheet').classList.remove('open'); $('#scrim').classList.remove('open'); stopVoice(); render();
+}
+$('#scrim').addEventListener('click', () => closeSheet(true));
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheetOpen()) closeSheet(); });
+/* 往下拖把手也能關 */
+(() => { let y0 = null; const sh = $('#sheet');
+  sh.addEventListener('touchstart', e => { if (e.target.closest('.grab') || sh.scrollTop <= 0 && e.target.closest('.sh-head')) y0 = e.touches[0].clientY; }, { passive: true });
+  sh.addEventListener('touchmove', e => { if (y0 == null) return; const dy = e.touches[0].clientY - y0; if (dy > 0) { sh.style.transition = 'none'; sh.style.transform = `translateY(${dy}px)`; } }, { passive: true });
+  sh.addEventListener('touchend', e => { if (y0 == null) return; const dy = (e.changedTouches[0].clientY - y0); y0 = null; sh.style.transition = ''; sh.style.transform = ''; if (dy > 90) closeSheet(true); });
+})();
+
+/* 抽屜設定 */
+const TONES = ['pool', 'moss', 'amber', 'slate', 'plum', 'ink'];
+const DR_ICONS = ['sunrise', 'coffee', 'focus-2', 'briefcase', 'brain', 'book', 'book-2', 'notebook', 'writing', 'school', 'code', 'device-laptop', 'presentation', 'message', 'mail', 'phone', 'users', 'users-group', 'heart', 'home', 'baby-carriage', 'dog', 'tools-kitchen-2', 'bowl', 'salad', 'walk', 'run', 'bike', 'barbell', 'yoga', 'stretching', 'swimming', 'plant', 'tree', 'leaf', 'palette', 'music', 'headphones', 'camera', 'brush', 'checklist', 'clipboard-list', 'report-analytics', 'calculator', 'wallet', 'shopping-cart', 'car', 'bath', 'bed', 'moon', 'sunset', 'sparkles', 'droplet', 'pray', 'armchair', 'device-tv', 'device-gamepad-2', 'target', 'bulb'].filter(n => ICONS[n]);
+function drawerChecks(x) {
+  const out = [], a = toMin(x.start), b = toMin(x.end), P = D.prefs;
+  if (!x.name.trim()) out.push(['hot', '幫抽屜取個名字']);
+  if (!(b > a)) { out.push(['hot', '結束時間要晚於開始時間']); return out; }
+  if (b - a < 10) out.push(['hot', '抽屜至少要 10 分鐘']);
+  if (!x.days.length) out.push(['hot', '選至少一天']);
+  if (a < wakeM() || b > sleepM()) out.push(['warn', `落在起床（${P.wake}）前或就寢（${P.sleep}）後`]);
+  const seen = new Set(), tight = new Map(), overDays = [];
+  for (const w of x.days) {
+    const others = drawersOnDow(w).filter(o => o.id !== x.id);
+    for (const o of others) {
+      const oa = toMin(o.start), ob = toMin(o.end);
+      if (a < ob && oa < b) { if (!seen.has(o.id)) { seen.add(o.id); out.push(['hot', `和「${o.name}」重疊（${o.start}–${o.end}）`]); } continue; }
+      const g = a >= ob ? a - ob : oa - b;
+      if (P.buffer && g < P.buffer && !tight.has(o.id)) tight.set(o.id, [o.name, g]);
+    }
+    const sum = others.reduce((s, o) => s + lenOf(o), 0) + (b - a), pct = sum / (sleepM() - wakeM());
+    if (pct * 100 > P.cap) overDays.push([w, pct]);
+  }
+  for (const [n, g] of tight.values()) out.push(['warn', `和「${n}」之間${g ? `只留 ${g} 分鐘` : '沒有空檔'}，建議至少留 ${P.buffer} 分鐘緩衝`]);
+  if (overDays.length) { const mx = Math.max(...overDays.map(o => o[1])); out.push(['warn', `週${overDays.map(o => WD[o[0]]).join('、')}會排到 ${Math.round(mx * 100)}%，超過${capName(P.cap)}。留一點白吧`]); }
+  if (!out.length) out.push(['ok', `從容：前後都有緩衝，每天都在${capName(P.cap)}以內`]);
+  return out;
+}
+function drawerSheet(id) {
+  const src = id ? drawerById(id) : null;
+  const nx = (() => { const ds = drawersOnDow(dow(today())); const last = ds[ds.length - 1]; const s = last ? Math.min(toMin(last.end) + 30, sleepM() - 60) : 9 * 60; return [hm(Math.round(s / 5) * 5), hm(Math.round(s / 5) * 5 + 60)]; })();
+  const X = src ? JSON.parse(JSON.stringify(src)) : { id: uid(), name: '', icon: 'focus-2', tone: 'pool', start: nx[0], end: nx[1], days: [1, 2, 3, 4, 5], order: live(D.drawers).length, c: now() };
+  let pick = false;
+  const checksHTML = () => drawerChecks(X).map(([lv, t]) => `<p class="${lv}">${ic(lv === 'ok' ? 'circle-check' : lv === 'hot' ? 'hand-stop' : 'hourglass-low')}<span>${esc(t)}</span></p>`).join('');
+  return {
+    html: () => {
+      const items = src ? live(D.items).filter(it => it.drawer === X.id).sort((a, b) => a.c - b.c) : [];
+      return `<div data-tone="${X.tone}" id="drs">
+      <div class="dr-head"><button class="ebtn" data-act="dr-pick" aria-label="換圖示">${ic(X.icon)}</button><input class="input kai" id="drName" value="${esc(X.name)}" placeholder="抽屜名稱，例如：深度工作" maxlength="16"></div>
+      <div class="igrid" id="drIcons" ${pick ? '' : 'hidden'} style="margin-top:10px">${DR_ICONS.map(n => `<button class="${n === X.icon ? 'on' : ''}" data-act="dr-icon" data-v="${n}" aria-label="${n}">${ic(n)}</button>`).join('')}</div>
+      <label class="field"><span>時間</span><div class="times"><input class="input" type="time" id="drStart" value="${X.start}" step="300"><span class="to">到</span><input class="input" type="time" id="drEnd" value="${X.end}" step="300"></div></label>
+      <div class="field"><span>哪幾天打開</span><div class="days">${[1, 2, 3, 4, 5, 6, 7].map(w => `<button class="${X.days.includes(w) ? 'on' : ''}" data-act="dr-day" data-w="${w}" aria-pressed="${X.days.includes(w)}">${WD[w]}</button>`).join('')}</div></div>
+      <div class="field"><span>顏色</span><div class="tones">${TONES.map(t => `<button data-tone="${t}" class="${t === X.tone ? 'on' : ''}" data-act="dr-tone" data-v="${t}" aria-label="${t}"></button>`).join('')}</div></div>
+      <div class="checks" id="drChecks" aria-live="polite">${checksHTML()}</div>
+      ${src ? `<div class="field"><span>抽屜裡的事</span><div class="rows">${items.map(it => itemRow(it, today())).join('')}<button class="row" data-act="add" data-drawer="${X.id}" style="color:var(--pool)">${ic('plus')}<span class="mid">放一件事進來</span></button></div></div>` : `<p class="note faint" style="margin-top:12px">存好之後，就能往抽屜裡放事情。</p>`}
+      <div style="margin-top:20px"><button class="btn" data-act="dr-save">${src ? '儲存' : '放進櫃子'}</button>${src ? `<button class="btn danger" data-act="dr-del">${ic('trash')}刪掉這個抽屜</button>` : ''}</div></div>`;
+    },
+    mount: sh => {
+      const upd = () => { $('#drChecks', sh).innerHTML = checksHTML(); $('[data-act="dr-save"]', sh).disabled = drawerChecks(X).some(c => c[0] === 'hot'); };
+      $('#drName', sh).addEventListener('input', e => { X.name = e.target.value; upd(); });
+      $('#drStart', sh).addEventListener('change', e => { const old = toMin(X.start), len = toMin(X.end) - old; X.start = e.target.value; if (len > 0 && toMin(X.end) <= toMin(X.start)) { X.end = hm(toMin(X.start) + len); $('#drEnd', sh).value = X.end; } upd(); });
+      $('#drEnd', sh).addEventListener('change', e => { X.end = e.target.value; upd(); });
+      sh.onDrawer = (act, el) => {
+        if (act === 'dr-pick') { pick = !pick; $('#drIcons', sh).hidden = !pick; }
+        if (act === 'dr-icon') { X.icon = el.dataset.v; $('.ebtn', sh).innerHTML = ic(X.icon); $$('#drIcons button', sh).forEach(b => b.classList.toggle('on', b === el)); pick = false; $('#drIcons', sh).hidden = true; }
+        if (act === 'dr-day') { const w = +el.dataset.w; X.days = X.days.includes(w) ? X.days.filter(v => v !== w) : [...X.days, w].sort(); el.classList.toggle('on'); el.setAttribute('aria-pressed', X.days.includes(w)); upd(); }
+        if (act === 'dr-tone') { X.tone = el.dataset.v; $('#drs', sh).dataset.tone = X.tone; $$('.tones button', sh).forEach(b => b.classList.toggle('on', b === el)); }
+        if (act === 'dr-save') {
+          if (drawerChecks(X).some(c => c[0] === 'hot')) return;
+          X.name = X.name.trim(); X.u = now();
+          if (src) Object.assign(src, X); else D.drawers.push(X);
+          save(); toast(src ? '已儲存' : `「${X.name}」放進櫃子了`); UI.lastSeg = undefined; closeSheet();
+        }
+        if (act === 'dr-del') {
+          src.del = 1; src.u = now(); save(); closeSheet();
+          toast(`刪掉了「${src.name}」`, '復原', () => { src.del = 0; src.u = now(); save(); render(); });
+        }
+      };
+      upd();
+    },
+  };
+}
+/* 放一件事 */
+function parseQuick(text) {
+  let t = text, when = null, mins = null, dr = null;
+  const tk = [];
+  if (/明天/.test(t)) { when = 'tomorrow'; t = t.replace(/明天/g, ''); tk.push(['calendar-event', '明天']); }
+  else if (/今天/.test(t)) { when = 'today'; t = t.replace(/今天/g, ''); tk.push(['calendar-event', '今天']); }
+  else if (/每天|每次|每週/.test(t)) { when = 'every'; t = t.replace(/每天|每次|每週/g, ''); tk.push(['refresh', '每次']); }
+  const zh = { 一: 1, 兩: 2, 二: 2, 三: 3, 五: 5, 十: 10, 十五: 15, 二十: 20, 三十: 30, 四十: 40, 四十五: 45, 六十: 60, 九十: 90 };
+  let m = t.match(/(\d+)\s*(分鐘|分)/) || t.match(/(十五|二十|三十|四十五|四十|六十|九十|十|五)\s*(分鐘|分)/);
+  if (m) { mins = +m[1] || zh[m[1]]; t = t.replace(m[0], ''); }
+  else if ((m = t.match(/半(個)?小時/))) { mins = 30; t = t.replace(m[0], ''); }
+  else if ((m = t.match(/(\d+|一|兩|二)\s*(個)?小時/))) { mins = (+m[1] || zh[m[1]]) * 60; t = t.replace(m[0], ''); }
+  if (mins) tk.push(['hourglass', `${mins} 分`]);
+  for (const x of live(D.drawers).sort((a, b) => b.name.length - a.name.length)) if (x.name && t.includes(x.name)) { dr = x.id; t = t.replace(x.name, ''); tk.push([x.icon, x.name]); break; }
+  if (/留白/.test(t)) { dr = 'pocket'; t = t.replace(/留白(清單)?/, ''); tk.push(['leaf', '留白清單']); }
+  t = t.replace(/^[\s，,、]*(放進|放到|放在)?/, '').replace(/[\s，,、。]*(放進|放到|放在)?[\s，,、。]*$/, '').trim();
+  return { title: t, when, mins, dr, tk };
+}
+function defaultDrawer() {
+  const d = today(), n = nowMin(), cur = curSeg();
+  if (cur && cur.type === 'drawer') return cur.dr.id;
+  const next = segsOn(d).find(s => s.type === 'drawer' && s.start > n); if (next) return next.dr.id;
+  const tm = drawersOn(addDays(d, 1))[0]; return tm ? tm.id : (live(D.drawers)[0]?.id || 'pocket');
+}
+function addSheet(pre = {}) {
+  const S = { title: pre.title || '', dr: pre.drawer || defaultDrawer(), when: 'next', mins: null, auto: {} };
+  const t = today(), order = [...new Set([...segsOn(t).filter(s => s.type === 'drawer' && s.end > nowMin()).map(s => s.dr.id), ...live(D.drawers).sort((a, b) => toMin(a.start) - toMin(b.start)).map(x => x.id)])];
+  const whenOpts = () => S.dr === 'pocket' ? [['next', '一次'], ['every', '常備']] : [['next', '下次打開'], ['today', '今天'], ['tomorrow', '明天'], ['every', '每次']];
+  return {
+    html: () => `<div class="sh-head"><h3>放一件事</h3></div>
+      <div class="qa-in"><input class="input" id="qaText" placeholder="例如：回覆客戶信 15 分" value="${esc(S.title)}" maxlength="60" enterkeyhint="done" autocomplete="off"><button class="mic" data-act="qa-mic" aria-label="用說的">${ic('microphone')}</button></div>
+      <div class="parsed" id="qaParsed"></div>
+      <div class="field"><span>放進</span><div class="scroll-x" id="qaDr">${order.map(id => { const x = drawerById(id); return `<button class="chip tone${S.dr === id ? ' on' : ''}" data-tone="${x.tone}" data-act="qa-dr" data-v="${id}">${ic(x.icon)}${esc(x.name)}</button>`; }).join('')}<button class="chip${S.dr === 'pocket' ? ' on' : ''}" data-act="qa-dr" data-v="pocket">${ic('leaf')}留白清單</button></div></div>
+      <div class="field"><span>什麼時候</span><div class="seg wide" id="qaWhen"></div></div>
+      <div class="field"><span>大約要多久</span><div class="chips" id="qaMins">${[null, 5, 15, 30, 60].map(m => `<button class="chip${S.mins === m ? ' on' : ''}" data-act="qa-min" data-v="${m ?? ''}">${m ? `${m} 分` : '不估'}</button>`).join('')}</div></div>
+      <p class="note faint" id="qaHint" style="margin:12px 4px 0;font-size:12px;min-height:18px"></p>
+      <button class="btn" data-act="qa-save" style="margin-top:10px">放進抽屜</button>`,
+    mount: sh => {
+      const drawWhen = () => { if (!whenOpts().some(o => o[0] === S.when)) S.when = 'next'; $('#qaWhen', sh).innerHTML = whenOpts().map(([k, l]) => `<button class="${S.when === k ? 'on' : ''}" data-act="qa-when" data-v="${k}">${l}</button>`).join(''); hint(); };
+      const hint = () => { const x = drawerById(S.dr), h = $('#qaHint', sh); if (!x || S.dr === 'pocket') { h.textContent = S.dr === 'pocket' ? '留白時，「今天」頁會依剩下的時間推薦它。' : ''; return; }
+        const nd = S.when === 'today' ? t : S.when === 'tomorrow' ? addDays(t, 1) : null;
+        if (nd && !x.days.includes(dow(nd))) h.textContent = `「${x.name}」${S.when === 'today' ? '今天' : '明天'}不會打開，會改成下次打開時。`;
+        else if (S.when === 'next') { let d = t, k = 0; while (k < 8 && !(x.days.includes(dow(d)) && (d !== t || toMin(x.end) > nowMin()))) { d = addDays(d, 1); k++; } h.textContent = `下次打開：${d === t ? '今天' : d === addDays(t, 1) ? '明天' : `週${WD[dow(d)]}`} ${x.start}`; }
+        else h.textContent = S.when === 'every' ? `每次「${x.name}」打開都會出現。` : ''; };
+      const setDr = id => { S.dr = id; $$('#qaDr .chip', sh).forEach(b => b.classList.toggle('on', b.dataset.v === id)); drawWhen(); };
+      const setMins = m => { S.mins = m; $$('#qaMins .chip', sh).forEach(b => b.classList.toggle('on', (b.dataset.v || null) == (m ?? null))); };
+      const inp = $('#qaText', sh);
+      inp.addEventListener('input', () => { const p = parseQuick(inp.value); S.title = p.title;
+        if (p.dr) setDr(p.dr); if (p.when) { S.when = p.when === 'every' ? 'every' : p.when; drawWhen(); } if (p.mins) setMins(p.mins);
+        $('#qaParsed', sh).innerHTML = p.tk.map(([i, l]) => `<span class="pc">${ic(i)}${esc(l)}</span>`).join(''); });
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); sh.onAdd('qa-save'); } });
+      sh.onAdd = (act, el) => {
+        if (act === 'qa-dr') setDr(el.dataset.v);
+        if (act === 'qa-when') { S.when = el.dataset.v; drawWhen(); }
+        if (act === 'qa-min') setMins(el.dataset.v ? +el.dataset.v : null);
+        if (act === 'qa-mic') toggleVoice(inp, el);
+        if (act === 'qa-save') {
+          const title = (S.title || parseQuick(inp.value).title || inp.value).trim(); if (!title) { inp.focus(); return; }
+          let when = S.when; const x = drawerById(S.dr);
+          if (when === 'today' || when === 'tomorrow') { const nd = when === 'today' ? t : addDays(t, 1); when = x && x.days.includes(dow(nd)) ? nd : 'next'; }
+          D.items.push({ id: uid(), title, drawer: S.dr, when, mins: S.mins, c: now(), u: now() }); save();
+          toast(S.dr === 'pocket' ? `放進留白清單了` : `放進「${x ? x.name : ''}」了`); closeSheet();
+        }
+      };
+      drawWhen(); setMins(S.mins);
+      if (pre.voice) toggleVoice(inp, $('[data-act="qa-mic"]', sh)); else setTimeout(() => inp.focus(), 380);
+    },
+  };
+}
+/* 單一事項 */
+function itemSheet(id) {
+  const it = D.items.find(x => x.id === id); if (!it) return null;
+  const X = { title: it.title, drawer: it.drawer, when: /^\d/.test(it.when) ? 'date' : it.when, mins: it.mins || null };
+  return {
+    html: () => `<div class="sh-head"><h3>事項</h3></div>
+      <input class="input" id="itT" value="${esc(X.title)}" maxlength="60">
+      <div class="field"><span>放在</span><div class="scroll-x">${live(D.drawers).sort((a, b) => toMin(a.start) - toMin(b.start)).map(x => `<button class="chip tone${X.drawer === x.id ? ' on' : ''}" data-tone="${x.tone}" data-act="it-dr" data-v="${x.id}">${ic(x.icon)}${esc(x.name)}</button>`).join('')}<button class="chip${X.drawer === 'pocket' ? ' on' : ''}" data-act="it-dr" data-v="pocket">${ic('leaf')}留白清單</button></div></div>
+      <div class="field"><span>什麼時候</span><div class="seg wide" id="itWhen"></div></div>
+      <div class="field"><span>大約要多久</span><div class="chips">${[null, 2, 5, 10, 15, 30, 60].map(m => `<button class="chip${X.mins === m ? ' on' : ''}" data-act="it-min" data-v="${m ?? ''}">${m ? `${m} 分` : '不估'}</button>`).join('')}</div></div>
+      <div class="two-btn" style="margin-top:22px"><button class="btn danger" data-act="it-del">${ic('trash')}刪除</button><button class="btn" data-act="it-save">儲存</button></div>`,
+    mount: sh => {
+      const opts = () => X.drawer === 'pocket' ? [['next', '一次'], ['every', '常備']] : [['next', '下次打開'], ...(X.when === 'date' ? [['date', whenLabel(it)]] : []), ['every', '每次']];
+      const drawW = () => { if (!opts().some(o => o[0] === X.when)) X.when = 'next'; $('#itWhen', sh).innerHTML = opts().map(([k, l]) => `<button class="${X.when === k ? 'on' : ''}" data-act="it-when" data-v="${k}">${l}</button>`).join(''); };
+      sh.onItem = (act, el) => {
+        if (act === 'it-dr') { X.drawer = el.dataset.v; $$('[data-act="it-dr"]', sh).forEach(b => b.classList.toggle('on', b === el)); drawW(); }
+        if (act === 'it-when') { X.when = el.dataset.v; drawW(); }
+        if (act === 'it-min') { X.mins = el.dataset.v ? +el.dataset.v : null; $$('[data-act="it-min"]', sh).forEach(b => b.classList.toggle('on', b === el)); }
+        if (act === 'it-save') { const tt = $('#itT', sh).value.trim(); if (!tt) return; Object.assign(it, { title: tt, drawer: X.drawer, mins: X.mins, u: now() }); if (X.when !== 'date') { if (it.when !== X.when) { it.doneAt = null; it.doneOn = null; } it.when = X.when; } delete it.rolled; save(); toast('已儲存'); closeSheet(); }
+        if (act === 'it-del') { delItem(it.id); closeSheet(); }
+      };
+      drawW();
+    },
+  };
+}
+function confirmSheet(title, body, okLabel, fn) {
+  openSheet({ html: () => `<div class="sh-head"><h3>${title}</h3></div><p class="note">${body}</p><div class="two-btn" style="margin-top:20px"><button class="btn ghost" data-act="close-sheet">取消</button><button class="btn danger" data-act="confirm-ok">${okLabel}</button></div>`,
+    mount: sh => { sh.onConfirm = () => { closeSheet(true); fn(); }; } });
+}
+
+/* ── 語音（Web Speech，zh-TW）──────────────── */
+let REC = null;
+function stopVoice() { if (REC) { try { REC.stop(); } catch (e) {} REC = null; } $$('.mic.on').forEach(b => b.classList.remove('on')); }
+function toggleVoice(inp, btn) {
+  if (REC) return stopVoice();
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { toast('這個瀏覽器不支援語音輸入，用打的就好'); return; }
+  REC = new SR(); REC.lang = 'zh-TW'; REC.interimResults = true; REC.continuous = false;
+  btn && btn.classList.add('on');
+  REC.onresult = e => { inp.value = [...e.results].map(r => r[0].transcript).join(''); inp.dispatchEvent(new Event('input')); };
+  REC.onerror = e => { toast(e.error === 'not-allowed' ? '沒有麥克風權限' : '沒聽清楚，再說一次'); stopVoice(); };
+  REC.onend = () => stopVoice();
+  try { REC.start(); } catch (e) { stopVoice(); }
+}
+
+/* ── actions ─────────────────────────────── */
+let TOAST_T = null;
+function toast(msg, act, fn) {
+  const el = $('#toast'), b = $('button', el); $('span', el).textContent = msg;
+  b.hidden = !act; el.classList.toggle('has-act', !!act); if (act) { b.textContent = act; b.onclick = () => { fn(); el.classList.remove('show'); }; }
+  el.classList.add('show'); clearTimeout(TOAST_T); TOAST_T = setTimeout(() => el.classList.remove('show'), act ? 5000 : 2400);
+}
+function delItem(id) {
+  const it = D.items.find(x => x.id === id); if (!it) return;
+  it.del = 1; it.u = now(); save(); rerender();
+  toast(`刪掉了「${it.title}」`, '復原', () => { it.del = 0; it.u = now(); save(); rerender(); });
+}
+const rerender = () => sheetOpen() ? drawSheet() : render();
+function download(name, text, type) {
+  if (window.__NO_DL) return openSheet({ html: () => `<div class="sh-head"><h3>${esc(name)}</h3></div><p class="note">這個環境不能直接下載檔案。複製下面的內容，存成「${esc(name)}」即可。</p><textarea class="input" id="dlText" readonly style="height:200px;padding:12px;font-family:ui-monospace,Consolas,monospace;font-size:12px;margin-top:12px">${esc(text)}</textarea><button class="btn" data-act="dl-copy" style="margin-top:12px">${ic('check')}複製</button>` });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+function exportICS() {
+  const BY = ['', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'], e = s => String(s).replace(/[\\;,]/g, m => '\\' + m).replace(/\n/g, '\\n');
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, ''), lead = D.prefs.lead || 0;
+  const L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Shiti//ZH-TW', 'CALSCALE:GREGORIAN', 'X-WR-CALNAME:時屜'];
+  for (const x of live(D.drawers)) {
+    let d = today(); for (let k = 0; k < 7 && !x.days.includes(dow(d)); k++) d = addDays(d, 1);
+    const ds = d.replace(/-/g, ''), items = live(D.items).filter(it => it.drawer === x.id && it.when === 'every').map(it => '・' + it.title).join('\n');
+    L.push('BEGIN:VEVENT', `UID:${x.id}@shiti`, `DTSTAMP:${stamp}`, `DTSTART:${ds}T${x.start.replace(':', '')}00`, `DTEND:${ds}T${x.end.replace(':', '')}00`,
+      `RRULE:FREQ=WEEKLY;BYDAY=${x.days.map(w => BY[w]).join(',')}`, `SUMMARY:${e('抽屜｜' + x.name)}`, `DESCRIPTION:${e(items || '打開時屜，看看抽屜裡有什麼。')}`,
+      'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${e(`「${x.name}」打開了`)}`, `TRIGGER:${lead ? `-PT${lead}M` : 'PT0S'}`, 'END:VALARM', 'END:VEVENT');
+  }
+  L.push('END:VCALENDAR'); download('時屜.ics', L.join('\r\n'), 'text/calendar');
+  if (!window.__NO_DL) toast('已匯出。用行事曆打開就會每週準時提醒');
+}
+async function notify(title, body, tag) {
+  try {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    const opt = { body, tag, icon: 'icons/icon-192.png', badge: 'icons/icon-192.png' };
+    const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
+    if (reg) reg.showNotification(title, opt); else new Notification(title, opt);
+  } catch (e) {}
+}
+const NOTIFIED = {};
+function checkNotify() {
+  if (!D || !D.prefs.notify) return;
+  const d = today(), n = nowMin(), lead = D.prefs.lead || 0;
+  for (const x of drawersOn(d)) {
+    const a = toMin(x.start), items = itemsIn(x.id, d).filter(it => !isDone(it, d)).slice(0, 3).map(it => it.title).join('、');
+    if (lead && n >= a - lead && n < a && !NOTIFIED[d + x.id + 'L']) { NOTIFIED[d + x.id + 'L'] = 1; notify(`${lead} 分鐘後打開「${x.name}」`, items || `${x.start}–${x.end}`, x.id + 'L'); }
+    if (n >= a && n < a + 2 && !NOTIFIED[d + x.id]) { NOTIFIED[d + x.id] = 1; notify(`「${x.name}」打開了`, items ? `裡面有：${items}` : `${x.start}–${x.end}`, x.id); if (document.visibilityState === 'visible') toast(`「${x.name}」打開了`); }
+  }
+}
+
+let SUPPRESS = false;
+document.addEventListener('click', e => {
+  if (SUPPRESS) { e.preventDefault(); e.stopPropagation(); return; }
+  const tb = e.target.closest('.tb'); if (tb) return go(tb.dataset.tab);
+  const el = e.target.closest('[data-act]'); if (!el) return;
+  const act = el.dataset.act, sh = $('#sheet'), d = today();
+  if (act.startsWith('dr-') && sh.onDrawer) return sh.onDrawer(act, el);
+  if (act.startsWith('qa-') && sh.onAdd) return sh.onAdd(act, el);
+  if (act.startsWith('it-') && sh.onItem) return sh.onItem(act, el);
+  switch (act) {
+    case 'close-sheet': return closeSheet();
+    case 'confirm-ok': return sh.onConfirm && sh.onConfirm();
+    case 'dl-copy': { const t = $('#dlText'); try { navigator.clipboard.writeText(t.value).then(() => toast('已複製'), () => { t.select(); toast('已選取，請按複製'); }); } catch (e) { t.select(); } return; }
+    case 'tab': if (sheetOpen()) closeSheet(true); return go(el.dataset.tab);
+    case 'settings': return go('settings');
+    case 'tick': {
+      const it = D.items.find(x => x.id === el.dataset.id); if (!it) return;
+      toggleDone(it, el.dataset.d || d); const on = isDone(it, el.dataset.d || d);
+      el.classList.toggle('on', on); el.classList.add('pop'); el.setAttribute('aria-pressed', on); el.closest('.it')?.classList.toggle('done', on);
+      setTimeout(rerender, 360); return;
+    }
+    case 'item': { const s = itemSheet(el.dataset.id); if (s) openSheet(s); return; }
+    case 'drawer': return openSheet(drawerSheet(el.dataset.id));
+    case 'new-drawer': return openSheet(drawerSheet(null));
+    case 'add': return openSheet(addSheet({ drawer: el.dataset.drawer }));
+    case 'cab': UI.cabDay = +el.dataset.v; UI.opened = true; return render();
+    case 'log': case 'skip': {
+      const seg = segsOn(d).find(s => s.key === el.dataset.key); if (!seg) return;
+      if (act === 'skip') { D.skips[d + seg.key] = 1; save(); UI.opened = true; return render(); }
+      const l = addLog(d, seg, el.dataset.kind); UI.opened = true; render();
+      return toast(el.dataset.kind === 'leak' ? '記下了。看見它，就是改變的開始' : '記下了', '復原', () => { l.del = 1; l.u = now(); save(); render(); });
+    }
+    case 'rest-now': { const seg = segsOn(d).find(s => s.key === el.dataset.key); if (!seg) return; addLog(d, seg, 'rest'); UI.opened = true; render(); return toast('好，這段留白是你的'); }
+    case 'move': {
+      const it = D.items.find(x => x.id === el.dataset.id); if (!it) return; const x = drawerById(it.drawer), tm = addDays(d, 1);
+      it.when = el.dataset.to === 'tomorrow' && x && x.days.includes(dow(tm)) ? tm : 'next'; it.u = now(); save(); UI.opened = true; render();
+      return toast(it.when === 'next' ? `放回「${x ? x.name : ''}」，下次打開時再做` : '移到明天了');
+    }
+    case 'close-day': D.prefs.closed[d] = now(); save(); UI.opened = true; render(); return toast('收好了。晚安');
+    case 'wk': UI.wkSel = UI.wkSel === +el.dataset.w ? null : +el.dataset.w; return render();
+    case 'ics': return exportICS();
+    case 'pk-min': $$('#pkMins .chip').forEach(b => b.classList.toggle('on', b === el)); return;
+    case 'pk-add': return addPocket();
+    case 'rv': UI.rvWeek = +el.dataset.v; return render();
+    case 'buffer': case 'cap': case 'lead': D.prefs[act] = +el.dataset.v; save(); return render();
+    case 'notify': return toggleNotify();
+    case 'theme': UIP.theme = el.dataset.v; saveUI(); applyTheme(); return render();
+    case 'mode': UIP.mode = el.dataset.v; saveUI(); applyTheme(); return render();
+    case 'export': download(`時屜備份-${d}.json`, JSON.stringify(D), 'application/json'); if (!window.__NO_DL) toast('已匯出備份'); return;
+    case 'seed-demo': seedDemo(); render(); return toast('放好了，到「回顧」看看');
+    case 'clear-demo': clearDemo(); render(); return toast('示範紀錄清掉了');
+    case 'reset': return confirmSheet('全部重來？', '所有抽屜、事項與紀錄都會刪除，無法復原。建議先匯出備份。', '全部刪除', () => { try { localStorage.removeItem(KEY); } catch (e) {} D = null; UI.tab = 'today'; showOnboarding(); });
+  }
+});
+document.addEventListener('change', e => {
+  const p = e.target.dataset.pref; if (p) { if (e.target.value) { D.prefs[p] = e.target.value; save(); toast('已更新'); } return; }
+  if (e.target.dataset.act === 'import') {
+    const f = e.target.files[0]; if (!f) return;
+    f.text().then(t => { const d = JSON.parse(t); if (!d || d.v !== 1 || !Array.isArray(d.drawers)) throw 0; D = d; save(); render(); toast('匯入完成'); }).catch(() => toast('這不是時屜的備份檔'));
+  }
+});
+document.addEventListener('keydown', e => { if (e.target.id === 'pkText' && e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addPocket(); } });
+function addPocket() {
+  const inp = $('#pkText'), t = inp.value.trim(); if (!t) return inp.focus();
+  const m = +($('#pkMins .chip.on')?.dataset.m || 5);
+  D.items.push({ id: uid(), title: t, drawer: 'pocket', when: 'every', mins: m, c: now(), u: now() }); save(); render();
+  toast('放進留白清單了'); setTimeout(() => $('#pkText')?.focus(), 50);
+}
+async function toggleNotify() {
+  if (D.prefs.notify) { D.prefs.notify = false; save(); return render(); }
+  if (!('Notification' in window)) return toast('這個瀏覽器不支援通知，請改用匯出到行事曆');
+  let p = Notification.permission; if (p === 'default') { try { p = await Notification.requestPermission(); } catch (e) {} }
+  if (p !== 'granted') return toast('通知被封鎖了，可以改用匯出到行事曆');
+  D.prefs.notify = true; save(); render(); toast('抽屜打開時會通知你');
+}
+
+/* 往左滑刪除 */
+let SW = null;
+document.addEventListener('pointerdown', e => { const s = e.target.closest('.it'); if (!s || e.button > 0) return; SW = { el: s, row: s.querySelector('.it-row'), x: e.clientX, y: e.clientY, dx: 0, on: false }; }, { passive: true });
+document.addEventListener('pointermove', e => {
+  if (!SW) return; const dx = e.clientX - SW.x, dy = e.clientY - SW.y;
+  if (!SW.on) { if (dx < -12 && Math.abs(dx) > Math.abs(dy) * 1.4) { SW.on = true; SW.el.classList.add('drag'); } else if (Math.abs(dy) > 10 || dx > 12) { SW = null; return; } else return; }
+  SW.dx = Math.min(0, dx); SW.row.style.transform = `translateX(${SW.dx}px)`;
+}, { passive: true });
+const swEnd = () => {
+  if (!SW) return; const s = SW; SW = null; if (!s.on) return;
+  SUPPRESS = true; setTimeout(() => SUPPRESS = false, 60);
+  if (s.dx < -96) { s.row.style.transform = 'translateX(-110%)'; setTimeout(() => delItem(s.el.dataset.id), 160); }
+  else { s.el.classList.remove('drag'); s.row.style.transform = ''; }
+};
+document.addEventListener('pointerup', swEnd); document.addEventListener('pointercancel', swEnd);
+
+/* ＋：點一下打字，長按直接用說的 */
+(() => { const f = $('#fab'); let t = null, long = false;
+  f.addEventListener('pointerdown', () => { long = false; t = setTimeout(() => { long = true; if (navigator.vibrate) navigator.vibrate(12); openSheet(addSheet({ voice: true })); }, 480); });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => f.addEventListener(ev, () => clearTimeout(t)));
+  f.addEventListener('click', e => { e.stopPropagation(); if (long) return; if (!D) return; openSheet(addSheet()); });
+  f.addEventListener('contextmenu', e => e.preventDefault());
+})();
+
+/* ── onboarding ─────────────────────────── */
+function showOnboarding() {
+  const ob = $('#ob'), S = { step: 0, tpl: 'work', wake: TPL.work.wake, sleep: TPL.work.sleep, demo: true };
+  const tplRibbon = k => { const T = TPL[k], W = toMin(S.wake), Sm = toMin(S.sleep) <= W ? toMin(S.sleep) + 1440 : toMin(S.sleep), span = Sm - W;
+    return `<div class="ribbon">${T.d.filter(x => x[5].includes(1)).map(x => `<i data-tone="${x[2]}" style="left:${clamp((toMin(x[3]) - W) / span * 100, 0, 100)}%;width:${(toMin(x[4]) - toMin(x[3])) / span * 100}%"></i>`).join('')}</div>`; };
+  const draw = () => {
+    ob.innerHTML = `<div class="ob-in">${[
+      () => `${LOGO.replace('<svg', '<svg class="mark"')}<h1>時屜</h1><p class="lead">每段時間，都有它的抽屜。<br>時間到了，抽屜打開；抽屜之間，留一點白。</p>
+        <div class="ob-pts">
+          <div><span class="ico">${ic('layout-rows')}</span><p><b>把一天分成幾個抽屜</b><span>晨間、深度工作、收尾……每個抽屜裝著屬於它的事。</span></p></div>
+          <div><span class="ico" data-tone="amber">${ic('bell-ringing')}</span><p><b>時間到了才提醒你</b><span>抽屜打開時通知，其餘時候安安靜靜。</span></p></div>
+          <div><span class="ico" style="background:var(--gold-soft);color:var(--gold)">${ic('leaf')}</span><p><b>不排滿，留白是你選的</b><span>每天最多排七分滿；空檔有小事可挑，也可以什麼都不做。</span></p></div>
+          <div><span class="ico" style="background:var(--vermilion-soft);color:var(--vermilion)">${ic('hourglass-low')}</span><p><b>看見時間去哪了</b><span>每段時間結束點一下，週末告訴你哪些時間不知不覺流失。</span></p></div>
+        </div><div class="ob-foot"><button class="btn" data-ob="next">開始安排</button></div>`,
+      () => `<p class="ob-step">1 / 2</p><h2>你的一天，從幾點到幾點？</h2><p class="lead">抽屜只會排在醒著的時間裡。</p>
+        <div class="rows" style="margin-top:22px"><label class="set-row"><span>起床</span><input type="time" id="obWake" value="${S.wake}"></label><label class="set-row"><span>就寢</span><input type="time" id="obSleep" value="${S.sleep}"></label></div>
+        <div class="ob-foot"><div class="two-btn"><button class="btn ghost" data-ob="back">上一步</button><button class="btn" data-ob="next">下一步</button></div></div>`,
+      () => `<p class="ob-step">2 / 2</p><h2>從哪個範本開始？</h2><p class="lead">之後每個抽屜都能改，範本只是起點。</p>
+        <div class="tpl">${Object.entries(TPL).map(([k, T]) => `<button class="${S.tpl === k ? 'on' : ''}${k === 'blank' ? ' blank' : ''}" data-ob="tpl" data-v="${k}" aria-pressed="${S.tpl === k}"><b>${T.name}</b><span class="s">${T.sub}${T.d.length ? ` · 平日 ${T.d.filter(x => x[5].includes(1)).length} 個抽屜` : ''}</span>${tplRibbon(k)}</button>`).join('')}</div>
+        <div class="rows" style="margin-top:14px"><button class="toggle" role="switch" aria-checked="${S.demo}" data-ob="demo"><span>放入過去 6 天的示範紀錄<small>先看看「回顧」長什麼樣，之後可在設定清除</small></span><span class="sw"></span></button></div>
+        <div class="ob-foot"><div class="two-btn"><button class="btn ghost" data-ob="back">上一步</button><button class="btn" data-ob="done">完成</button></div></div>`,
+    ][S.step]()}</div>`;
+    ob.scrollTop = 0;
+  };
+  ob.onclick = e => {
+    const b = e.target.closest('[data-ob]'); if (!b) return; const a = b.dataset.ob;
+    if (S.step === 1) { S.wake = $('#obWake').value || S.wake; S.sleep = $('#obSleep').value || S.sleep; }
+    if (a === 'next') S.step++; if (a === 'back') S.step--;
+    if (a === 'tpl') { S.tpl = b.dataset.v; if (!S.custom) { S.wake = TPL[S.tpl].wake; S.sleep = TPL[S.tpl].sleep; } }
+    if (a === 'demo') S.demo = !S.demo;
+    if (a === 'done') {
+      applyTemplate(S.tpl, S.wake, S.sleep); if (S.demo && TPL[S.tpl].d.length) seedDemo();
+      ob.hidden = true; UI.tab = 'today'; UI.opened = false; UI.lastSeg = undefined; render(); UI.opened = true; UI.lastSeg = curSeg()?.key || 'none';
+      return toast('櫃子排好了');
+    }
+    draw();
+  };
+  ob.onchange = e => { if (e.target.type === 'time') S.custom = true; };
+  ob.hidden = false; draw();
+}
+
+/* ── boot ───────────────────────────────── */
+applyTheme();
+if (!D) showOnboarding();
+else { D.skips = D.skips || {}; rollOver(); render(); UI.opened = true; UI.lastSeg = curSeg()?.key || 'none'; }
+setInterval(() => { if (!D) return; refreshLive(); checkNotify(); }, 20000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && D && !sheetOpen()) { rollOver(); UI.opened = true; render(); } });
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
