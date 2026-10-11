@@ -1,6 +1,6 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "shiti", "runtimeExecutable": "python", "runtimeArgs": ["-m", "http.server", "8766", "--directory", "C:/Users/User/.antigravity/Shiti_APP"], "port": 8766 }
+    { "name": "shiti", "runtimeExecutable": "python", "runtimeArgs": ["-m", "http.server", "8766", "--directory", "C:/Users/User/.antigravity/Time_APP"], "port": 8766 }
   ]
 }
