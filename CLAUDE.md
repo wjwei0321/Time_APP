@@ -11,6 +11,7 @@
 | --- | --- |
 | `index.html` | 整個 App（HTML/CSS/JS，沒有 build 步驟）。圖示路徑內嵌在 `ICONS`（Tabler outline，MIT，授權見 `icons/TABLER-LICENSE.txt`） |
 | `quotes.js` | 每日一句，365 句依一年中的第幾天輪替（中文原文附英譯、英文原文附中譯、其他語言只放中英譯＋出處地區） |
+| `api/ics.js` | Vercel 函式：`/api/ics?id=<同步 id>&tz=` 依雲端資料產生行事曆訂閱（webcal），iPhone 主畫面 App 不能下載檔案，所以用訂閱取代 .ics 下載 |
 | `sw.js`、`manifest.webmanifest`、`icons/*.png` | PWA；圖示用 `python tools/make_icons.py` 重畫 |
 | 本機預覽 | `python -m http.server 8766`；網址加 `?at=HH:MM`、`?day=YYYY-MM-DD` 可把時鐘撥到指定時間測試 |
 
@@ -46,7 +47,7 @@
 - 五種色系：青瓷、靛藍、烏龍、紫藤、銀杏（黃；留白色改青綠）。
 - 朱色＝超量／流失；金色＝用心留白。
 - 色系屬性是 `data-palette`（不是 `data-theme`，因為嵌在 Artifact 時外層會蓋 `data-theme=light|dark`）。
-- 網頁無法在關閉後排程通知：通知只在 App 開著時有效，可靠提醒靠匯出 .ics 到手機行事曆。
+- 網頁無法在關閉後排程通知：通知只在 App 開著時有效，可靠提醒靠行事曆訂閱（`api/ics.js`，需先用 email 同步）。
 
 ## 目標（王永福「便利貼思考法」簡化版，來源：Cheers 2023-07-15）
 
