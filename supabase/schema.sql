@@ -1,53 +1,39 @@
--- 時屜 · 時間抽屜 App 的雲端同步資料表
+-- 時屜 · 雲端同步（email 登入版）
 -- 在 Supabase → SQL Editor 貼上整段執行一次即可（可重複執行）。
 --
--- 設計（與細水長流相同）：
---   * 每個使用者的全部資料是一筆 JSON（payload），id = SHA-256("shiti:" + 同步密語)。
---   * 資料表開啟 RLS 且「沒有任何 policy」，anon key 無法直接讀寫資料表。
---   * 只能透過下面兩個 security definer 函式存取，而且必須知道 id（＝知道密語）。
---     所以就算網址與 publishable key 公開，沒有密語也看不到資料。
+-- 設計：
+--   * 用 Supabase Auth 的 email＋密碼登入；每個帳號的全部資料是一筆 JSON（payload）。
+--   * RLS：已登入的人只能讀寫自己那一筆（auth.uid() = user_id），沒登入（anon）完全碰不到。
+--   * 2026-04 起新資料表不會自動開放給 Data API，所以下面明確 grant 給 authenticated。
+--   * 與細水長流共用專案；細水長流的 budget_* 不受影響。
 
-create table if not exists public.shiti_doc (
-  id         text primary key check (char_length(id) = 64),
-  payload    jsonb not null,
+create table if not exists public.shiti_user_doc (
+  user_id    uuid primary key references auth.users (id) on delete cascade,
+  payload    jsonb not null check (pg_column_size(payload) < 5000000),
   updated_at timestamptz not null default now()
 );
 
-alter table public.shiti_doc enable row level security;
-revoke all on public.shiti_doc from anon, authenticated;
+alter table public.shiti_user_doc enable row level security;
+revoke all on public.shiti_user_doc from anon, authenticated;
+grant select, insert, update on public.shiti_user_doc to authenticated;
 
-create or replace function public.shiti_get(p_id text)
-returns jsonb
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select payload from public.shiti_doc where id = p_id;
-$$;
+drop policy if exists "shiti own doc: read" on public.shiti_user_doc;
+create policy "shiti own doc: read" on public.shiti_user_doc
+  for select to authenticated
+  using ((select auth.uid()) = user_id);
 
-create or replace function public.shiti_put(p_id text, p_payload jsonb)
-returns void
-language plpgsql
-security definer
-set search_path = public
-as $$
-begin
-  if char_length(p_id) <> 64 then
-    raise exception 'invalid id';
-  end if;
-  if pg_column_size(p_payload) > 5000000 then
-    raise exception 'payload too large';
-  end if;
-  insert into public.shiti_doc (id, payload, updated_at)
-  values (p_id, p_payload, now())
-  on conflict (id) do update
-    set payload = excluded.payload,
-        updated_at = now();
-end;
-$$;
+drop policy if exists "shiti own doc: insert" on public.shiti_user_doc;
+create policy "shiti own doc: insert" on public.shiti_user_doc
+  for insert to authenticated
+  with check ((select auth.uid()) = user_id);
 
-revoke all on function public.shiti_get(text) from public;
-revoke all on function public.shiti_put(text, jsonb) from public;
-grant execute on function public.shiti_get(text) to anon, authenticated;
-grant execute on function public.shiti_put(text, jsonb) to anon, authenticated;
+drop policy if exists "shiti own doc: update" on public.shiti_user_doc;
+create policy "shiti own doc: update" on public.shiti_user_doc
+  for update to authenticated
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
+
+-- 停用舊的「同步密語」入口（任何人都能呼叫的 security definer 函式）。
+-- 舊資料表 shiti_doc 只有部署測試資料，保留不刪；確認不需要後可以自行 drop。
+drop function if exists public.shiti_get(text);
+drop function if exists public.shiti_put(text, jsonb);

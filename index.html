@@ -374,9 +374,9 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area
 .fab .ti{width:28px;height:28px;stroke-width:2.4}
 
 /* sheets */
-.scrim{position:fixed;inset:0;background:var(--scrim);opacity:0;pointer-events:none;transition:opacity .28s;z-index:50}
+.scrim{position:fixed;inset:0;background:var(--scrim);opacity:0;pointer-events:none;transition:opacity .28s;z-index:71}
 .scrim.open{opacity:1;pointer-events:auto}
-.sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:480px;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain;background:var(--paper);border-radius:30px 30px 0 0;transform:translateY(105%);transition:transform .38s var(--ease);z-index:51;padding:0 16px calc(18px + env(safe-area-inset-bottom));scrollbar-width:none}
+.sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:480px;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain;background:var(--paper);border-radius:30px 30px 0 0;transform:translateY(105%);transition:transform .38s var(--ease);z-index:72;padding:0 16px calc(18px + env(safe-area-inset-bottom));scrollbar-width:none}
 .sheet::-webkit-scrollbar{display:none}
 .sheet.open{transform:none}
 .sheet:not(.open){visibility:hidden;transition:transform .38s var(--ease),visibility 0s .38s}
@@ -449,7 +449,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area
 .about svg{width:56px;height:56px;border-radius:14px;flex:none}
 
 /* toast */
-.toast{position:fixed;left:50%;bottom:calc(98px + env(safe-area-inset-bottom));width:max-content;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:60;background:var(--ink);color:var(--paper);border-radius:16px;padding:11px 8px 11px 16px;font-size:14px;display:flex;align-items:center;gap:12px;transition:opacity .25s,transform .25s var(--ease);max-width:calc(100% - 32px);box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
+.toast{position:fixed;left:50%;bottom:calc(98px + env(safe-area-inset-bottom));width:max-content;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:80;background:var(--ink);color:var(--paper);border-radius:16px;padding:11px 8px 11px 16px;font-size:14px;display:flex;align-items:center;gap:12px;transition:opacity .25s,transform .25s var(--ease);max-width:calc(100% - 32px);box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
 .toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .toast button{color:var(--celadon);font-weight:600;padding:2px 8px;white-space:nowrap;flex:none}
 html[data-mode="light"] .toast button{color:var(--celadon)}
@@ -649,7 +649,7 @@ const nowMin = () => { const d = clock(); return d.getHours() * 60 + d.getMinute
 /* ── 雲端同步（與細水長流相同：Supabase＋同步密語）──────── */
 const CONFIG = {
   SUPA_URL: 'https://tbukohrgpxxhmtsqgzon.supabase.co',  // 與細水長流共用 Supabase 專案 Budget_APP（Tokyo），資料表為 shiti_doc
-  SUPA_KEY: 'sb_publishable_naaPTzV6pdPoiTctKsiShg_VJQqsXCs',  // Publishable key（公開也安全；資料只能透過 shiti_get/put 加密語 id 存取）
+  SUPA_KEY: 'sb_publishable_naaPTzV6pdPoiTctKsiShg_VJQqsXCs',  // Publishable key（公開也安全；資料表有 RLS，只能讀寫自己登入帳號的那一筆）
 };
 
 /* ── data ────────────────────────────────── */
@@ -1306,7 +1306,7 @@ function pageSettings() {
     + `<section class="block"><h2>外觀</h2><div class="panel"><div class="swatches">${THEMES.map(([k, l, c]) => `<button class="sw-btn${(UIP.theme || 'celadon') === k ? ' on' : ''}" data-act="theme" data-v="${k}"><i style="background:${c}"></i>${l}</button>`).join('')}</div>
       <div class="seg wide" style="margin-top:16px">${[['auto', '跟系統'], ['light', '白天'], ['dark', '夜晚']].map(([k, l]) => `<button class="${(UIP.mode || 'auto') === k ? 'on' : ''}" data-act="mode" data-v="${k}">${l}</button>`).join('')}</div></div></section>`
     + `<section class="block"><h2>資料</h2><div class="rows">
-      <button class="set-row" data-act="sync"><span>雲端同步<small>手機和電腦用同一組密語，資料自動合併</small></span>${syncDot()}</button>
+      <button class="set-row" data-act="sync"><span>${Auth.signedIn() ? esc(Auth.s.email) : '用 email 登入'}<small>${Auth.signedIn() ? '手機、電腦登入同一個帳號，資料自動合併' : '登入後手機和電腦自動同步'}</small></span>${syncDot()}</button>
       <button class="set-row" data-act="export"><span>匯出備份<small>${Sync.ready() ? '另存一份在這台裝置' : '資料只存在這台裝置'}</small></span>${ic('download')}</button>
       <label class="set-row" style="cursor:pointer"><span>匯入備份</span>${ic('upload')}<input type="file" accept="application/json,.json" data-act="import" hidden></label>
       ${D.demo ? `<button class="set-row" data-act="clear-demo"><span>清除示範紀錄<small>只刪掉範例回顧資料，抽屜與事項都留著</small></span>${ic('trash')}</button>` : `<button class="set-row" data-act="seed-demo"><span>放入一週示範紀錄<small>看看回顧頁的樣子，之後可清除</small></span>${ic('sparkles')}</button>`}
@@ -1582,15 +1582,10 @@ function confirmSheet(title, body, okLabel, fn) {
     mount: sh => { sh.onConfirm = () => { closeSheet(true); fn(); }; } });
 }
 
-/* ── 同步：資料先存在本機；連上雲端後，每台裝置輸入同一組同步密語就會自動合併 ── */
-const LS_SYNC = 'shiti.sync.v1';
+/* ── 同步：資料先存在本機；用自己的 email 登入後，每台裝置自動合併 ──
+   Supabase Auth（email＋密碼，或寄登入連結）＋ 資料表 shiti_user_doc（RLS：只能讀寫自己那一筆） */
 const lsGetJ = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
 const lsSetJ = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
-async function hashId(pass) {
-  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('shiti:' + pass));
-  return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
-}
-const syncCode = id => id ? id.slice(0, 6).toUpperCase().replace(/(...)(...)/, '$1 $2') : '—';
 function mergeList(a = [], b = []) {
   const m = new Map(a.map(x => [x.id, x]));
   for (const y of b) { const x = m.get(y.id); if (!x || (y.u || 0) > (x.u || 0)) m.set(y.id, y); }
@@ -1611,72 +1606,131 @@ function stable(o) {
   if (o && typeof o === 'object') return '{' + Object.keys(o).sort().map(k => JSON.stringify(k) + ':' + stable(o[k])).join(',') + '}';
   return JSON.stringify(o);
 }
+const LS_AUTH = 'shiti.auth.v1';
+const AUTH_ERR = { invalid_credentials: 'email 或密碼不對。', email_not_confirmed: '還沒確認信箱。請到信箱點「確認」連結，再回來登入。', user_already_exists: '這個 email 已經有帳號了，直接登入就好。',
+  weak_password: '密碼太簡單，至少 8 個字，混合英文與數字。', over_email_send_rate_limit: '寄信太頻繁，請過幾分鐘再試。', signup_disabled: '這個 App 目前不開放新帳號。', otp_disabled: '這個 email 還沒有帳號。', email_address_invalid: 'email 格式不對。' };
+const Auth = {
+  s: lsGetJ(LS_AUTH),
+  base: () => CONFIG.SUPA_URL.replace(/\/+$/, ''),
+  back: () => location.origin + location.pathname,
+  async call(path, body, opt = {}) {
+    const h = { 'Content-Type': 'application/json', apikey: CONFIG.SUPA_KEY };
+    if (opt.token) h.Authorization = 'Bearer ' + opt.token;
+    const r = await fetch(`${this.base()}/auth/v1/${path}`, { method: opt.method || 'POST', headers: h, body: body ? JSON.stringify(body) : undefined });
+    const t = await r.text(); let j = null; try { j = t ? JSON.parse(t) : null; } catch (e) {}
+    if (!r.ok) { const code = j && (j.error_code || j.code || j.error); const e = new Error(AUTH_ERR[code] || (j && (j.msg || j.error_description || j.message)) || `連線失敗（${r.status}）`); e.code = code; throw e; }
+    return j;
+  },
+  keep(j) {
+    const u = j.user || {};
+    this.s = { at: j.access_token, rt: j.refresh_token, exp: Date.now() + (j.expires_in || 3600) * 1000, email: u.email || (this.s && this.s.email), uid: u.id || (this.s && this.s.uid) };
+    lsSetJ(LS_AUTH, this.s); UIP.lastEmail = this.s.email; saveUI();
+  },
+  signedIn() { return !!(this.s && this.s.rt && this.s.uid); },
+  async token() {
+    if (!this.signedIn()) throw new Error('還沒登入');
+    if (Date.now() > this.s.exp - 60000) {
+      try { this.keep(await this.call('token?grant_type=refresh_token', { refresh_token: this.s.rt })); }
+      catch (e) { if (/refresh_token|session/.test(e.code || '')) { this.clear(); throw new Error('登入已過期，請重新登入'); } throw e; }
+    }
+    return this.s.at;
+  },
+  clear() { this.s = null; try { localStorage.removeItem(LS_AUTH); } catch (e) {} },
+  async login(email, password) { this.keep(await this.call('token?grant_type=password', { email, password })); },
+  async signup(email, password) { const j = await this.call(`signup?redirect_to=${encodeURIComponent(this.back())}`, { email, password }); if (j && j.access_token) this.keep(j); return !!(j && j.access_token); },
+  async sendLink(email) { await this.call(`otp?redirect_to=${encodeURIComponent(this.back())}`, { email, create_user: false }); },
+  async setPassword(password) { await this.call('user', { password }, { method: 'PUT', token: await this.token() }); },
+  async logout() { try { await this.call('logout', null, { token: this.s.at }); } catch (e) {} this.clear(); },
+  /* 確認信、登入連結點回來時，token 在網址的 # 後面 */
+  async fromLink() {
+    const h = new URLSearchParams(location.hash.slice(1));
+    if (!h.get('access_token') && !h.get('error_description')) return null;
+    history.replaceState(null, '', location.pathname + location.search);
+    if (h.get('error_description')) return { error: h.get('error_description').replace(/\+/g, ' ') };
+    const at = h.get('access_token'), u = await this.call('user', null, { method: 'GET', token: at });
+    this.keep({ access_token: at, refresh_token: h.get('refresh_token'), expires_in: +h.get('expires_in') || 3600, user: u });
+    return { type: h.get('type') };
+  },
+};
 const SYNC_LBL = { off: '只在這台裝置', ok: '已同步', busy: '同步中', err: '沒有同步成功' };
 const Sync = {
   st: 'off', busy: false, dirty: false, timer: null, err: '', at: 0,
-  cfg() { const c = lsGetJ(LS_SYNC) || {}; return { url: (c.url || CONFIG.SUPA_URL || '').replace(/\/+$/, ''), key: c.key || CONFIG.SUPA_KEY || '', id: c.id || '' }; },
-  ready() { const c = this.cfg(); return !!(c.url && c.key && c.id); },
+  ready() { return !!(CONFIG.SUPA_URL && CONFIG.SUPA_KEY && Auth.signedIn()); },
   set(st) { this.st = st; $$('.gear').forEach(g => { g.dataset.st = st; }); $$('.sync-dot').forEach(el => { el.dataset.st = st; el.lastChild.textContent = SYNC_LBL[st]; }); },
-  async rpc(fn, body) {
-    const c = this.cfg(), h = { 'Content-Type': 'application/json', apikey: c.key };
-    if (!c.key.startsWith('sb_')) h.Authorization = 'Bearer ' + c.key;
-    const r = await fetch(`${c.url}/rest/v1/rpc/${fn}`, { method: 'POST', headers: h, body: JSON.stringify(body) });
+  async rest(method, q, body, prefer) {
+    const h = { apikey: CONFIG.SUPA_KEY, Authorization: 'Bearer ' + await Auth.token(), 'Content-Type': 'application/json' };
+    if (prefer) h.Prefer = prefer;
+    const r = await fetch(`${Auth.base()}/rest/v1/shiti_user_doc${q}`, { method, headers: h, body: body ? JSON.stringify(body) : undefined });
     const text = await r.text();
     if (!r.ok) throw new Error(`${r.status} ${text.slice(0, 160)}`);
     return text ? JSON.parse(text) : null;
   },
   schedule() { if (!this.ready() || !D) return; this.dirty = true; clearTimeout(this.timer); this.timer = setTimeout(() => this.run(), 1500); },
   async run(force) {
-    if (!this.ready() || !D || (this.busy && !force)) return false;
+    if (!this.ready() || (this.busy && !force)) return false;
     this.busy = true; this.set('busy');
     try {
-      const id = this.cfg().id, remote = await this.rpc('shiti_get', { p_id: id }), before = stable(D);
+      const uid = Auth.s.uid, rows = await this.rest('GET', `?select=payload&user_id=eq.${uid}`), remote = rows && rows[0] ? rows[0].payload : null;
+      if (!D) {  // 新裝置還沒做新手引導：直接用雲端的資料
+        if (remote && remote.v === 1) { D = remote; migrate(); try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} $('#ob').hidden = true; UI.tab = 'today'; UI.opened = false; render(); UI.opened = true; UIP.dawn = today(); saveUI(); }
+        this.dirty = false; this.err = ''; this.at = Date.now(); this.set('ok'); return true;
+      }
+      const before = stable(D);
       if (remote && remote.v === 1) { D = mergeDoc(D, remote); migrate(); }
       const after = stable(D);
       if (after !== before) { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} if (!sheetOpen()) render(); }
-      if (!remote || stable(remote) !== after) await this.rpc('shiti_put', { p_id: id, p_payload: D });
+      if (!remote || stable(remote) !== after) await this.rest('POST', '', { user_id: uid, payload: D, updated_at: new Date().toISOString() }, 'resolution=merge-duplicates,return=minimal');
       this.dirty = false; this.err = ''; this.at = Date.now(); this.set('ok'); return true;
-    } catch (e) { console.warn('sync', e); this.err = String(e.message || e); this.set('err'); return false; }
+    } catch (e) { console.warn('sync', e); this.err = String(e.message || e); this.set(Auth.signedIn() ? 'err' : 'off'); return false; }
     finally { this.busy = false; if (this.dirty) this.schedule(); }
   },
 };
 const syncDot = () => `<span class="sync-dot" data-st="${Sync.st}"><i></i>${SYNC_LBL[Sync.st]}</span>`;
 function syncSheet() {
-  let confirmNew = false;
+  let mode = 'login', pwOpen = false;
   return {
     html: () => {
-      const c = Sync.cfg();
-      if (!c.url || !c.key) return `<div class="sh-head"><h3>雲端同步</h3></div><p class="note">雲端資料庫還沒設定好。設定完成後，這裡就能輸入同步密語，讓手機和電腦看到同一份抽屜與紀錄。</p>`;
-      if (Sync.ready()) return `<div class="sh-head"><h3>雲端同步</h3></div>
-        <div class="panel"><div class="kv" style="display:flex;justify-content:space-between;align-items:center"><span>${Sync.st === 'err' ? '連線失敗' : '已連接'}</span>${syncDot()}</div>
+      if (!CONFIG.SUPA_URL || !CONFIG.SUPA_KEY) return `<div class="sh-head"><h3>登入</h3></div><p class="note">雲端資料庫還沒設定好。</p>`;
+      if (Auth.signedIn()) return `<div class="sh-head"><h3>帳號與同步</h3></div>
+        <div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span style="font-weight:600;overflow-wrap:anywhere">${esc(Auth.s.email || '')}</span>${syncDot()}</div>
           ${Sync.err ? `<p class="note" style="color:var(--vermilion)">${esc(Sync.err)}</p>` : ''}${Sync.at ? `<p class="note">上次同步 ${new Date(Sync.at).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}</p>` : ''}
-          <p class="note" style="margin-top:10px">裝置代碼 <span class="sync-code">${syncCode(c.id)}</span></p>
-          <p class="note">其他裝置要看到一模一樣的代碼，才是同一份資料。代碼不同，代表密語有一點不一樣（大小寫、空格）。</p></div>
-        <div class="two-btn" style="margin-top:16px"><button class="btn ghost" data-act="sy-off">中斷同步</button><button class="btn" data-act="sy-now">立即同步</button></div>`;
-      return `<div class="sh-head"><h3>雲端同步</h3></div>
-        <p class="note">資料一直都先存在這台裝置。手機和電腦輸入同一組「同步密語」，抽屜、目標和紀錄就會自動合併。密語不會上傳，只有它算出來的代碼會。</p>
-        <label class="field"><span>同步密語（至少 8 個字，每台裝置輸入相同的）</span><input class="input" id="syPass" type="password" autocomplete="off" placeholder="例如：一句只有你知道的話"></label>
-        <button class="linkbtn" data-act="sy-show" style="color:var(--pool);font-size:13px;margin:8px 4px 0">顯示密語</button>
-        <p class="note" id="syErr" style="color:var(--vermilion);min-height:20px"></p>
-        <button class="btn" data-act="sy-on" style="margin-top:8px">連接</button>`;
+          <p class="note">手機、電腦登入同一個 email，抽屜、目標和紀錄會自動合併。</p></div>
+        <div class="two-btn" style="margin-top:14px"><button class="btn ghost" data-act="au-out">登出</button><button class="btn" data-act="au-now">立即同步</button></div>
+        <div class="rows" style="margin-top:14px"><button class="set-row" data-act="au-pw"><span>設定新密碼<small>忘記密碼、用登入連結進來時，在這裡設一個新的</small></span><span class="chev">${ic(pwOpen ? 'chevron-down' : 'chevron-right')}</span></button></div>
+        <div ${pwOpen ? '' : 'hidden'} style="margin-top:10px"><input class="input" id="auNew" type="password" autocomplete="new-password" placeholder="新密碼，至少 8 個字"><p class="note" id="auErr" style="color:var(--vermilion);min-height:20px"></p><button class="btn" data-act="au-setpw">更新密碼</button></div>`;
+      const su = mode === 'signup';
+      return `<div class="sh-head"><h3>${su ? '建立帳號' : '用 email 登入'}</h3></div>
+        <p class="note">${su ? '第一次使用時建立。建立後會寄一封確認信，點信裡的連結就完成登入。' : '登入後，手機和電腦的抽屜、目標和紀錄會自動合併。沒登入也能用，資料會存在這台裝置。'}</p>
+        <label class="field"><span>Email</span><input class="input" id="auEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" value="${esc(UIP.lastEmail || '')}" placeholder="you@example.com"></label>
+        <label class="field"><span>密碼${su ? '（至少 8 個字）' : ''}</span><input class="input" id="auPass" type="password" autocomplete="${su ? 'new-password' : 'current-password'}"></label>
+        <p class="note" id="auErr" style="min-height:20px;margin-top:10px"></p>
+        <button class="btn" data-act="${su ? 'au-signup' : 'au-login'}">${su ? '建立帳號' : '登入'}</button>
+        <div class="two-btn" style="margin-top:10px"><button class="btn ghost" data-act="au-mode">${su ? '已經有帳號，登入' : '第一次使用，建立帳號'}</button>${su ? '' : '<button class="btn ghost" data-act="au-link">忘記密碼？寄登入連結</button>'}</div>`;
     },
     mount: sh => {
-      const p = $('#syPass', sh); if (p) { setTimeout(() => p.focus(), 380); p.addEventListener('input', () => { confirmNew = false; $('[data-act="sy-on"]', sh).textContent = '連接'; }); }
-      sh.onSync = async (act, el) => {
-        if (act === 'sy-show') { p.type = p.type === 'password' ? 'text' : 'password'; el.textContent = p.type === 'password' ? '顯示密語' : '隱藏密語'; }
-        if (act === 'sy-now') { await Sync.run(true); drawSheet(); }
-        if (act === 'sy-off') { const c = lsGetJ(LS_SYNC) || {}; delete c.id; lsSetJ(LS_SYNC, c); Sync.set('off'); closeSheet(); toast('已中斷，資料留在這台裝置'); }
-        if (act === 'sy-on') {
-          const pass = p.value, err = $('#syErr', sh);
-          if (pass.length < 8) { err.textContent = '同步密語至少 8 個字。'; return; }
-          if (!(window.crypto && crypto.subtle)) { err.textContent = '這個瀏覽器不支援加密雜湊，請用 https 網址開啟。'; return; }
-          el.textContent = '連接中…'; const id = await hashId(pass), c = lsGetJ(LS_SYNC) || {};
-          let found = null; try { lsSetJ(LS_SYNC, { ...c, id }); found = await Sync.rpc('shiti_get', { p_id: id }); } catch (e) { lsSetJ(LS_SYNC, c); err.textContent = '連不上資料庫：' + e.message; el.textContent = '連接'; return; }
-          if (!found && !confirmNew) { lsSetJ(LS_SYNC, c); confirmNew = true; err.innerHTML = '雲端還沒有用這組密語的資料。<br>如果另一台裝置已經在用，代表密語不一樣，請按「顯示密語」逐字對照。<br>確定是第一次設定，再按一次下面的按鈕。'; el.textContent = '用這組密語開始同步'; return; }
-          const ok = await Sync.run(true);
-          if (ok) { closeSheet(); toast(found ? '已連接，資料合併好了' : '已建立雲端資料，其他裝置輸入同一組密語即可'); }
-          else { lsSetJ(LS_SYNC, c); Sync.set('off'); err.textContent = '同步失敗：' + Sync.err; el.textContent = '連接'; }
-        }
+      const em = $('#auEmail', sh), pw = $('#auPass', sh), err = () => $('#auErr', sh);
+      const say = (t, bad) => { const e = err(); if (e) { e.textContent = t; e.style.color = bad ? 'var(--vermilion)' : 'var(--pool)'; } };
+      if (em) setTimeout(() => (em.value ? pw : em).focus(), 380);
+      [em, pw].forEach(i => i && i.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); sh.onAuth(mode === 'signup' ? 'au-signup' : 'au-login', $(`[data-act="${mode === 'signup' ? 'au-signup' : 'au-login'}"]`, sh)); } }));
+      const after = async msg => { const ok = await Sync.run(true); closeSheet(true); if (D) render(); toast(ok ? msg : `已登入，但這次沒同步成功：${Sync.err}`); };
+      sh.onAuth = async (act, el) => {
+        const email = em ? em.value.trim().toLowerCase() : '', pass = pw ? pw.value : '';
+        const busy = (on, label) => { if (el) { el.disabled = on; if (label) el.textContent = label; } };
+        try {
+          if (act === 'au-mode') { mode = mode === 'login' ? 'signup' : 'login'; drawSheet(); }
+          if (act === 'au-login') { if (!email || !pass) return say('請輸入 email 和密碼。', true); busy(true, '登入中…'); await Auth.login(email, pass); await after('已登入，資料同步好了'); }
+          if (act === 'au-signup') {
+            if (!email) return say('請輸入 email。', true); if (pass.length < 8) return say('密碼至少 8 個字。', true);
+            busy(true, '建立中…'); const inNow = await Auth.signup(email, pass); UIP.lastEmail = email; saveUI();
+            if (inNow) await after('帳號建立好了，已登入');
+            else { busy(false, '建立帳號'); say('確認信寄出了。請到信箱點「確認」連結，就會回到這裡並自動登入。', false); }
+          }
+          if (act === 'au-link') { if (!email) return say('先輸入 email，再按這個按鈕。', true); busy(true); await Auth.sendLink(email); UIP.lastEmail = email; saveUI(); busy(false); say('登入連結寄出了。打開信、點連結就會登入，再到這裡設定新密碼。', false); }
+          if (act === 'au-now') { await Sync.run(true); drawSheet(); }
+          if (act === 'au-out') { await Auth.logout(); Sync.set('off'); closeSheet(true); toast('已登出，資料留在這台裝置'); }
+          if (act === 'au-pw') { pwOpen = !pwOpen; drawSheet(); }
+          if (act === 'au-setpw') { const v = $('#auNew', sh).value; if (v.length < 8) return say('密碼至少 8 個字。', true); await Auth.setPassword(v); closeSheet(true); toast('密碼更新好了'); }
+        } catch (e) { busy(false, { 'au-login': '登入', 'au-signup': '建立帳號' }[act]); say(e.message, true); }
       };
     },
   };
@@ -1775,7 +1829,7 @@ document.addEventListener('click', e => {
   if (act.startsWith('gp-') && sh.onGap) return sh.onGap(act, el);
   if (act.startsWith('gs-') && sh.onGoal) return sh.onGoal(act, el);
   if (act.startsWith('wp-') && sh.onWeek) return sh.onWeek(act, el);
-  if (act.startsWith('sy-') && sh.onSync) return sh.onSync(act, el);
+  if (act.startsWith('au-') && sh.onAuth) return sh.onAuth(act, el);
   switch (act) {
     case 'close-sheet': return closeSheet();
     case 'confirm-ok': return sh.onConfirm && sh.onConfirm();
@@ -1922,7 +1976,7 @@ function showOnboarding() {
           <div><span class="ico" data-tone="amber">${ic('bell-ringing')}</span><p><b>時間到了才提醒你</b><span>抽屜打開時通知，其餘時候安安靜靜。</span></p></div>
           <div><span class="ico" style="background:var(--gold-soft);color:var(--gold)">${ic('leaf')}</span><p><b>不排滿，留白是你選的</b><span>每天最多排七分滿；空檔有小事可挑，也可以什麼都不做。</span></p></div>
           <div><span class="ico" style="background:var(--vermilion-soft);color:var(--vermilion)">${ic('hourglass-low')}</span><p><b>看見時間去哪了</b><span>每段時間結束點一下，週末告訴你哪些時間不知不覺流失。</span></p></div>
-        </div><div class="ob-foot"><button class="btn" data-ob="next">開始安排</button></div>`,
+        </div><div class="ob-foot"><button class="btn" data-ob="next">開始安排</button><button class="btn ghost" data-ob="login">已經在別台裝置用過？登入</button></div>`,
       () => `<p class="ob-step">1 / 2</p><h2>你的一天，從幾點到幾點？</h2><p class="lead">抽屜只會排在醒著的時間裡。</p>
         <div class="rows" style="margin-top:22px"><label class="set-row"><span>起床</span><input type="time" id="obWake" value="${S.wake}"></label><label class="set-row"><span>就寢</span><input type="time" id="obSleep" value="${S.sleep}"></label></div>
         <div class="ob-foot"><div class="two-btn"><button class="btn ghost" data-ob="back">上一步</button><button class="btn" data-ob="next">下一步</button></div></div>`,
@@ -1939,6 +1993,7 @@ function showOnboarding() {
     if (a === 'next') S.step++; if (a === 'back') S.step--;
     if (a === 'tpl') { S.tpl = b.dataset.v; if (!S.custom) { S.wake = TPL[S.tpl].wake; S.sleep = TPL[S.tpl].sleep; } }
     if (a === 'demo') S.demo = !S.demo;
+    if (a === 'login') return openSheet(syncSheet());
     if (a === 'done') {
       applyTemplate(S.tpl, S.wake, S.sleep); if (S.demo && TPL[S.tpl].d.length) seedDemo();
       ob.hidden = true; UI.tab = 'today'; UI.opened = false; UI.lastSeg = undefined; render(); UI.opened = true; UI.lastSeg = curSeg()?.key || 'none';
@@ -1957,6 +2012,12 @@ if (!D) showOnboarding();
 else { migrate(); save(); rollOver(); render(); UI.opened = true; UI.lastSeg = curSeg()?.key || 'none'; if (UIP.dawn !== today()) showDawn(); }
 setInterval(() => { if (!D) return; refreshLive(); checkNotify(); if (document.visibilityState === 'visible' && !Sync.dirty) Sync.run(); }, 20000);
 if (Sync.ready()) Sync.run(); else Sync.set('off');
+Auth.fromLink().then(r => {
+  if (!r) return;
+  if (r.error) return toast('連結已失效或用過了，請重新寄一次');
+  toast(r.type === 'signup' ? '信箱確認好了，已登入' : r.type === 'recovery' || r.type === 'magiclink' ? '已登入。可以到設定 → 帳號設定新密碼' : '已登入');
+  Sync.run(true).then(() => { if (D) render(); });
+}).catch(e => toast('登入沒有成功：' + e.message));
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && D) Sync.run(); if (document.visibilityState === 'visible' && D && !sheetOpen()) { rollOver(); UI.opened = true; render(); if (UIP.dawn !== today() && $('#ob').hidden) showDawn(); } });
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
