@@ -7,3 +7,4 @@ _test/
 shots/
 tools/.venv-tts/
 tools/tts-models/
+tools/_list.txt
