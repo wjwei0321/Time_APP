@@ -10,7 +10,8 @@
 | 檔案 | 說明 |
 | --- | --- |
 | `index.html` | 整個 App（HTML/CSS/JS，沒有 build 步驟）。圖示路徑內嵌在 `ICONS`（Tabler outline，MIT，授權見 `icons/TABLER-LICENSE.txt`） |
-| `quotes.js` | 每日一句，365 句依一年中的第幾天輪替（中文原文附英譯、英文原文附中譯、其他語言只放中英譯＋出處地區） |
+| `quotes.js` | 每日一句，730 句：早上（04:00–15:59）`QUOTES`、傍晚以後（16:00–隔天 03:59）`QUOTES_PM` 各 365 句，依一年中的第幾天輪替（中文原文附英譯、英文原文附中譯、其他語言只放中英譯＋出處地區） |
+| `glossary.js` | 金句裡所有英文單字的中文解釋（點單字時顯示）。由 `tools/gloss_*.txt` 經 `python tools/build_glossary.py` 產生；改金句後要重跑，它會列出缺的字 |
 | `api/ics.js` | Vercel 函式：`/api/ics?id=<同步 id>&tz=` 依雲端資料產生行事曆訂閱（webcal），iPhone 主畫面 App 不能下載檔案，所以用訂閱取代 .ics 下載 |
 | `sw.js`、`manifest.webmanifest`、`icons/*.png` | PWA；圖示用 `python tools/make_icons.py` 重畫 |
 | 本機預覽 | `python -m http.server 8766`；網址加 `?at=HH:MM`、`?day=YYYY-MM-DD` 可把時鐘撥到指定時間測試 |
@@ -43,7 +44,7 @@
 ## 設計
 
 - 主視覺是「此刻的抽屜」：面板＋把手＋拉出來的內盒（`.face`/`.pull`/`.tray`）。面板裡的水位（`.liquid`，沿用細水長流）＝這段還剩多少時間，會隨時間下降。
-- 每次打開 App（以及離開超過 30 分鐘、或換日後回來）都先出現滿版「今日一句」，只有金句，按右下角 > 才進入（`showDawn`）。今天頁不再放金句卡。
+- 每次打開 App（以及離開超過 30 分鐘、或換日後回來）都先出現滿版「今日一句」，只有金句，按右下角 > 才進入（`showDawn`）。英文單字可點：顯示中文解釋（`GLOSS`，找不到原字會試著去掉 s/ed/ing 等）、音標與英文釋義（dictionaryapi.dev，查不到不影響），並用瀏覽器內建語音唸出；底部可朗讀整句英文或中文。今天頁不再放金句卡。
 - 五種色系：青瓷、靛藍、烏龍、紫藤、銀杏（黃；留白色改青綠）。
 - 朱色＝超量／流失；金色＝用心留白。
 - 色系屬性是 `data-palette`（不是 `data-theme`，因為嵌在 Artifact 時外層會蓋 `data-theme=light|dark`）。
