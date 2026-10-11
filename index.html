@@ -486,22 +486,20 @@ html[data-mode="light"] .toast button{color:var(--celadon)}
 .qt .q1{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-family:var(--kai);font-size:17px;line-height:1.55;color:var(--ink)}
 .qt .q2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13px;line-height:1.5;color:var(--ink-2);margin-top:4px}
 .qt .q3{display:block;font-size:12px;color:var(--ink-3);margin-top:6px}
-.dawn{position:fixed;inset:0;z-index:66;background:var(--paper);overflow:hidden auto;display:flex;flex-direction:column;opacity:0;transition:opacity .35s}
+.dawn{position:fixed;inset:0;z-index:66;background:var(--paper);overflow:hidden auto;opacity:0;transition:opacity .45s}
 .dawn.in{opacity:1}
-.dawn-in{position:relative;z-index:1;max-width:460px;width:100%;margin:0 auto;padding:calc(env(safe-area-inset-top) + 40px) 24px calc(env(safe-area-inset-bottom) + 28px);flex:1;display:flex;flex-direction:column;min-height:100%}
-.dawn-d{font-size:13px;color:var(--ink-3);font-family:var(--num);font-variant-numeric:tabular-nums}
-.dawn-h{font-family:var(--kai);font-size:34px;font-weight:700;margin-top:2px;letter-spacing:.03em}
-.dawn-q{margin:auto 0;padding:28px 0}
-.dawn-q .q1{font-family:var(--kai);font-size:clamp(23px,6.6vw,29px);line-height:1.55;color:var(--ink);text-wrap:balance}
-.dawn-q .q2{font-size:16px;line-height:1.7;color:var(--ink-2);margin-top:16px;text-wrap:pretty}
-.dawn-q footer{font-size:13px;color:var(--ink-3);margin-top:18px}
-.dawn-next{font-size:14px;color:var(--ink);margin-bottom:14px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--surface) 80%,transparent)}
-.dawn-sea{position:fixed;left:0;right:0;bottom:0;height:0;background:linear-gradient(180deg,color-mix(in srgb,var(--celadon) 70%,var(--paper)),var(--celadon));transition:height 1.8s cubic-bezier(.2,.85,.2,1) .25s;z-index:0}
-.dawn.in .dawn-sea{height:24%}
-.dawn-sea .wave path{fill:color-mix(in srgb,var(--celadon) 70%,var(--paper))}
-.dawn-sea .wave.back path{fill:color-mix(in srgb,var(--celadon) 40%,var(--paper))}
-.dawn.in .dawn-in > *{animation:rise .8s var(--ease) both}
-.dawn.in .dawn-in > :nth-child(2){animation-delay:.08s} .dawn.in .dawn-in > :nth-child(3){animation-delay:.2s} .dawn.in .dawn-in > :nth-child(n+4){animation-delay:.36s}
+.dawn-in{max-width:560px;min-height:100%;margin:0 auto;padding:calc(env(safe-area-inset-top) + 48px) 32px calc(env(safe-area-inset-bottom) + 120px);display:flex;flex-direction:column;justify-content:center}
+.dawn-q .q1{font-family:var(--kai);font-size:clamp(26px,7.6vw,36px);line-height:1.6;letter-spacing:.02em;color:var(--ink);text-wrap:balance}
+.dawn-q .q1[lang="en"]{letter-spacing:0;line-height:1.5}
+.dawn-q .q1[lang="zh-Hant"]{text-wrap:pretty}
+.dawn-q .q2{font-size:16px;line-height:1.75;color:var(--ink-2);margin-top:22px;text-wrap:pretty}
+.dawn-q footer{font-size:13px;color:var(--ink-3);margin-top:26px}
+.dawn-go{position:fixed;right:max(24px,calc(50% - 256px));bottom:calc(env(safe-area-inset-bottom) + 32px);width:60px;height:60px;border-radius:50%;background:var(--pool);color:var(--pool-ink);display:grid;place-items:center;box-shadow:0 10px 24px -10px color-mix(in srgb,var(--pool) 70%,transparent);transition:transform .15s}
+.dawn-go .ti{width:28px;height:28px;stroke-width:2.2}
+.dawn-go:active{transform:scale(.92)}
+.dawn.in .dawn-q > *{animation:rise .9s var(--ease) both}
+.dawn.in .dawn-q > :nth-child(2){animation-delay:.18s} .dawn.in .dawn-q > :nth-child(3){animation-delay:.32s}
+.dawn.in .dawn-go{animation:rise .9s var(--ease) .45s both}
 /* 設定的滑桿 */
 .slider{display:flex;flex-direction:column;gap:6px;padding:14px 16px 12px}
 .slider .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;font-size:15px}
@@ -978,17 +976,13 @@ function quoteCard() {
   return `<button class="qt" data-act="dawn" aria-label="今日一句，點一下放大"><span class="q1" lang="${langOf(q, 1)}">${esc(q[1])}</span><span class="q2" lang="${langOf(q, 2)}">${esc(q[2])}</span><span class="q3">— ${quoteMeta(q)}</span></button>`;
 }
 const WAVES = `<svg class="wave back" viewBox="0 0 200 16" preserveAspectRatio="none"><path d="M0 8 Q12.5 0 25 8 T50 8 T75 8 T100 8 T125 8 T150 8 T175 8 T200 8 V16 H0Z"/></svg><svg class="wave" viewBox="0 0 200 16" preserveAspectRatio="none"><path d="M0 8 Q12.5 16 25 8 T50 8 T75 8 T100 8 T125 8 T150 8 T175 8 T200 8 V16 H0Z"/></svg>`;
+/* 每次打開 App 先出現今日一句；按右下角的 > 才進入 */
 function showDawn() {
-  const el = $('#dawn'), d = today(), q = quoteOf(d), t = clock(), h = t.getHours();
-  const greet = h < 5 ? '夜深了' : h < 11 ? '早安' : h < 14 ? '午安' : h < 18 ? '午後好' : '晚上好';
-  const cur = curSeg(), next = drawersOn(d).find(x => toMin(x.start) > nowMin());
-  const line = cur && cur.type === 'drawer' ? `此刻是「${esc(cur.dr.name)}」，${cur.dr.end} 關上。` : next ? `下一個抽屜是「${esc(next.name)}」，${next.start} 打開。` : '今天剩下的時間，都是留白。';
-  el.innerHTML = `<div class="dawn-in"><p class="dawn-d">${t.getMonth() + 1} 月 ${t.getDate()} 日 · 週${WD[t.getDay() || 7]}</p><h2 class="dawn-h">${greet}</h2>
-    ${q ? `<blockquote class="dawn-q"><p class="q1" lang="${langOf(q, 1)}">${esc(q[1])}</p><p class="q2" lang="${langOf(q, 2)}">${esc(q[2])}</p><footer>— ${quoteMeta(q)}</footer></blockquote>` : '<div style="margin:auto"></div>'}
-    ${live(D.drawers).length ? `<p class="dawn-next">${line}${live(D.goals).length ? `<br>${top3Of(d).length ? `今天的三件事：${top3Of(d).map(id => esc(D.items.find(x => x.id === id).title)).join('、')}` : '進去後，挑今天要做的三件事。'}` : ''}</p>` : ''}<button class="btn" data-act="dawn-close">開始今天</button></div>
-    <div class="dawn-sea" aria-hidden="true">${WAVES}</div>`;
+  const el = $('#dawn'), q = quoteOf(today()); if (!q) return;
+  el.innerHTML = `<div class="dawn-in"><blockquote class="dawn-q"><p class="q1" lang="${langOf(q, 1)}">${langOf(q, 1) === 'en' ? esc(q[1]) : esc(q[1]).replace(/([。！？；])(?=.)/g, '$1<br>')}</p><p class="q2" lang="${langOf(q, 2)}">${esc(q[2])}</p><footer>— ${quoteMeta(q)}</footer></blockquote></div>
+    <button class="dawn-go" data-act="dawn-close" aria-label="進入時屜">${ic('chevron-right')}</button>`;
   el.hidden = false; el.getBoundingClientRect(); requestAnimationFrame(() => el.classList.add('in'));
-  UIP.dawn = d; saveUI();
+  UIP.dawn = today(); saveUI();
 }
 function hideDawn() { const el = $('#dawn'); el.classList.remove('in'); setTimeout(() => { el.hidden = true; }, 360); }
 
@@ -1144,7 +1138,7 @@ function cabinetHTML() {
 }
 function pageToday() {
   const t = clock();
-  return head('時屜', `${t.getMonth() + 1} 月 ${t.getDate()} 日 · 週${WD[t.getDay() || 7]}`) + quoteCard() + heroHTML() + top3HTML() + weekNudge() + askHTML() + closeHTML()
+  return head('時屜', `${t.getMonth() + 1} 月 ${t.getDate()} 日 · 週${WD[t.getDay() || 7]}`) + heroHTML() + top3HTML() + weekNudge() + askHTML() + closeHTML()
     + `<section class="block"><h2>今天的節奏</h2>${meterHTML(today())}</section>`
     + `<section class="block"><h2>${UI.cabDay ? '明天的櫃子' : '今天的櫃子'}<span class="seg"><button class="${UI.cabDay ? '' : 'on'}" data-act="cab" data-v="0">今天</button><button class="${UI.cabDay ? 'on' : ''}" data-act="cab" data-v="1">明天</button></span></h2>${cabinetHTML()}</section>`;
 }
@@ -1967,10 +1961,12 @@ function showOnboarding() {
 /* ── boot ───────────────────────────────── */
 applyTheme();
 if (!D) showOnboarding();
-else { migrate(); save(); rollOver(); render(); UI.opened = true; UI.lastSeg = curSeg()?.key || 'none'; if (UIP.dawn !== today()) showDawn(); }
+else { migrate(); save(); rollOver(); render(); UI.opened = true; UI.lastSeg = curSeg()?.key || 'none'; showDawn(); }
 setInterval(() => { if (!D) return; refreshLive(); checkNotify(); if (document.visibilityState === 'visible' && !Sync.dirty) Sync.run(); }, 20000);
 if (Sync.ready()) Sync.run(); else Sync.set('off');
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && D) Sync.run(); if (document.visibilityState === 'visible' && D && !sheetOpen()) { rollOver(); UI.opened = true; render(); if (UIP.dawn !== today() && $('#ob').hidden) showDawn(); } });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && D) Sync.run(); if (document.visibilityState === 'visible' && D && !sheetOpen()) { rollOver(); UI.opened = true; render(); if ((UIP.dawn !== today() || Date.now() - HIDDEN_AT > 30 * 60000) && HIDDEN_AT && $('#ob').hidden && $('#dawn').hidden) showDawn(); } });
+let HIDDEN_AT = 0;
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') HIDDEN_AT = Date.now(); });
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
