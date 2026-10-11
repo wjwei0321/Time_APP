@@ -23,6 +23,10 @@
   logs:    [{ id, d, key: drawerId|'g<分鐘>', start, end (分鐘), kind:'plan'|'rest'|'other'|'leak', dr?, demo? }],
   plans:   [{ id, d, start(分鐘), mins, title, item?: 留白清單事項 id, done?, demo? }],   // 排進某段留白的事
   recs:    [{ id, d, at(分鐘), title, item?, plan?, drawer?, note, demo? }],          // 完成紀錄（時間＋細節，例如讀到第幾頁）
+  goals:   [{ id, title, core, doneAt?, drawer?, demo? }],   // 人生清單（目標 50 件），core＝核心目標（最多 10 個）
+  vision:  { text, at },                                      // 五年後的你
+  top3:    { 'YYYY-MM-DD': [itemId…] },                       // 今天的三件事
+  // items 另有 goal?（對應目標）、week?（那一週的週一）
   skips:   { 'YYYY-MM-DD'+key: 1 },
   demo?: 1 }
 ```
@@ -42,3 +46,9 @@
 - 朱色＝超量／流失；金色＝用心留白。
 - 色系屬性是 `data-palette`（不是 `data-theme`，因為嵌在 Artifact 時外層會蓋 `data-theme=light|dark`）。
 - 網頁無法在關閉後排程通知：通知只在 App 開著時有效，可靠提醒靠匯出 .ics 到手機行事曆。
+
+## 目標（王永福「便利貼思考法」簡化版，來源：Cheers 2023-07-15）
+
+- 每年問「五年後的我會是什麼樣子」→ 人生清單寫到 50 件 → 選出核心 10 個 → 每週替核心目標安排行動（直接變成抽屜或留白清單裡的事項，`goal`＋`week`）→ 每天挑 3 件（`top3`）。
+- 週日安排的是下週（`planWeek()`），其他天是這週。週日、週一若還沒安排，今天頁會提醒。
+- 導覽列第四格是「目標」；留白清單併到「抽屜」頁的切換（`UI.tab = 'pocket'` 仍可用）。

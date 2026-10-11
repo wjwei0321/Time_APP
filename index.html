@@ -523,6 +523,50 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px color
 .row.rec .s.empty-note{color:var(--ink-3);font-style:normal}
 .jd + .jd{margin-top:16px}
 .jh{font-size:13px;color:var(--ink-2);font-weight:600;margin:0 4px 6px}
+/* 目標：人生清單 → 核心 10 個 → 每週往前一步 → 今天的三件事 */
+.steps ol{list-style:none;display:flex;flex-direction:column;gap:12px}
+.steps li{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+.steps .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-family:var(--num);font-weight:650;font-size:13px;background:var(--surface-2);color:var(--ink-2)}
+.steps li.now .n{background:var(--pool);color:var(--pool-ink)}
+.steps li.ok .n{background:var(--pool-soft);color:var(--pool)}
+.steps li.ok .n .ti{width:15px;height:15px;stroke-width:2.6}
+.steps b{display:block;font-size:15px;font-weight:600;line-height:1.35}
+.steps span{font-size:12px;color:var(--ink-3)}
+.steps li:not(.now):not(.ok) b{color:var(--ink-2);font-weight:500}
+.vision .ask-q{display:block}
+.vision .vtext{width:100%;min-height:84px;border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:12px 14px;font-size:16px;line-height:1.6;resize:vertical;outline:none;margin-top:10px;font-family:var(--kai)}
+.vision .vtext:focus{border-color:var(--pool)}
+.star{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--ink-3);transition:color .15s,transform .15s}
+.star .ti{width:22px;height:22px}
+.star.on{color:var(--gold)}
+.star.on .ti{fill:currentColor}
+.star:active{transform:scale(.9)}
+.it.reached .t{color:var(--gold)}
+.g50{height:6px;border-radius:9px;background:var(--surface-2);overflow:hidden}
+.g50 i{display:block;height:100%;background:var(--pool);border-radius:9px;transition:width .5s var(--ease)}
+.g-prompt{font-size:13px;color:var(--ink-2);margin:10px 2px 10px;min-height:20px}
+.gc + .gc{border-top:1px solid var(--line)}
+.gc > .row .ico{background:var(--gold-soft);color:var(--gold)}
+.gc > .row .ico .ti{fill:currentColor}
+.gc .acts{padding:0 8px 8px 52px}
+.gc .acts .it-row{padding:6px 8px}
+.gc .acts .ck{width:24px;height:24px}
+.gc .acts .t{font-size:14px}
+.top3{margin-top:12px;padding:14px 12px 8px}
+.t3-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:0 4px 6px}
+.t3-h small{font-size:12px;color:var(--ink-3)}
+.slot{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 12px;border-radius:14px;border:1.5px dashed var(--line);color:var(--ink-3);font-size:14px;margin:4px 0}
+.slot .n{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);font-family:var(--num);font-weight:650;font-size:12px;color:var(--ink-2);flex:none}
+.slot:hover{border-color:color-mix(in srgb,var(--pool) 50%,var(--line));color:var(--pool)}
+.t3 .it-row{padding:8px 4px 8px 12px}
+.t3 .rm{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:var(--ink-3)}
+.t3 .rm .ti{width:16px;height:16px}
+.gtag{display:inline-flex;align-items:center;gap:3px;color:var(--gold);font-weight:600}
+.pick-h{font-size:13px;color:var(--ink-2);font-weight:600;margin:16px 4px 6px}
+.week-g{margin-top:14px}
+.week-g h4{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:600;margin:0 4px 8px}
+.week-g h4 .ti{width:17px;height:17px;color:var(--gold);fill:currentColor}
+.week-g .rows{margin-bottom:8px}
 input,select,textarea{font-size:max(16px,1em)}
 input[type="time"]{-webkit-appearance:none;appearance:none;min-width:0}
 html{overscroll-behavior:none;scrollbar-width:none}
@@ -541,7 +585,7 @@ html,body{overflow-x:clip}
   <button class="tb" data-tab="today"></button>
   <button class="tb" data-tab="drawers"></button>
   <button class="fab" id="fab" aria-label="放一件事進抽屜（長按用說的）"></button>
-  <button class="tb" data-tab="pocket"></button>
+  <button class="tb" data-tab="goals"></button>
   <button class="tb" data-tab="review"></button>
 </div></nav>
 
@@ -554,7 +598,7 @@ html,body{overflow-x:clip}
 
 <script>
 'use strict';
-const ICONS = {"settings":"<path d=\"M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065\"/><path d=\"M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/>","check":"<path d=\"M5 12l5 5l10 -10\"/>","plus":"<path d=\"M12 5l0 14\"/><path d=\"M5 12l14 0\"/>","x":"<path d=\"M18 6l-12 12\"/><path d=\"M6 6l12 12\"/>","chevron-left":"<path d=\"M15 6l-6 6l6 6\"/>","chevron-right":"<path d=\"M9 6l6 6l-6 6\"/>","chevron-down":"<path d=\"M6 9l6 6l6 -6\"/>","clock":"<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0\"/><path d=\"M12 7v5l3 3\"/>","bell":"<path d=\"M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6\"/><path d=\"M9 17v1a3 3 0 0 0 6 0v-1\"/>","bell-off":"<path d=\"M9.346 5.353c.21 -.129 .428 -.246 .654 -.353a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3m-1 3h-13a4 4 0 0 0 2 -3v-3a6.996 6.996 0 0 1 1.273 -3.707\"/><path d=\"M9 17v1a3 3 0 0 0 6 0v-1\"/><path d=\"M3 3l18 18\"/>","bell-ringing":"<path d=\"M10 5a2 2 0 0 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6\"/><path d=\"M9 17v1a3 3 0 0 0 6 0v-1\"/><path d=\"M21 6.727a11.05 11.05 0 0 0 -2.794 -3.727\"/><path d=\"M3 6.727a11.05 11.05 0 0 1 2.792 -3.727\"/>","calendar-event":"<path d=\"M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12\"/><path d=\"M16 3l0 4\"/><path d=\"M8 3l0 4\"/><path d=\"M4 11l16 0\"/><path d=\"M8 15h2v2h-2l0 -2\"/>","calendar-plus":"<path d=\"M12.5 21h-6.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v5\"/><path d=\"M16 3v4\"/><path d=\"M8 3v4\"/><path d=\"M4 11h16\"/><path d=\"M16 19h6\"/><path d=\"M19 16v6\"/>","calendar":"<path d=\"M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12\"/><path d=\"M16 3v4\"/><path d=\"M8 3v4\"/><path d=\"M4 11h16\"/><path d=\"M11 15h1\"/><path d=\"M12 15v3\"/>","microphone":"<path d=\"M9 5a3 3 0 0 1 3 -3a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3a3 3 0 0 1 -3 -3l0 -5\"/><path d=\"M5 10a7 7 0 0 0 14 0\"/><path d=\"M8 21l8 0\"/><path d=\"M12 17l0 4\"/>","trash":"<path d=\"M4 7l16 0\"/><path d=\"M10 11l0 6\"/><path d=\"M14 11l0 6\"/><path d=\"M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12\"/><path d=\"M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3\"/>","pencil":"<path d=\"M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4\"/><path d=\"M13.5 6.5l4 4\"/>","dots":"<path d=\"M4 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M18 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/>","arrow-right":"<path d=\"M5 12l14 0\"/><path d=\"M13 18l6 -6\"/><path d=\"M13 6l6 6\"/>","player-play":"<path d=\"M7 4v16l13 -8l-13 -8\"/>","refresh":"<path d=\"M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4\"/><path d=\"M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4\"/>","download":"<path d=\"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2\"/><path d=\"M7 11l5 5l5 -5\"/><path d=\"M12 4l0 12\"/>","upload":"<path d=\"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2\"/><path d=\"M7 9l5 -5l5 5\"/><path d=\"M12 4l0 12\"/>","sun":"<path d=\"M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\"/><path d=\"M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7\"/>","moon":"<path d=\"M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008\"/>","sparkles":"<path d=\"M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2m0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2m-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6\"/>","inbox":"<path d=\"M4 6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12\"/><path d=\"M4 13h3l3 3h4l3 -3h3\"/>","archive":"<path d=\"M3 6a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2\"/><path d=\"M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10\"/><path d=\"M10 12l4 0\"/>","layout-rows":"<path d=\"M4 6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12\"/><path d=\"M4 12l16 0\"/>","chart-bar":"<path d=\"M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6\"/><path d=\"M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10\"/><path d=\"M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14\"/><path d=\"M4 20h14\"/>","leaf":"<path d=\"M5 21c.5 -4.5 2.5 -8 7 -10\"/><path d=\"M9 18c6.218 0 10.5 -3.288 11 -12v-2h-4.014c-9 0 -11.986 4 -12 9c0 1 0 3 2 5h3l.014 0\"/>","feather":"<path d=\"M4 20l10 -10m0 -5v5h5m-9 -1v5h5m-9 -1v5h5m-5 -5l4 -4l4 -4\"/><path d=\"M19 10c.638 -.636 1 -1.515 1 -2.486a3.515 3.515 0 0 0 -3.517 -3.514c-.97 0 -1.847 .367 -2.483 1m-3 13l4 -4l4 -4\"/>","hourglass":"<path d=\"M6.5 7h11\"/><path d=\"M6.5 17h11\"/><path d=\"M6 20v-2a6 6 0 1 1 12 0v2a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1\"/><path d=\"M6 4v2a6 6 0 1 0 12 0v-2a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1\"/>","hourglass-low":"<path d=\"M6.5 17h11\"/><path d=\"M6 20v-2a6 6 0 1 1 12 0v2a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1\"/><path d=\"M6 4v2a6 6 0 1 0 12 0v-2a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1\"/>","circle":"<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/>","circle-check":"<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/><path d=\"M9 12l2 2l4 -4\"/>","square-check":"<path d=\"M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14\"/><path d=\"M9 12l2 2l4 -4\"/>","arrow-back-up":"<path d=\"M9 14l-4 -4l4 -4\"/><path d=\"M5 10h11a4 4 0 1 1 0 8h-1\"/>","arrow-forward-up":"<path d=\"M15 14l4 -4l-4 -4\"/><path d=\"M19 10h-11a4 4 0 1 0 0 8h1\"/>","corner-down-right":"<path d=\"M6 6v6a3 3 0 0 0 3 3h10l-4 -4m0 8l4 -4\"/>","sunrise":"<path d=\"M3 17h1m16 0h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7m-9.7 5.7a4 4 0 0 1 8 0\"/><path d=\"M3 21l18 0\"/><path d=\"M12 9v-6l3 3m-6 0l3 -3\"/>","sunset":"<path d=\"M3 17h1m16 0h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7m-9.7 5.7a4 4 0 0 1 8 0\"/><path d=\"M3 21l18 0\"/><path d=\"M12 3v6l3 -3m-6 0l3 3\"/>","coffee":"<path d=\"M3 14c.83 .642 2.077 1.017 3.5 1c1.423 .017 2.67 -.358 3.5 -1c.83 -.642 2.077 -1.017 3.5 -1c1.423 -.017 2.67 .358 3.5 1\"/><path d=\"M8 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2\"/><path d=\"M12 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2\"/><path d=\"M3 10h14v5a6 6 0 0 1 -6 6h-2a6 6 0 0 1 -6 -6v-5\"/><path d=\"M16.746 16.726a3 3 0 1 0 .252 -5.555\"/>","briefcase":"<path d=\"M3 9a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2l0 -9\"/><path d=\"M8 7v-2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v2\"/><path d=\"M12 12l0 .01\"/><path d=\"M3 13a20 20 0 0 0 18 0\"/>","brain":"<path d=\"M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8\"/><path d=\"M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8\"/><path d=\"M17.5 16a3.5 3.5 0 0 0 0 -7h-.5\"/><path d=\"M19 9.3v-2.8a3.5 3.5 0 0 0 -7 0\"/><path d=\"M6.5 16a3.5 3.5 0 0 1 0 -7h.5\"/><path d=\"M5 9.3v-2.8a3.5 3.5 0 0 1 7 0v10\"/>","book":"<path d=\"M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0\"/><path d=\"M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0\"/><path d=\"M3 6l0 13\"/><path d=\"M12 6l0 13\"/><path d=\"M21 6l0 13\"/>","book-2":"<path d=\"M19 4v16h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12\"/><path d=\"M19 16h-12a2 2 0 0 0 -2 2\"/><path d=\"M9 8h6\"/>","school":"<path d=\"M22 9l-10 -4l-10 4l10 4l10 -4v6\"/><path d=\"M6 10.6v5.4a6 3 0 0 0 12 0v-5.4\"/>","barbell":"<path d=\"M2 12h1\"/><path d=\"M6 8h-2a1 1 0 0 0 -1 1v6a1 1 0 0 0 1 1h2\"/><path d=\"M6 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1\"/><path d=\"M9 12h6\"/><path d=\"M15 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1\"/><path d=\"M18 8h2a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-2\"/><path d=\"M22 12h-1\"/>","run":"<path d=\"M11.007 5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M4 17l5 1l.75 -1.5\"/><path d=\"M15 21v-4l-4 -3l1 -6\"/><path d=\"M7 12v-3l5 -1l3 3l3 1\"/>","yoga":"<path d=\"M4 20h4l1.5 -3\"/><path d=\"M17 20l-1 -5h-5l1 -7\"/><path d=\"M4 10l4 -1l4 -1l4 1.5l4 1.5\"/><path d=\"M10.007 5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/>","heart":"<path d=\"M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572\"/>","home":"<path d=\"M5 12l-2 0l9 -9l9 9l-2 0\"/><path d=\"M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7\"/><path d=\"M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6\"/>","users":"<path d=\"M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\"/><path d=\"M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/><path d=\"M21 21v-2a4 4 0 0 0 -3 -3.85\"/>","baby-carriage":"<path d=\"M6 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M16 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M2 5h2.5l1.632 4.897a6 6 0 0 0 5.693 4.103h2.675a5.5 5.5 0 0 0 0 -11h-.5v6\"/><path d=\"M6 9h14\"/><path d=\"M9 17l1 -3\"/><path d=\"M16 14l1 3\"/>","tools-kitchen-2":"<path d=\"M19 3v12h-5c-.023 -3.681 .184 -7.406 5 -12m0 12v6h-1v-3m-10 -14v17m-3 -17v3a3 3 0 1 0 6 0v-3\"/>","bowl":"<path d=\"M4 8h16a1 1 0 0 1 1 1v.5c0 1.5 -2.517 5.573 -4 6.5v1a1 1 0 0 1 -1 1h-8a1 1 0 0 1 -1 -1v-1c-1.687 -1.054 -4 -5 -4 -6.5v-.5a1 1 0 0 1 1 -1\"/>","bed":"<path d=\"M5 9a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M22 17v-3h-20\"/><path d=\"M2 8v9\"/><path d=\"M12 14h10v-2a3 3 0 0 0 -3 -3h-7v5\"/>","device-laptop":"<path d=\"M3 19l18 0\"/><path d=\"M5 7a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v8a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1l0 -8\"/>","code":"<path d=\"M7 8l-4 4l4 4\"/><path d=\"M17 8l4 4l-4 4\"/><path d=\"M14 4l-4 16\"/>","palette":"<path d=\"M12 21a9 9 0 0 1 0 -18c4.97 0 9 3.582 9 8c0 1.06 -.474 2.078 -1.318 2.828c-.844 .75 -1.989 1.172 -3.182 1.172h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25\"/><path d=\"M7.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M11.5 7.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M15.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/>","music":"<path d=\"M3 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/><path d=\"M13 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/><path d=\"M9 17v-13h10v13\"/><path d=\"M9 8h10\"/>","plant":"<path d=\"M7 15h10v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2v-4\"/><path d=\"M12 9a6 6 0 0 0 -6 -6h-3v2a6 6 0 0 0 6 6h3\"/><path d=\"M12 11a6 6 0 0 1 6 -6h3v1a6 6 0 0 1 -6 6h-3\"/><path d=\"M12 15l0 -6\"/>","walk":"<path d=\"M12 4a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M7 21l3 -4\"/><path d=\"M16 21l-2 -4l-3 -3l1 -6\"/><path d=\"M6 12l2 -3l4 -1l3 3l3 1\"/>","bike":"<path d=\"M2 18a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/><path d=\"M16 18a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/><path d=\"M12 19v-4l-3 -3l5 -4l2 3h3\"/><path d=\"M13.007 5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/>","car":"<path d=\"M5 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M15 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 -6h15m-6 0v-5\"/>","shopping-cart":"<path d=\"M4 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M15 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M17 17h-11v-14h-2\"/><path d=\"M6 5l14 1l-1 7h-13\"/>","mail":"<path d=\"M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10\"/><path d=\"M3 7l9 6l9 -6\"/>","phone":"<path d=\"M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2\"/>","message":"<path d=\"M8 9h8\"/><path d=\"M8 13h6\"/><path d=\"M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12\"/>","wallet":"<path d=\"M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12\"/><path d=\"M20 12v4h-4a2 2 0 0 1 0 -4h4\"/>","target":"<path d=\"M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0\"/><path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/>","focus-2":"<path d=\"M11.5 12a.5 .5 0 1 0 1 0a.5 .5 0 1 0 -1 0\" fill=\"currentColor\"/><path d=\"M5 12a7 7 0 1 0 14 0a7 7 0 1 0 -14 0\"/><path d=\"M12 3l0 2\"/><path d=\"M3 12l2 0\"/><path d=\"M12 19l0 2\"/><path d=\"M19 12l2 0\"/>","bulb":"<path d=\"M3 12h1m8 -9v1m8 8h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7\"/><path d=\"M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0 -1 3a2 2 0 0 1 -4 0a3.5 3.5 0 0 0 -1 -3\"/><path d=\"M9.7 17l4.6 0\"/>","notebook":"<path d=\"M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-11a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1m3 0v18\"/><path d=\"M13 8l2 0\"/><path d=\"M13 12l2 0\"/>","dog":"<path d=\"M11 5h2\"/><path d=\"M19 12c-.667 5.333 -2.333 8 -5 8h-4c-2.667 0 -4.333 -2.667 -5 -8\"/><path d=\"M11 16c0 .667 .333 1 1 1s1 -.333 1 -1h-2\"/><path d=\"M12 18v2\"/><path d=\"M10 11v.01\"/><path d=\"M14 11v.01\"/><path d=\"M5 4l6 .97l-6.238 6.688a1.021 1.021 0 0 1 -1.41 .111a.953 .953 0 0 1 -.327 -.954l1.975 -6.815\"/><path d=\"M19 4l-6 .97l6.238 6.688c.358 .408 .989 .458 1.41 .111a.953 .953 0 0 0 .327 -.954l-1.975 -6.815\"/>","first-aid-kit":"<path d=\"M8 8v-2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v2\"/><path d=\"M4 10a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -8\"/><path d=\"M10 14h4\"/><path d=\"M12 12v4\"/>","pill":"<path d=\"M4.5 12.5l8 -8a4.94 4.94 0 0 1 7 7l-8 8a4.94 4.94 0 0 1 -7 -7\"/><path d=\"M8.5 8.5l7 7\"/>","bath":"<path d=\"M4 12h16a1 1 0 0 1 1 1v3a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-3a1 1 0 0 1 1 -1\"/><path d=\"M6 12v-7a2 2 0 0 1 2 -2h3v2.25\"/><path d=\"M4 21l1 -1.5\"/><path d=\"M20 21l-1 -1.5\"/>","clipboard-list":"<path d=\"M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2\"/><path d=\"M9 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2\"/><path d=\"M9 12l.01 0\"/><path d=\"M13 12l2 0\"/><path d=\"M9 16l.01 0\"/><path d=\"M13 16l2 0\"/>","checklist":"<path d=\"M9.615 20h-2.615a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8\"/><path d=\"M14 19l2 2l4 -4\"/><path d=\"M9 8h4\"/><path d=\"M9 12h2\"/>","stretching":"<path d=\"M15 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M5 20l5 -.5l1 -2\"/><path d=\"M18 20v-5h-5.5l2.5 -6.5l-5.5 1l1.5 2\"/>","headphones":"<path d=\"M4 15a2 2 0 0 1 2 -2h1a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-1a2 2 0 0 1 -2 -2l0 -3\"/><path d=\"M15 15a2 2 0 0 1 2 -2h1a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-1a2 2 0 0 1 -2 -2l0 -3\"/><path d=\"M4 15v-3a8 8 0 0 1 16 0v3\"/>","device-tv":"<path d=\"M3 9a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2l0 -9\"/><path d=\"M16 3l-4 4l-4 -4\"/>","device-gamepad-2":"<path d=\"M12 5h3.5a5 5 0 0 1 0 10h-5.5l-4.015 4.227a2.3 2.3 0 0 1 -3.923 -2.035l1.634 -8.173a5 5 0 0 1 4.904 -4.019h3.4\"/><path d=\"M14 15l4.07 4.284a2.3 2.3 0 0 0 3.925 -2.023l-1.6 -8.232\"/><path d=\"M8 9v2\"/><path d=\"M7 10h2\"/><path d=\"M14 10h2\"/>","device-mobile":"<path d=\"M6 5a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-14\"/><path d=\"M11 4h2\"/><path d=\"M12 17v.01\"/>","armchair":"<path d=\"M5 11a2 2 0 0 1 2 2v2h10v-2a2 2 0 1 1 4 0v4a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-4a2 2 0 0 1 2 -2\"/><path d=\"M5 11v-5a3 3 0 0 1 3 -3h8a3 3 0 0 1 3 3v5\"/><path d=\"M6 19v2\"/><path d=\"M18 19v2\"/>","mood-smile":"<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/><path d=\"M9 10l.01 0\"/><path d=\"M15 10l.01 0\"/><path d=\"M9.5 15a3.5 3.5 0 0 0 5 0\"/>","users-group":"<path d=\"M10 13a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\"/><path d=\"M8 21v-1a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v1\"/><path d=\"M15 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\"/><path d=\"M17 10h2a2 2 0 0 1 2 2v1\"/><path d=\"M5 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\"/><path d=\"M3 13v-1a2 2 0 0 1 2 -2h2\"/>","pray":"<path d=\"M11 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M7 20h8l-4 -4v-7l4 3l2 -2\"/>","map-2":"<path d=\"M12 18.5l-3 -1.5l-6 3v-13l6 -3l6 3l6 -3v7.5\"/><path d=\"M9 4v13\"/><path d=\"M15 7v5.5\"/><path d=\"M21.121 20.121a3 3 0 1 0 -4.242 0c.418 .419 1.125 1.045 2.121 1.879c1.051 -.89 1.759 -1.516 2.121 -1.879\"/><path d=\"M19 18v.01\"/>","tree":"<path d=\"M12 13l-2 -2\"/><path d=\"M12 12l2 -2\"/><path d=\"M12 21v-13\"/><path d=\"M9.824 16a3 3 0 0 1 -2.743 -3.69a3 3 0 0 1 .304 -4.833a3 3 0 0 1 4.615 -3.707a3 3 0 0 1 4.614 3.707a3 3 0 0 1 .305 4.833a3 3 0 0 1 -2.919 3.695h-4l-.176 -.005\"/>","cup":"<path d=\"M5 11h14v-3h-14l0 3\"/><path d=\"M17.5 11l-1.5 10h-8l-1.5 -10\"/><path d=\"M6 8v-1a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v1\"/><path d=\"M15 5v-2\"/>","sofa":"<path d=\"M4 11a2 2 0 0 1 2 2v1h12v-1a2 2 0 1 1 4 0v5a1 1 0 0 1 -1 1h-18a1 1 0 0 1 -1 -1v-5a2 2 0 0 1 2 -2\"/><path d=\"M4 11v-3a3 3 0 0 1 3 -3h10a3 3 0 0 1 3 3v3\"/><path d=\"M12 5v9\"/>","writing":"<path d=\"M20 17v-12c0 -1.121 -.879 -2 -2 -2s-2 .879 -2 2v12l2 2l2 -2\"/><path d=\"M16 7h4\"/><path d=\"M18 19h-13a2 2 0 1 1 0 -4h4a2 2 0 1 0 0 -4h-3\"/>","ballpen":"<path d=\"M14 6l7 7l-4 4\"/><path d=\"M5.828 18.172a2.828 2.828 0 0 0 4 0l10.586 -10.586a2 2 0 0 0 0 -2.829l-1.171 -1.171a2 2 0 0 0 -2.829 0l-10.586 10.586a2.828 2.828 0 0 0 0 4\"/><path d=\"M4 20l1.768 -1.768\"/>","calculator":"<path d=\"M4 5a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -14\"/><path d=\"M8 8a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1l0 -1\"/><path d=\"M8 14l0 .01\"/><path d=\"M12 14l0 .01\"/><path d=\"M16 14l0 .01\"/><path d=\"M8 17l0 .01\"/><path d=\"M12 17l0 .01\"/><path d=\"M16 17l0 .01\"/>","brush":"<path d=\"M3 21v-4a4 4 0 1 1 4 4h-4\"/><path d=\"M21 3a16 16 0 0 0 -12.8 10.2\"/><path d=\"M21 3a16 16 0 0 1 -10.2 12.8\"/><path d=\"M10.6 9a9 9 0 0 1 4.4 4.4\"/>","camera":"<path d=\"M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2\"/><path d=\"M9 13a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/>","presentation":"<path d=\"M3 4l18 0\"/><path d=\"M4 4v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-10\"/><path d=\"M12 16l0 4\"/><path d=\"M9 20l6 0\"/><path d=\"M8 12l3 -3l2 2l3 -3\"/>","report-analytics":"<path d=\"M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2\"/><path d=\"M9 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2\"/><path d=\"M9 17v-5\"/><path d=\"M12 17v-1\"/><path d=\"M15 17v-3\"/>","droplet":"<path d=\"M7.502 19.423c2.602 2.105 6.395 2.105 8.996 0c2.602 -2.105 3.262 -5.708 1.566 -8.546l-4.89 -7.26c-.42 -.625 -1.287 -.803 -1.936 -.397a1.376 1.376 0 0 0 -.41 .397l-4.893 7.26c-1.695 2.838 -1.035 6.441 1.567 8.546\"/>","salad":"<path d=\"M4 11h16a1 1 0 0 1 1 1v.5c0 1.5 -2.517 5.573 -4 6.5v1a1 1 0 0 1 -1 1h-8a1 1 0 0 1 -1 -1v-1c-1.687 -1.054 -4 -5 -4 -6.5v-.5a1 1 0 0 1 1 -1\"/><path d=\"M18.5 11c.351 -1.017 .426 -2.236 .5 -3.714v-1.286h-2.256c-2.83 0 -4.616 .804 -5.64 2.076\"/><path d=\"M5.255 11.008a12.204 12.204 0 0 1 -.255 -2.008v-1h1.755c.98 0 1.801 .124 2.479 .35\"/><path d=\"M8 8l1 -4l4 2.5\"/><path d=\"M13 11v-.5a2.5 2.5 0 1 0 -5 0v.5\"/>","soup":"<path d=\"M4 11h16a1 1 0 0 1 1 1v.5c0 1.5 -2.517 5.573 -4 6.5v1a1 1 0 0 1 -1 1h-8a1 1 0 0 1 -1 -1v-1c-1.687 -1.054 -4 -5 -4 -6.5v-.5a1 1 0 0 1 1 -1\"/><path d=\"M12 4a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2\"/><path d=\"M16 4a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2\"/><path d=\"M8 4a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2\"/>","glass":"<path d=\"M8 21h8\"/><path d=\"M12 16v5\"/><path d=\"M17 5l1 6c0 3.012 -2.686 5 -6 5s-6 -1.988 -6 -5l1 -6\"/><path d=\"M7 5a5 2 0 1 0 10 0a5 2 0 1 0 -10 0\"/>","bucket":"<path d=\"M4 7a8 4 0 1 0 16 0a8 4 0 1 0 -16 0\"/><path d=\"M4 7c0 .664 .088 1.324 .263 1.965l2.737 10.035c.5 1.5 2.239 2 5 2s4.5 -.5 5 -2c.333 -1 1.246 -4.345 2.737 -10.035a7.45 7.45 0 0 0 .263 -1.965\"/>","wash":"<path d=\"M3.486 8.965c.168 .02 .34 .033 .514 .035c.79 .009 1.539 -.178 2 -.5c.461 -.32 1.21 -.507 2 -.5c.79 -.007 1.539 .18 2 .5c.461 .322 1.21 .509 2 .5c.79 .009 1.539 -.178 2 -.5c.461 -.32 1.21 -.507 2 -.5c.79 -.007 1.539 .18 2 .5c.461 .322 1.21 .509 2 .5c.17 0 .339 -.014 .503 -.034\"/><path d=\"M3 6l1.721 10.329a2 2 0 0 0 1.973 1.671h10.612a2 2 0 0 0 1.973 -1.671l1.721 -10.329\"/>","spray":"<path d=\"M4 12a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-4a2 2 0 0 1 -2 -2l0 -7\"/><path d=\"M6 10v-4a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v4\"/><path d=\"M15 7h.01\"/><path d=\"M18 9h.01\"/><path d=\"M18 5h.01\"/><path d=\"M21 3h.01\"/><path d=\"M21 7h.01\"/><path d=\"M21 11h.01\"/><path d=\"M10 7h1\"/>","meat":"<path d=\"M13.62 8.382l1.966 -1.967a2 2 0 1 1 3.414 -1.415a2 2 0 1 1 -1.413 3.414l-1.82 1.821\"/><path d=\"M5.904 18.596c2.733 2.734 5.9 4 7.07 2.829c1.172 -1.172 -.094 -4.338 -2.828 -7.071c-2.733 -2.734 -5.9 -4 -7.07 -2.829c-1.172 1.172 .094 4.338 2.828 7.071\"/><path d=\"M7.5 16l1 1\"/><path d=\"M12.975 21.425c3.905 -3.906 4.855 -9.288 2.121 -12.021c-2.733 -2.734 -8.115 -1.784 -12.02 2.121\"/>","stretching-2":"<path d=\"M6.5 21l3.5 -5\"/><path d=\"M5 11l7 -2\"/><path d=\"M16 21l-4 -7v-5l7 -4\"/><path d=\"M9.007 6a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/>","swimming":"<path d=\"M15 9a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M6 11l4 -2l3.5 3l-1.5 2\"/><path d=\"M3 16.75a2.4 2.4 0 0 0 1 .25a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 1 -.25\"/>","tent":"<path d=\"M11 14l4 6h6l-9 -16l-9 16h6l4 -6\"/>","ear":"<path d=\"M6 10a7 7 0 1 1 13 3.6a10 10 0 0 1 -2 2a8 8 0 0 0 -2 3a4.5 4.5 0 0 1 -6.8 1.4\"/><path d=\"M10 10a3 3 0 1 1 5 2.2\"/>","mood-happy":"<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/><path d=\"M9 9l.01 0\"/><path d=\"M15 9l.01 0\"/><path d=\"M8 13a4 4 0 1 0 8 0h-8\"/>","hand-stop":"<path d=\"M8 13v-7.5a1.5 1.5 0 0 1 3 0v6.5\"/><path d=\"M11 5.5v-2a1.5 1.5 0 1 1 3 0v8.5\"/><path d=\"M14 5.5a1.5 1.5 0 0 1 3 0v6.5\"/><path d=\"M17 7.5a1.5 1.5 0 0 1 3 0v8.5a6 6 0 0 1 -6 6h-2h.208a6 6 0 0 1 -5.012 -2.7a69.74 69.74 0 0 1 -.196 -.3c-.312 -.479 -1.407 -2.388 -3.286 -5.728a1.5 1.5 0 0 1 .536 -2.022a1.867 1.867 0 0 1 2.28 .28l1.47 1.47\"/>","eye-off":"<path d=\"M10.585 10.587a2 2 0 0 0 2.829 2.828\"/><path d=\"M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87\"/><path d=\"M3 3l18 18\"/>","zzz":"<path d=\"M4 12h6l-6 8h6\"/><path d=\"M14 4h6l-6 8h6\"/>","anchor":"<path d=\"M12 9v12m-8 -8a8 8 0 0 0 16 0m1 0h-2m-14 0h-2\"/><path d=\"M9 6a3 3 0 1 0 6 0a3 3 0 1 0 -6 0\"/>","tag":"<path d=\"M6.5 7.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M3 6v5.172a2 2 0 0 0 .586 1.414l7.71 7.71a2.41 2.41 0 0 0 3.408 0l5.592 -5.592a2.41 2.41 0 0 0 0 -3.408l-7.71 -7.71a2 2 0 0 0 -1.414 -.586h-5.172a3 3 0 0 0 -3 3\"/>","box":"<path d=\"M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5\"/><path d=\"M12 12l8 -4.5\"/><path d=\"M12 12l0 9\"/><path d=\"M12 12l-8 -4.5\"/>"};
+const ICONS = {"star":"<path d=\"M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245\"/>","flag":"<path d=\"M5 5a5 5 0 0 1 7 0a5 5 0 0 0 7 0v9a5 5 0 0 1 -7 0a5 5 0 0 0 -7 0v-9\"/><path d=\"M5 21v-7\"/>","compass":"<path d=\"M8 16l2 -6l6 -2l-2 6l-6 2\"/><path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/><path d=\"M12 3l0 2\"/><path d=\"M12 19l0 2\"/><path d=\"M3 12l2 0\"/><path d=\"M19 12l2 0\"/>","mountain":"<path d=\"M3 20h18l-6.921 -14.612a2.3 2.3 0 0 0 -4.158 0l-6.921 14.612\"/><path d=\"M7.5 11l2 2.5l2.5 -2.5l2 3l2.5 -2\"/>","list-check":"<path d=\"M3.5 5.5l1.5 1.5l2.5 -2.5\"/><path d=\"M3.5 11.5l1.5 1.5l2.5 -2.5\"/><path d=\"M3.5 17.5l1.5 1.5l2.5 -2.5\"/><path d=\"M11 6l9 0\"/><path d=\"M11 12l9 0\"/><path d=\"M11 18l9 0\"/>","route":"<path d=\"M3 19a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\"/><path d=\"M19 7a2 2 0 1 0 0 -4a2 2 0 0 0 0 4\"/><path d=\"M11 19h5.5a3.5 3.5 0 0 0 0 -7h-8a3.5 3.5 0 0 1 0 -7h4.5\"/>","arrow-up-right":"<path d=\"M17 7l-10 10\"/><path d=\"M8 7l9 0l0 9\"/>","circle-dot":"<path d=\"M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/>","pencil":"<path d=\"M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4\"/><path d=\"M13.5 6.5l4 4\"/>","eye":"<path d=\"M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\"/><path d=\"M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6\"/>","settings":"<path d=\"M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065\"/><path d=\"M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/>","check":"<path d=\"M5 12l5 5l10 -10\"/>","plus":"<path d=\"M12 5l0 14\"/><path d=\"M5 12l14 0\"/>","x":"<path d=\"M18 6l-12 12\"/><path d=\"M6 6l12 12\"/>","chevron-left":"<path d=\"M15 6l-6 6l6 6\"/>","chevron-right":"<path d=\"M9 6l6 6l-6 6\"/>","chevron-down":"<path d=\"M6 9l6 6l6 -6\"/>","clock":"<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0\"/><path d=\"M12 7v5l3 3\"/>","bell":"<path d=\"M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6\"/><path d=\"M9 17v1a3 3 0 0 0 6 0v-1\"/>","bell-off":"<path d=\"M9.346 5.353c.21 -.129 .428 -.246 .654 -.353a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3m-1 3h-13a4 4 0 0 0 2 -3v-3a6.996 6.996 0 0 1 1.273 -3.707\"/><path d=\"M9 17v1a3 3 0 0 0 6 0v-1\"/><path d=\"M3 3l18 18\"/>","bell-ringing":"<path d=\"M10 5a2 2 0 0 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6\"/><path d=\"M9 17v1a3 3 0 0 0 6 0v-1\"/><path d=\"M21 6.727a11.05 11.05 0 0 0 -2.794 -3.727\"/><path d=\"M3 6.727a11.05 11.05 0 0 1 2.792 -3.727\"/>","calendar-event":"<path d=\"M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12\"/><path d=\"M16 3l0 4\"/><path d=\"M8 3l0 4\"/><path d=\"M4 11l16 0\"/><path d=\"M8 15h2v2h-2l0 -2\"/>","calendar-plus":"<path d=\"M12.5 21h-6.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v5\"/><path d=\"M16 3v4\"/><path d=\"M8 3v4\"/><path d=\"M4 11h16\"/><path d=\"M16 19h6\"/><path d=\"M19 16v6\"/>","calendar":"<path d=\"M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12\"/><path d=\"M16 3v4\"/><path d=\"M8 3v4\"/><path d=\"M4 11h16\"/><path d=\"M11 15h1\"/><path d=\"M12 15v3\"/>","microphone":"<path d=\"M9 5a3 3 0 0 1 3 -3a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3a3 3 0 0 1 -3 -3l0 -5\"/><path d=\"M5 10a7 7 0 0 0 14 0\"/><path d=\"M8 21l8 0\"/><path d=\"M12 17l0 4\"/>","trash":"<path d=\"M4 7l16 0\"/><path d=\"M10 11l0 6\"/><path d=\"M14 11l0 6\"/><path d=\"M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12\"/><path d=\"M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3\"/>","pencil":"<path d=\"M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4\"/><path d=\"M13.5 6.5l4 4\"/>","dots":"<path d=\"M4 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M18 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/>","arrow-right":"<path d=\"M5 12l14 0\"/><path d=\"M13 18l6 -6\"/><path d=\"M13 6l6 6\"/>","player-play":"<path d=\"M7 4v16l13 -8l-13 -8\"/>","refresh":"<path d=\"M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4\"/><path d=\"M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4\"/>","download":"<path d=\"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2\"/><path d=\"M7 11l5 5l5 -5\"/><path d=\"M12 4l0 12\"/>","upload":"<path d=\"M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2\"/><path d=\"M7 9l5 -5l5 5\"/><path d=\"M12 4l0 12\"/>","sun":"<path d=\"M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\"/><path d=\"M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7\"/>","moon":"<path d=\"M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008\"/>","sparkles":"<path d=\"M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2m0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2m-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6\"/>","inbox":"<path d=\"M4 6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12\"/><path d=\"M4 13h3l3 3h4l3 -3h3\"/>","archive":"<path d=\"M3 6a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2\"/><path d=\"M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10\"/><path d=\"M10 12l4 0\"/>","layout-rows":"<path d=\"M4 6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12\"/><path d=\"M4 12l16 0\"/>","chart-bar":"<path d=\"M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6\"/><path d=\"M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10\"/><path d=\"M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14\"/><path d=\"M4 20h14\"/>","leaf":"<path d=\"M5 21c.5 -4.5 2.5 -8 7 -10\"/><path d=\"M9 18c6.218 0 10.5 -3.288 11 -12v-2h-4.014c-9 0 -11.986 4 -12 9c0 1 0 3 2 5h3l.014 0\"/>","feather":"<path d=\"M4 20l10 -10m0 -5v5h5m-9 -1v5h5m-9 -1v5h5m-5 -5l4 -4l4 -4\"/><path d=\"M19 10c.638 -.636 1 -1.515 1 -2.486a3.515 3.515 0 0 0 -3.517 -3.514c-.97 0 -1.847 .367 -2.483 1m-3 13l4 -4l4 -4\"/>","hourglass":"<path d=\"M6.5 7h11\"/><path d=\"M6.5 17h11\"/><path d=\"M6 20v-2a6 6 0 1 1 12 0v2a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1\"/><path d=\"M6 4v2a6 6 0 1 0 12 0v-2a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1\"/>","hourglass-low":"<path d=\"M6.5 17h11\"/><path d=\"M6 20v-2a6 6 0 1 1 12 0v2a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1\"/><path d=\"M6 4v2a6 6 0 1 0 12 0v-2a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1\"/>","circle":"<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/>","circle-check":"<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/><path d=\"M9 12l2 2l4 -4\"/>","square-check":"<path d=\"M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14\"/><path d=\"M9 12l2 2l4 -4\"/>","arrow-back-up":"<path d=\"M9 14l-4 -4l4 -4\"/><path d=\"M5 10h11a4 4 0 1 1 0 8h-1\"/>","arrow-forward-up":"<path d=\"M15 14l4 -4l-4 -4\"/><path d=\"M19 10h-11a4 4 0 1 0 0 8h1\"/>","corner-down-right":"<path d=\"M6 6v6a3 3 0 0 0 3 3h10l-4 -4m0 8l4 -4\"/>","sunrise":"<path d=\"M3 17h1m16 0h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7m-9.7 5.7a4 4 0 0 1 8 0\"/><path d=\"M3 21l18 0\"/><path d=\"M12 9v-6l3 3m-6 0l3 -3\"/>","sunset":"<path d=\"M3 17h1m16 0h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7m-9.7 5.7a4 4 0 0 1 8 0\"/><path d=\"M3 21l18 0\"/><path d=\"M12 3v6l3 -3m-6 0l3 3\"/>","coffee":"<path d=\"M3 14c.83 .642 2.077 1.017 3.5 1c1.423 .017 2.67 -.358 3.5 -1c.83 -.642 2.077 -1.017 3.5 -1c1.423 -.017 2.67 .358 3.5 1\"/><path d=\"M8 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2\"/><path d=\"M12 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2\"/><path d=\"M3 10h14v5a6 6 0 0 1 -6 6h-2a6 6 0 0 1 -6 -6v-5\"/><path d=\"M16.746 16.726a3 3 0 1 0 .252 -5.555\"/>","briefcase":"<path d=\"M3 9a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2l0 -9\"/><path d=\"M8 7v-2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v2\"/><path d=\"M12 12l0 .01\"/><path d=\"M3 13a20 20 0 0 0 18 0\"/>","brain":"<path d=\"M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8\"/><path d=\"M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8\"/><path d=\"M17.5 16a3.5 3.5 0 0 0 0 -7h-.5\"/><path d=\"M19 9.3v-2.8a3.5 3.5 0 0 0 -7 0\"/><path d=\"M6.5 16a3.5 3.5 0 0 1 0 -7h.5\"/><path d=\"M5 9.3v-2.8a3.5 3.5 0 0 1 7 0v10\"/>","book":"<path d=\"M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0\"/><path d=\"M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0\"/><path d=\"M3 6l0 13\"/><path d=\"M12 6l0 13\"/><path d=\"M21 6l0 13\"/>","book-2":"<path d=\"M19 4v16h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12\"/><path d=\"M19 16h-12a2 2 0 0 0 -2 2\"/><path d=\"M9 8h6\"/>","school":"<path d=\"M22 9l-10 -4l-10 4l10 4l10 -4v6\"/><path d=\"M6 10.6v5.4a6 3 0 0 0 12 0v-5.4\"/>","barbell":"<path d=\"M2 12h1\"/><path d=\"M6 8h-2a1 1 0 0 0 -1 1v6a1 1 0 0 0 1 1h2\"/><path d=\"M6 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1\"/><path d=\"M9 12h6\"/><path d=\"M15 7v10a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-10a1 1 0 0 0 -1 -1h-1a1 1 0 0 0 -1 1\"/><path d=\"M18 8h2a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-2\"/><path d=\"M22 12h-1\"/>","run":"<path d=\"M11.007 5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M4 17l5 1l.75 -1.5\"/><path d=\"M15 21v-4l-4 -3l1 -6\"/><path d=\"M7 12v-3l5 -1l3 3l3 1\"/>","yoga":"<path d=\"M4 20h4l1.5 -3\"/><path d=\"M17 20l-1 -5h-5l1 -7\"/><path d=\"M4 10l4 -1l4 -1l4 1.5l4 1.5\"/><path d=\"M10.007 5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/>","heart":"<path d=\"M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572\"/>","home":"<path d=\"M5 12l-2 0l9 -9l9 9l-2 0\"/><path d=\"M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7\"/><path d=\"M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6\"/>","users":"<path d=\"M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\"/><path d=\"M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/><path d=\"M21 21v-2a4 4 0 0 0 -3 -3.85\"/>","baby-carriage":"<path d=\"M6 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M16 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M2 5h2.5l1.632 4.897a6 6 0 0 0 5.693 4.103h2.675a5.5 5.5 0 0 0 0 -11h-.5v6\"/><path d=\"M6 9h14\"/><path d=\"M9 17l1 -3\"/><path d=\"M16 14l1 3\"/>","tools-kitchen-2":"<path d=\"M19 3v12h-5c-.023 -3.681 .184 -7.406 5 -12m0 12v6h-1v-3m-10 -14v17m-3 -17v3a3 3 0 1 0 6 0v-3\"/>","bowl":"<path d=\"M4 8h16a1 1 0 0 1 1 1v.5c0 1.5 -2.517 5.573 -4 6.5v1a1 1 0 0 1 -1 1h-8a1 1 0 0 1 -1 -1v-1c-1.687 -1.054 -4 -5 -4 -6.5v-.5a1 1 0 0 1 1 -1\"/>","bed":"<path d=\"M5 9a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M22 17v-3h-20\"/><path d=\"M2 8v9\"/><path d=\"M12 14h10v-2a3 3 0 0 0 -3 -3h-7v5\"/>","device-laptop":"<path d=\"M3 19l18 0\"/><path d=\"M5 7a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v8a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1l0 -8\"/>","code":"<path d=\"M7 8l-4 4l4 4\"/><path d=\"M17 8l4 4l-4 4\"/><path d=\"M14 4l-4 16\"/>","palette":"<path d=\"M12 21a9 9 0 0 1 0 -18c4.97 0 9 3.582 9 8c0 1.06 -.474 2.078 -1.318 2.828c-.844 .75 -1.989 1.172 -3.182 1.172h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25\"/><path d=\"M7.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M11.5 7.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M15.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/>","music":"<path d=\"M3 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/><path d=\"M13 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/><path d=\"M9 17v-13h10v13\"/><path d=\"M9 8h10\"/>","plant":"<path d=\"M7 15h10v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2v-4\"/><path d=\"M12 9a6 6 0 0 0 -6 -6h-3v2a6 6 0 0 0 6 6h3\"/><path d=\"M12 11a6 6 0 0 1 6 -6h3v1a6 6 0 0 1 -6 6h-3\"/><path d=\"M12 15l0 -6\"/>","walk":"<path d=\"M12 4a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M7 21l3 -4\"/><path d=\"M16 21l-2 -4l-3 -3l1 -6\"/><path d=\"M6 12l2 -3l4 -1l3 3l3 1\"/>","bike":"<path d=\"M2 18a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/><path d=\"M16 18a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/><path d=\"M12 19v-4l-3 -3l5 -4l2 3h3\"/><path d=\"M13.007 5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/>","car":"<path d=\"M5 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M15 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 -6h15m-6 0v-5\"/>","shopping-cart":"<path d=\"M4 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M15 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/><path d=\"M17 17h-11v-14h-2\"/><path d=\"M6 5l14 1l-1 7h-13\"/>","mail":"<path d=\"M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10\"/><path d=\"M3 7l9 6l9 -6\"/>","phone":"<path d=\"M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2\"/>","message":"<path d=\"M8 9h8\"/><path d=\"M8 13h6\"/><path d=\"M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12\"/>","wallet":"<path d=\"M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12\"/><path d=\"M20 12v4h-4a2 2 0 0 1 0 -4h4\"/>","target":"<path d=\"M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0\"/><path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/>","focus-2":"<path d=\"M11.5 12a.5 .5 0 1 0 1 0a.5 .5 0 1 0 -1 0\" fill=\"currentColor\"/><path d=\"M5 12a7 7 0 1 0 14 0a7 7 0 1 0 -14 0\"/><path d=\"M12 3l0 2\"/><path d=\"M3 12l2 0\"/><path d=\"M12 19l0 2\"/><path d=\"M19 12l2 0\"/>","bulb":"<path d=\"M3 12h1m8 -9v1m8 8h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7\"/><path d=\"M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0 -1 3a2 2 0 0 1 -4 0a3.5 3.5 0 0 0 -1 -3\"/><path d=\"M9.7 17l4.6 0\"/>","notebook":"<path d=\"M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-11a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1m3 0v18\"/><path d=\"M13 8l2 0\"/><path d=\"M13 12l2 0\"/>","dog":"<path d=\"M11 5h2\"/><path d=\"M19 12c-.667 5.333 -2.333 8 -5 8h-4c-2.667 0 -4.333 -2.667 -5 -8\"/><path d=\"M11 16c0 .667 .333 1 1 1s1 -.333 1 -1h-2\"/><path d=\"M12 18v2\"/><path d=\"M10 11v.01\"/><path d=\"M14 11v.01\"/><path d=\"M5 4l6 .97l-6.238 6.688a1.021 1.021 0 0 1 -1.41 .111a.953 .953 0 0 1 -.327 -.954l1.975 -6.815\"/><path d=\"M19 4l-6 .97l6.238 6.688c.358 .408 .989 .458 1.41 .111a.953 .953 0 0 0 .327 -.954l-1.975 -6.815\"/>","first-aid-kit":"<path d=\"M8 8v-2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v2\"/><path d=\"M4 10a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -8\"/><path d=\"M10 14h4\"/><path d=\"M12 12v4\"/>","pill":"<path d=\"M4.5 12.5l8 -8a4.94 4.94 0 0 1 7 7l-8 8a4.94 4.94 0 0 1 -7 -7\"/><path d=\"M8.5 8.5l7 7\"/>","bath":"<path d=\"M4 12h16a1 1 0 0 1 1 1v3a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-3a1 1 0 0 1 1 -1\"/><path d=\"M6 12v-7a2 2 0 0 1 2 -2h3v2.25\"/><path d=\"M4 21l1 -1.5\"/><path d=\"M20 21l-1 -1.5\"/>","clipboard-list":"<path d=\"M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2\"/><path d=\"M9 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2\"/><path d=\"M9 12l.01 0\"/><path d=\"M13 12l2 0\"/><path d=\"M9 16l.01 0\"/><path d=\"M13 16l2 0\"/>","checklist":"<path d=\"M9.615 20h-2.615a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8\"/><path d=\"M14 19l2 2l4 -4\"/><path d=\"M9 8h4\"/><path d=\"M9 12h2\"/>","stretching":"<path d=\"M15 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M5 20l5 -.5l1 -2\"/><path d=\"M18 20v-5h-5.5l2.5 -6.5l-5.5 1l1.5 2\"/>","headphones":"<path d=\"M4 15a2 2 0 0 1 2 -2h1a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-1a2 2 0 0 1 -2 -2l0 -3\"/><path d=\"M15 15a2 2 0 0 1 2 -2h1a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-1a2 2 0 0 1 -2 -2l0 -3\"/><path d=\"M4 15v-3a8 8 0 0 1 16 0v3\"/>","device-tv":"<path d=\"M3 9a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2l0 -9\"/><path d=\"M16 3l-4 4l-4 -4\"/>","device-gamepad-2":"<path d=\"M12 5h3.5a5 5 0 0 1 0 10h-5.5l-4.015 4.227a2.3 2.3 0 0 1 -3.923 -2.035l1.634 -8.173a5 5 0 0 1 4.904 -4.019h3.4\"/><path d=\"M14 15l4.07 4.284a2.3 2.3 0 0 0 3.925 -2.023l-1.6 -8.232\"/><path d=\"M8 9v2\"/><path d=\"M7 10h2\"/><path d=\"M14 10h2\"/>","device-mobile":"<path d=\"M6 5a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-14\"/><path d=\"M11 4h2\"/><path d=\"M12 17v.01\"/>","armchair":"<path d=\"M5 11a2 2 0 0 1 2 2v2h10v-2a2 2 0 1 1 4 0v4a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-4a2 2 0 0 1 2 -2\"/><path d=\"M5 11v-5a3 3 0 0 1 3 -3h8a3 3 0 0 1 3 3v5\"/><path d=\"M6 19v2\"/><path d=\"M18 19v2\"/>","mood-smile":"<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/><path d=\"M9 10l.01 0\"/><path d=\"M15 10l.01 0\"/><path d=\"M9.5 15a3.5 3.5 0 0 0 5 0\"/>","users-group":"<path d=\"M10 13a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\"/><path d=\"M8 21v-1a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v1\"/><path d=\"M15 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\"/><path d=\"M17 10h2a2 2 0 0 1 2 2v1\"/><path d=\"M5 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0\"/><path d=\"M3 13v-1a2 2 0 0 1 2 -2h2\"/>","pray":"<path d=\"M11 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M7 20h8l-4 -4v-7l4 3l2 -2\"/>","map-2":"<path d=\"M12 18.5l-3 -1.5l-6 3v-13l6 -3l6 3l6 -3v7.5\"/><path d=\"M9 4v13\"/><path d=\"M15 7v5.5\"/><path d=\"M21.121 20.121a3 3 0 1 0 -4.242 0c.418 .419 1.125 1.045 2.121 1.879c1.051 -.89 1.759 -1.516 2.121 -1.879\"/><path d=\"M19 18v.01\"/>","tree":"<path d=\"M12 13l-2 -2\"/><path d=\"M12 12l2 -2\"/><path d=\"M12 21v-13\"/><path d=\"M9.824 16a3 3 0 0 1 -2.743 -3.69a3 3 0 0 1 .304 -4.833a3 3 0 0 1 4.615 -3.707a3 3 0 0 1 4.614 3.707a3 3 0 0 1 .305 4.833a3 3 0 0 1 -2.919 3.695h-4l-.176 -.005\"/>","cup":"<path d=\"M5 11h14v-3h-14l0 3\"/><path d=\"M17.5 11l-1.5 10h-8l-1.5 -10\"/><path d=\"M6 8v-1a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v1\"/><path d=\"M15 5v-2\"/>","sofa":"<path d=\"M4 11a2 2 0 0 1 2 2v1h12v-1a2 2 0 1 1 4 0v5a1 1 0 0 1 -1 1h-18a1 1 0 0 1 -1 -1v-5a2 2 0 0 1 2 -2\"/><path d=\"M4 11v-3a3 3 0 0 1 3 -3h10a3 3 0 0 1 3 3v3\"/><path d=\"M12 5v9\"/>","writing":"<path d=\"M20 17v-12c0 -1.121 -.879 -2 -2 -2s-2 .879 -2 2v12l2 2l2 -2\"/><path d=\"M16 7h4\"/><path d=\"M18 19h-13a2 2 0 1 1 0 -4h4a2 2 0 1 0 0 -4h-3\"/>","ballpen":"<path d=\"M14 6l7 7l-4 4\"/><path d=\"M5.828 18.172a2.828 2.828 0 0 0 4 0l10.586 -10.586a2 2 0 0 0 0 -2.829l-1.171 -1.171a2 2 0 0 0 -2.829 0l-10.586 10.586a2.828 2.828 0 0 0 0 4\"/><path d=\"M4 20l1.768 -1.768\"/>","calculator":"<path d=\"M4 5a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -14\"/><path d=\"M8 8a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1l0 -1\"/><path d=\"M8 14l0 .01\"/><path d=\"M12 14l0 .01\"/><path d=\"M16 14l0 .01\"/><path d=\"M8 17l0 .01\"/><path d=\"M12 17l0 .01\"/><path d=\"M16 17l0 .01\"/>","brush":"<path d=\"M3 21v-4a4 4 0 1 1 4 4h-4\"/><path d=\"M21 3a16 16 0 0 0 -12.8 10.2\"/><path d=\"M21 3a16 16 0 0 1 -10.2 12.8\"/><path d=\"M10.6 9a9 9 0 0 1 4.4 4.4\"/>","camera":"<path d=\"M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2\"/><path d=\"M9 13a3 3 0 1 0 6 0a3 3 0 0 0 -6 0\"/>","presentation":"<path d=\"M3 4l18 0\"/><path d=\"M4 4v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-10\"/><path d=\"M12 16l0 4\"/><path d=\"M9 20l6 0\"/><path d=\"M8 12l3 -3l2 2l3 -3\"/>","report-analytics":"<path d=\"M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2\"/><path d=\"M9 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2\"/><path d=\"M9 17v-5\"/><path d=\"M12 17v-1\"/><path d=\"M15 17v-3\"/>","droplet":"<path d=\"M7.502 19.423c2.602 2.105 6.395 2.105 8.996 0c2.602 -2.105 3.262 -5.708 1.566 -8.546l-4.89 -7.26c-.42 -.625 -1.287 -.803 -1.936 -.397a1.376 1.376 0 0 0 -.41 .397l-4.893 7.26c-1.695 2.838 -1.035 6.441 1.567 8.546\"/>","salad":"<path d=\"M4 11h16a1 1 0 0 1 1 1v.5c0 1.5 -2.517 5.573 -4 6.5v1a1 1 0 0 1 -1 1h-8a1 1 0 0 1 -1 -1v-1c-1.687 -1.054 -4 -5 -4 -6.5v-.5a1 1 0 0 1 1 -1\"/><path d=\"M18.5 11c.351 -1.017 .426 -2.236 .5 -3.714v-1.286h-2.256c-2.83 0 -4.616 .804 -5.64 2.076\"/><path d=\"M5.255 11.008a12.204 12.204 0 0 1 -.255 -2.008v-1h1.755c.98 0 1.801 .124 2.479 .35\"/><path d=\"M8 8l1 -4l4 2.5\"/><path d=\"M13 11v-.5a2.5 2.5 0 1 0 -5 0v.5\"/>","soup":"<path d=\"M4 11h16a1 1 0 0 1 1 1v.5c0 1.5 -2.517 5.573 -4 6.5v1a1 1 0 0 1 -1 1h-8a1 1 0 0 1 -1 -1v-1c-1.687 -1.054 -4 -5 -4 -6.5v-.5a1 1 0 0 1 1 -1\"/><path d=\"M12 4a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2\"/><path d=\"M16 4a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2\"/><path d=\"M8 4a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2\"/>","glass":"<path d=\"M8 21h8\"/><path d=\"M12 16v5\"/><path d=\"M17 5l1 6c0 3.012 -2.686 5 -6 5s-6 -1.988 -6 -5l1 -6\"/><path d=\"M7 5a5 2 0 1 0 10 0a5 2 0 1 0 -10 0\"/>","bucket":"<path d=\"M4 7a8 4 0 1 0 16 0a8 4 0 1 0 -16 0\"/><path d=\"M4 7c0 .664 .088 1.324 .263 1.965l2.737 10.035c.5 1.5 2.239 2 5 2s4.5 -.5 5 -2c.333 -1 1.246 -4.345 2.737 -10.035a7.45 7.45 0 0 0 .263 -1.965\"/>","wash":"<path d=\"M3.486 8.965c.168 .02 .34 .033 .514 .035c.79 .009 1.539 -.178 2 -.5c.461 -.32 1.21 -.507 2 -.5c.79 -.007 1.539 .18 2 .5c.461 .322 1.21 .509 2 .5c.79 .009 1.539 -.178 2 -.5c.461 -.32 1.21 -.507 2 -.5c.79 -.007 1.539 .18 2 .5c.461 .322 1.21 .509 2 .5c.17 0 .339 -.014 .503 -.034\"/><path d=\"M3 6l1.721 10.329a2 2 0 0 0 1.973 1.671h10.612a2 2 0 0 0 1.973 -1.671l1.721 -10.329\"/>","spray":"<path d=\"M4 12a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-4a2 2 0 0 1 -2 -2l0 -7\"/><path d=\"M6 10v-4a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v4\"/><path d=\"M15 7h.01\"/><path d=\"M18 9h.01\"/><path d=\"M18 5h.01\"/><path d=\"M21 3h.01\"/><path d=\"M21 7h.01\"/><path d=\"M21 11h.01\"/><path d=\"M10 7h1\"/>","meat":"<path d=\"M13.62 8.382l1.966 -1.967a2 2 0 1 1 3.414 -1.415a2 2 0 1 1 -1.413 3.414l-1.82 1.821\"/><path d=\"M5.904 18.596c2.733 2.734 5.9 4 7.07 2.829c1.172 -1.172 -.094 -4.338 -2.828 -7.071c-2.733 -2.734 -5.9 -4 -7.07 -2.829c-1.172 1.172 .094 4.338 2.828 7.071\"/><path d=\"M7.5 16l1 1\"/><path d=\"M12.975 21.425c3.905 -3.906 4.855 -9.288 2.121 -12.021c-2.733 -2.734 -8.115 -1.784 -12.02 2.121\"/>","stretching-2":"<path d=\"M6.5 21l3.5 -5\"/><path d=\"M5 11l7 -2\"/><path d=\"M16 21l-4 -7v-5l7 -4\"/><path d=\"M9.007 6a2 2 0 1 0 4 0a2 2 0 1 0 -4 0\"/>","swimming":"<path d=\"M15 9a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M6 11l4 -2l3.5 3l-1.5 2\"/><path d=\"M3 16.75a2.4 2.4 0 0 0 1 .25a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 1 -.25\"/>","tent":"<path d=\"M11 14l4 6h6l-9 -16l-9 16h6l4 -6\"/>","ear":"<path d=\"M6 10a7 7 0 1 1 13 3.6a10 10 0 0 1 -2 2a8 8 0 0 0 -2 3a4.5 4.5 0 0 1 -6.8 1.4\"/><path d=\"M10 10a3 3 0 1 1 5 2.2\"/>","mood-happy":"<path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0\"/><path d=\"M9 9l.01 0\"/><path d=\"M15 9l.01 0\"/><path d=\"M8 13a4 4 0 1 0 8 0h-8\"/>","hand-stop":"<path d=\"M8 13v-7.5a1.5 1.5 0 0 1 3 0v6.5\"/><path d=\"M11 5.5v-2a1.5 1.5 0 1 1 3 0v8.5\"/><path d=\"M14 5.5a1.5 1.5 0 0 1 3 0v6.5\"/><path d=\"M17 7.5a1.5 1.5 0 0 1 3 0v8.5a6 6 0 0 1 -6 6h-2h.208a6 6 0 0 1 -5.012 -2.7a69.74 69.74 0 0 1 -.196 -.3c-.312 -.479 -1.407 -2.388 -3.286 -5.728a1.5 1.5 0 0 1 .536 -2.022a1.867 1.867 0 0 1 2.28 .28l1.47 1.47\"/>","eye-off":"<path d=\"M10.585 10.587a2 2 0 0 0 2.829 2.828\"/><path d=\"M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87\"/><path d=\"M3 3l18 18\"/>","zzz":"<path d=\"M4 12h6l-6 8h6\"/><path d=\"M14 4h6l-6 8h6\"/>","anchor":"<path d=\"M12 9v12m-8 -8a8 8 0 0 0 16 0m1 0h-2m-14 0h-2\"/><path d=\"M9 6a3 3 0 1 0 6 0a3 3 0 1 0 -6 0\"/>","tag":"<path d=\"M6.5 7.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0\"/><path d=\"M3 6v5.172a2 2 0 0 0 .586 1.414l7.71 7.71a2.41 2.41 0 0 0 3.408 0l5.592 -5.592a2.41 2.41 0 0 0 0 -3.408l-7.71 -7.71a2 2 0 0 0 -1.414 -.586h-5.172a3 3 0 0 0 -3 3\"/>","box":"<path d=\"M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5\"/><path d=\"M12 12l8 -4.5\"/><path d=\"M12 12l0 9\"/><path d=\"M12 12l-8 -4.5\"/>"};
 const LOGO = `<svg viewBox="0 0 1024 1024" aria-hidden="true"><defs><linearGradient id="lg-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#24695F"/><stop offset="1" stop-color="#174842"/></linearGradient></defs><rect width="1024" height="1024" fill="url(#lg-bg)"/><rect x="236" y="232" width="552" height="150" rx="44" fill="#9FD1C0" opacity=".5"/><rect x="452" y="296" width="120" height="22" rx="11" fill="#174842" opacity=".55"/><rect x="236" y="642" width="552" height="150" rx="44" fill="#9FD1C0" opacity=".5"/><rect x="452" y="706" width="120" height="22" rx="11" fill="#174842" opacity=".55"/><rect x="190" y="420" width="644" height="186" rx="50" fill="#0B2622" opacity=".28" transform="translate(0 24)"/><rect x="190" y="414" width="644" height="186" rx="50" fill="#F4F7F3"/><rect x="427" y="492" width="170" height="30" rx="15" fill="#D9B45A"/></svg>`;
 
 /* ── helpers ─────────────────────────────── */
@@ -604,11 +648,11 @@ const save = () => { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch
 const saveUI = () => { try { localStorage.setItem(UIKEY, JSON.stringify(UIP)); } catch (e) {} };
 const UI = { tab: 'today', cabDay: 0, wkSel: null, rvWeek: 0, opened: false, lastSeg: undefined };
 
-function fresh() { return { v: 1, prefs: { wake: '07:00', sleep: '23:00', buffer: 10, cap: 70, notify: false, lead: 5, closed: {} }, drawers: [], items: [], logs: [], skips: {}, plans: [], recs: [] }; }
+function fresh() { return { v: 1, prefs: { wake: '07:00', sleep: '23:00', buffer: 10, cap: 70, notify: false, lead: 5, closed: {} }, drawers: [], items: [], logs: [], skips: {}, plans: [], recs: [], goals: [], vision: { text: '', at: 0 }, top3: {} }; }
 /* 完成時要記細節的事（例如讀到第幾頁） */
 const HINTS = { '讀一章書': '書名、第幾頁到第幾頁', '讀完《原子習慣》第 3 章': '讀到第幾頁', '慢跑 5 公里': '距離、配速', '線上課程一個單元': '上到第幾個單元', '數學講義第 4 回': '做到第幾題' };
 function migrate() {
-  D.skips = D.skips || {}; D.plans = D.plans || []; D.recs = D.recs || [];
+  D.skips = D.skips || {}; D.plans = D.plans || []; D.recs = D.recs || []; D.goals = D.goals || []; D.vision = D.vision || { text: '', at: 0 }; D.top3 = D.top3 || {};
   if (D.prefs.lead == null) D.prefs.lead = 5;
   for (const it of live(D.items)) {
     if (it.drawer === 'pocket' && it.title === '打電話給爸媽' && !it.doneAt) { it.del = 1; it.u = now(); }
@@ -757,10 +801,156 @@ function seedDemo() {
   D.demo = 1; save();
 }
 function clearDemo() {
-  D.logs = D.logs.filter(l => !l.demo); D.recs = (D.recs || []).filter(x => !x.demo); D.plans = (D.plans || []).filter(x => !x.demo);
+  D.logs = D.logs.filter(l => !l.demo); D.recs = (D.recs || []).filter(x => !x.demo); D.plans = (D.plans || []).filter(x => !x.demo); D.goals = (D.goals || []).filter(x => !x.demo); D.items = D.items.filter(x => !x.demo);
   for (const it of D.items) if (it.doneDates) for (const k in it.doneDates) if (it.doneDates[k] === -1) delete it.doneDates[k];
   for (const k in D.prefs.closed) if (D.prefs.closed[k] === -1) delete D.prefs.closed[k];
   delete D.demo; save();
+}
+
+/* ── 目標（王永福「便利貼思考法」的簡化版）──────────
+   1 人生清單：不設限寫下想做的事，目標 50 件
+   2 核心目標：選出最重要的 10 個（分辨真心想要與別人期待）
+   3 每週往前一步：週日安排這週的行動，直接放進抽屜
+   4 今天的三件事：每天挑 3 件最能靠近目標的事 */
+const weekStart = d => addDays(d, -(dow(d) - 1));
+const planWeek = () => { const t = today(); return dow(t) === 7 ? addDays(t, 1) : weekStart(t); };
+const goalsAll = () => live(D.goals).sort((a, b) => a.c - b.c);
+const coreGoals = () => goalsAll().filter(g => g.core && !g.doneAt);
+const goalById = id => D.goals.find(g => g.id === id);
+const goalActs = (gid, wk) => live(D.items).filter(it => it.goal === gid && (!wk || it.week === wk));
+const everDone = it => it.when === 'every' ? Object.keys(it.doneDates || {}).length > 0 : !!it.doneAt;
+const AREAS = [['健康', '想擁有怎樣的身體？'], ['學習', '有什麼一直想學會的？'], ['工作', '想做出什麼成績？'], ['家人', '想和家人一起做什麼？'], ['旅行', '有沒有一直想去的地方？'], ['創作', '想做出什麼作品？'], ['財務', '想要什麼樣的財務狀態？'], ['體驗', '有什麼想嘗試一次的事？'], ['朋友', '想和誰一起完成什麼？'], ['助人', '想幫助誰、改變什麼？'], ['居住', '想住在什麼樣的地方？'], ['興趣', '想把什麼玩到很厲害？']];
+const EXAMPLE_GOALS = ['跑完一場全程馬拉松', '能用英文自在地開會', '帶爸媽去一趟日本', '出版一本自己的書', '存到一年的生活預備金', '學會游泳', '每年讀 30 本書', '在海邊住一個月', '學會做十道拿手菜', '帶孩子去看極光', '考到潛水證照', '開一場個人攝影展'];
+function addGoal(title, demo) { const g = { id: uid(), title, core: false, c: now(), u: now() }; if (demo) g.demo = 1; D.goals.push(g); return g; }
+function toggleCore(g) {
+  if (!g.core && coreGoals().length >= 10) { toast('核心目標最多 10 個，先拿掉一個'); return false; }
+  g.core = !g.core; g.u = now(); save(); return true;
+}
+function addGoalAction(g, title, drawer, wk) {
+  const it = { id: uid(), title, drawer, when: 'next', goal: g.id, week: wk, c: now(), u: now() };
+  D.items.push(it); g.drawer = drawer; g.u = now(); save(); return it;
+}
+function goalRow(g) {
+  return `<div class="it${g.doneAt ? ' done reached' : ''}" data-goal="${g.id}">
+    <span class="it-del" aria-hidden="true">${ic('trash')}</span>
+    <div class="it-row"><button class="star${g.core ? ' on' : ''}" data-act="gl-star" data-id="${g.id}" aria-pressed="${!!g.core}" aria-label="${g.core ? '從核心目標拿掉' : '選為核心目標'}：${esc(g.title)}">${ic('star')}</button>
+    <button class="mid" data-act="goal" data-id="${g.id}" style="text-align:left"><span class="t">${esc(g.title)}</span>${g.doneAt ? `<span class="s">已實現 · ${new Date(g.doneAt).getFullYear()}/${new Date(g.doneAt).getMonth() + 1}</span>` : g.demo ? '<span class="s">範例</span>' : ''}</button></div></div>`;
+}
+function goalCoreRow(g) {
+  const lbl = dow(today()) === 7 ? '下週' : '這週', wk = goalActs(g.id, planWeek()), done = wk.filter(everDone).length, all = goalActs(g.id).filter(everDone).length;
+  return `<div class="gc"><button class="row" data-act="goal" data-id="${g.id}"><span class="ico">${ic('star')}</span><span class="mid"><span class="t">${esc(g.title)}</span><span class="s">${wk.length ? `${lbl} ${done}/${wk.length} 步` : `${lbl}還沒安排`}${all ? ` · 累計走了 ${all} 步` : ''}</span></span><span class="chev">${ic('chevron-right')}</span></button>
+    ${wk.length ? `<div class="acts">${wk.map(it => itemRow(it, today(), { noGoal: true, showDrawer: true })).join('')}</div>` : ''}</div>`;
+}
+function pageGoals() {
+  const all = goalsAll(), core = coreGoals(), n = all.length, wk = planWeek(), sunday = dow(today()) === 7;
+  const planned = core.some(g => goalActs(g.id, weekStart(today())).length || goalActs(g.id, wk).length);
+  const st = [n >= 10, core.length > 0, planned], cur = st.indexOf(false);
+  const steps = [['寫下人生想做的事', `不設限，寫到 50 件（已寫 ${n} 件）`], ['選出最重要的 10 個', `點 ☆ 選出來（已選 ${core.length} 個）`], ['每週往前一步，每天挑 3 件', '週日安排這週的行動，放進抽屜']];
+  const P = AREAS[n % AREAS.length];
+  return head('目標', n ? `人生清單 ${n} 件 · 核心 ${core.length} 個` : '讓時間走向你想去的地方')
+    + `<section class="panel vision"><label class="ask-q" for="vision">五年後的你，會是什麼樣子？</label>
+      <textarea class="vtext" id="vision" rows="3" placeholder="例如：身體健康、能用英文工作、出了第一本書……">${esc(D.vision.text)}</textarea>
+      <p class="note faint" style="font-size:12px;margin-top:6px">${D.vision.at ? `上次寫下：${new Date(D.vision.at).getFullYear()}/${new Date(D.vision.at).getMonth() + 1}/${new Date(D.vision.at).getDate()}。每年回來重寫一次，再檢視一遍清單。` : '每年寫一次。先想像未來，再回頭安排現在。'}</p></section>`
+    + (cur >= 0 ? `<section class="panel steps" style="margin-top:12px"><ol>${steps.map(([b, t], i) => `<li class="${st[i] ? 'ok' : i === cur ? 'now' : ''}"><span class="n">${st[i] ? ic('check') : i + 1}</span><div><b>${b}</b><span>${t}</span></div></li>`).join('')}</ol></section>` : '')
+    + `<section class="block"><h2>核心目標<small>${core.length} / 10</small></h2>
+      ${core.length ? `<div class="rows">${core.map(goalCoreRow).join('')}</div>
+        <button class="btn" data-act="week-plan" style="margin-top:12px">${ic('calendar-plus')}${sunday ? '安排下週' : '安排這週'}的往前一步</button>`
+        : `<div class="panel note">從下面的人生清單點 ☆，選出最重要的 10 個。<br>選的時候問自己：這是我真心想要的，還是別人期待我做到的？</div>`}</section>`
+    + `<section class="block"><h2>人生清單<small>${Math.min(n, 50)} / 50</small></h2>
+      <div class="panel" style="padding:14px">
+        <div class="g50" aria-hidden="true"><i style="width:${Math.min(n, 50) / 50 * 100}%"></i></div>
+        <p class="g-prompt">${n >= 50 ? '寫滿 50 件了。接下來，選出最重要的 10 個。' : `想想「${P[0]}」：${P[1]}`}</p>
+        <div class="qa-in"><input class="input" id="glText" placeholder="寫下一件人生想做的事" maxlength="50" enterkeyhint="done" autocomplete="off"><button class="mic" data-act="gl-add" aria-label="加入人生清單">${ic('plus')}</button></div>
+      </div>
+      ${n ? `<div class="rows" style="margin-top:10px">${[...all.filter(g => g.core && !g.doneAt), ...all.filter(g => !g.core && !g.doneAt), ...all.filter(g => g.doneAt)].map(goalRow).join('')}</div>
+        <p class="note faint" style="margin:10px 6px 0;font-size:12px">點 ☆ 選為核心目標，往左滑可以刪除。不用一次寫完，想到就加。</p>`
+        : `<div class="panel empty" style="margin-top:10px"><div class="e-big">還沒寫下任何一件</div>先不要管做不做得到，寫下真心想做的事。<br>前 10 件很快，寫到 30 件會卡住，那正是開始認識自己的地方。
+          <button class="btn ghost" data-act="gl-example">${ic('sparkles')}先放幾個範例看看</button></div>`}</section>`;
+}
+/* 單一目標 */
+function goalSheet(id) {
+  const g = goalById(id); if (!g) return null;
+  let dr = g.drawer || defaultDrawer();
+  return {
+    html: () => {
+      const wk = planWeek(), acts = goalActs(g.id).sort((a, b) => b.c - a.c), recN = live(D.recs).filter(r => acts.some(a => a.id === r.item)).length;
+      return `<div class="sh-head"><h3>目標</h3></div>
+      <input class="input kai" id="gsT" value="${esc(g.title)}" maxlength="50">
+      <div class="rows" style="margin-top:12px">
+        <button class="toggle" role="switch" aria-checked="${!!g.core}" data-act="gs-core"><span>核心目標<small>最重要的 10 個之一</small></span><span class="sw"></span></button>
+        <button class="toggle" role="switch" aria-checked="${!!g.doneAt}" data-act="gs-done"><span>已經實現了<small>會留在清單裡，標成金色</small></span><span class="sw"></span></button></div>
+      ${!g.doneAt ? `<div class="field"><span>${dow(today()) === 7 ? '下週' : '這週'}可以做什麼，讓自己更接近它？</span>
+        <div class="qa-in"><input class="input" id="gsAct" placeholder="例如：報名英文會話課、跑 3 次 5 公里" maxlength="50" enterkeyhint="done" autocomplete="off"><button class="mic" data-act="gs-add" aria-label="加入這週的行動">${ic('plus')}</button></div>
+        <div class="scroll-x" style="margin-top:10px">${drChips(dr, 'gs-dr')}</div></div>` : ''}
+      ${acts.length ? `<div class="field"><span>往前的每一步<small>做完 ${acts.filter(everDone).length} / ${acts.length}${recN ? ` · ${recN} 筆紀錄` : ''}</small></span><div class="rows">${acts.slice(0, 12).map(it => itemRow(it, today(), { noGoal: true, showDrawer: true })).join('')}</div></div>` : ''}
+      <div class="two-btn" style="margin-top:22px"><button class="btn danger" data-act="gs-del">${ic('trash')}刪除</button><button class="btn" data-act="gs-save">儲存</button></div>`;
+    },
+    mount: sh => {
+      const a = $('#gsAct', sh);
+      a && a.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); sh.onGoal('gs-add'); } });
+      sh.onGoal = (act, el) => {
+        const keepTitle = () => { const t = $('#gsT', sh).value.trim(); if (t) g.title = t; };
+        if (act === 'gs-core') { keepTitle(); if (toggleCore(g)) drawSheet(); }
+        if (act === 'gs-done') { keepTitle(); g.doneAt = g.doneAt ? null : now(); if (g.doneAt) g.core = false; g.u = now(); save(); if (g.doneAt) toast('恭喜，實現了一個目標'); drawSheet(); }
+        if (act === 'gs-dr') { dr = el.dataset.v; $$('[data-act="gs-dr"]', sh).forEach(b => b.classList.toggle('on', b === el)); }
+        if (act === 'gs-add') { const v = a.value.trim(); if (!v) return a.focus(); keepTitle(); addGoalAction(g, v, dr, planWeek()); toast(`放進「${dr === 'pocket' ? '留白清單' : drawerById(dr)?.name}」了`); drawSheet(); setTimeout(() => $('#gsAct')?.focus(), 50); }
+        if (act === 'gs-save') { keepTitle(); g.u = now(); save(); toast('已儲存'); closeSheet(); }
+        if (act === 'gs-del') { g.del = 1; g.u = now(); save(); closeSheet(); toast(`刪掉了「${g.title}」`, '復原', () => { g.del = 0; save(); rerender(); }); }
+      };
+    },
+  };
+}
+function drChips(sel, act) {
+  return live(D.drawers).sort((a, b) => toMin(a.start) - toMin(b.start)).map(x => `<button class="chip tone${sel === x.id ? ' on' : ''}" data-tone="${x.tone}" data-act="${act}" data-v="${x.id}">${ic(x.icon)}${esc(x.name)}</button>`).join('')
+    + `<button class="chip${sel === 'pocket' ? ' on' : ''}" data-act="${act}" data-v="pocket">${ic('leaf')}留白清單</button>`;
+}
+/* 週日（或這週還沒安排時）：替每個核心目標想一步 */
+function weekSheet() {
+  let dr = UIP.goalDr && (UIP.goalDr === 'pocket' || drawerById(UIP.goalDr)) ? UIP.goalDr : defaultDrawer();
+  const wk = planWeek(), wd = parseYmd(wk);
+  return {
+    html: () => `<div class="sh-head"><h3>${dow(today()) === 7 ? '安排下週' : '安排這週'}</h3></div>
+      <p class="gs-sub">${wd.getMonth() + 1}/${wd.getDate()} 起的一週。每個核心目標，想一件這週做得到的事。</p>
+      <div class="field"><span>放進哪個抽屜</span><div class="scroll-x">${drChips(dr, 'wp-dr')}</div></div>
+      ${coreGoals().map(g => { const acts = goalActs(g.id, wk); return `<div class="week-g"><h4>${ic('star')}${esc(g.title)}</h4>
+        ${acts.length ? `<div class="rows">${acts.map(it => itemRow(it, today(), { noGoal: true, showDrawer: true })).join('')}</div>` : ''}
+        <div class="qa-in"><input class="input" data-goal-in="${g.id}" placeholder="${acts.length ? '再加一步' : '這週可以做什麼？'}" maxlength="50" enterkeyhint="done" autocomplete="off"><button class="mic" data-act="wp-add" data-id="${g.id}" aria-label="加入">${ic('plus')}</button></div></div>`; }).join('')}
+      <button class="btn" data-act="close-sheet" style="margin-top:22px">好了</button>`,
+    mount: sh => {
+      const add = id => { const inp = $(`[data-goal-in="${id}"]`, sh), v = inp.value.trim(); if (!v) return inp.focus(); addGoalAction(goalById(id), v, dr, wk); UIP.goalDr = dr; saveUI(); drawSheet(); setTimeout(() => $(`[data-goal-in="${id}"]`)?.focus(), 50); };
+      $$('[data-goal-in]', sh).forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); add(i.dataset.goalIn); } }));
+      sh.onWeek = (act, el) => {
+        if (act === 'wp-dr') { dr = el.dataset.v; $$('[data-act="wp-dr"]', sh).forEach(b => b.classList.toggle('on', b === el)); }
+        if (act === 'wp-add') add(el.dataset.id);
+      };
+    },
+  };
+}
+/* 今天的三件事 */
+const top3Of = d => (D.top3[d] || []).filter(id => { const it = D.items.find(x => x.id === id); return it && !it.del; });
+function top3HTML() {
+  const d = today(), ids = top3Of(d);
+  if (!live(D.goals).length && !ids.length) return '';
+  const rows = ids.map(id => { const it = D.items.find(x => x.id === id), done = isDone(it, d), dr = drawerById(it.drawer), g = it.goal && goalById(it.goal);
+    return `<div class="it t3${done ? ' done' : ''}" ${dr ? `data-tone="${dr.tone}"` : ''}><div class="it-row"><button class="ck${done ? ' on' : ''}" data-act="tick" data-id="${it.id}" data-d="${d}" aria-pressed="${done}" aria-label="完成：${esc(it.title)}">${ic('check')}</button>
+      <button class="mid" data-act="item" data-id="${it.id}" style="text-align:left"><span class="t">${esc(it.title)}</span><span class="s">${g ? `<span class="gtag">${esc(g.title)}</span> · ` : ''}${it.drawer === 'pocket' ? '留白清單' : esc(dr ? `${dr.name} ${dr.start}` : '')}</span></button>
+      <button class="rm" data-act="t3-rm" data-id="${it.id}" aria-label="從今天的三件事拿掉">${ic('x')}</button></div></div>`; });
+  for (let i = ids.length; i < 3; i++) rows.push(`<button class="slot" data-act="t3-pick"><span class="n">${i + 1}</span>${i === ids.length ? '挑一件能讓你更接近目標的事' : '再挑一件'}</button>`);
+  const doneN = ids.filter(id => isDone(D.items.find(x => x.id === id), d)).length;
+  return `<section class="panel top3"><div class="t3-h"><span class="ask-q">今天的三件事</span><small>${ids.length ? `完成 ${doneN} / ${ids.length}` : '每天挑 3 件就好'}</small></div>${rows.join('')}</section>`;
+}
+function top3Sheet() {
+  const d = today(), have = new Set(top3Of(d));
+  const goalIts = live(D.items).filter(it => it.goal && !have.has(it.id) && !everDone(it) && (it.week === weekStart(d) || it.week === planWeek() || !it.week));
+  const todays = drawersOn(d).flatMap(x => itemsIn(x.id, d)).filter(it => !it.goal && !have.has(it.id) && !isDone(it, d));
+  const row = it => { const g = it.goal && goalById(it.goal), dr = drawerById(it.drawer);
+    return `<button class="row pick" data-act="t3-add" data-id="${it.id}"><span class="mid"><span class="t">${esc(it.title)}</span><span class="s">${g ? `<span class="gtag">${esc(g.title)}</span> · ` : ''}${it.drawer === 'pocket' ? '留白清單' : esc(dr ? `${dr.name} ${dr.start}` : '')}</span></span><span class="pill ok">選這件</span></button>`; };
+  return {
+    html: () => `<div class="sh-head"><h3>挑一件今天要做的事</h3></div>
+      <p class="gs-sub">挑能讓你更接近目標的事。三件就好，做完比做多重要。</p>
+      ${goalIts.length ? `<p class="pick-h">往目標的一步</p><div class="rows">${goalIts.map(row).join('')}</div>` : `<div class="panel note" style="margin-top:12px">這週還沒有往目標的行動。<button class="lk" data-act="week-plan" style="color:var(--pool);margin-left:4px">安排這週</button></div>`}
+      ${todays.length ? `<p class="pick-h">今天抽屜裡的事</p><div class="rows">${todays.map(row).join('')}</div>` : ''}`,
+  };
 }
 
 /* ── 今日一句 ───────────────────────────── */
@@ -781,7 +971,7 @@ function showDawn() {
   const line = cur && cur.type === 'drawer' ? `此刻是「${esc(cur.dr.name)}」，${cur.dr.end} 關上。` : next ? `下一個抽屜是「${esc(next.name)}」，${next.start} 打開。` : '今天剩下的時間，都是留白。';
   el.innerHTML = `<div class="dawn-in"><p class="dawn-d">${t.getMonth() + 1} 月 ${t.getDate()} 日 · 週${WD[t.getDay() || 7]}</p><h2 class="dawn-h">${greet}</h2>
     ${q ? `<blockquote class="dawn-q"><p class="q1" lang="${langOf(q, 1)}">${esc(q[1])}</p><p class="q2" lang="${langOf(q, 2)}">${esc(q[2])}</p><footer>— ${quoteMeta(q)}</footer></blockquote>` : '<div style="margin:auto"></div>'}
-    ${live(D.drawers).length ? `<p class="dawn-next">${line}</p>` : ''}<button class="btn" data-act="dawn-close">開始今天</button></div>
+    ${live(D.drawers).length ? `<p class="dawn-next">${line}${live(D.goals).length ? `<br>${top3Of(d).length ? `今天的三件事：${top3Of(d).map(id => esc(D.items.find(x => x.id === id).title)).join('、')}` : '進去後，挑今天要做的三件事。'}` : ''}</p>` : ''}<button class="btn" data-act="dawn-close">開始今天</button></div>
     <div class="dawn-sea" aria-hidden="true">${WAVES}</div>`;
   el.hidden = false; el.getBoundingClientRect(); requestAnimationFrame(() => el.classList.add('in'));
   UIP.dawn = d; saveUI();
@@ -789,18 +979,20 @@ function showDawn() {
 function hideDawn() { const el = $('#dawn'); el.classList.remove('in'); setTimeout(() => { el.hidden = true; }, 360); }
 
 /* ── shell ───────────────────────────────── */
-const TABS = { today: ['今天', 'clock'], drawers: ['抽屜', 'layout-rows'], pocket: ['留白', 'leaf'], review: ['回顧', 'chart-bar'] };
+const TABS = { today: ['今天', 'clock'], drawers: ['抽屜', 'layout-rows'], goals: ['目標', 'target'], review: ['回顧', 'chart-bar'] };
 for (const b of $$('.tb')) { const [l, i] = TABS[b.dataset.tab]; b.innerHTML = `${ic(i)}<span>${l}</span>`; }
 $('#fab').innerHTML = ic('plus');
 
+const drSeg = which => `<span class="seg"><button class="${which === 'drawers' ? 'on' : ''}" data-act="tab" data-tab="drawers">抽屜</button><button class="${which === 'pocket' ? 'on' : ''}" data-act="tab" data-tab="pocket">留白清單</button></span>`;
 function head(title, sub, extra = '', gear = true) {
   return `<header class="head"><div><h1>${title}</h1>${sub ? `<div class="sub">${sub}</div>` : ''}</div><div class="head-r">${extra}${gear ? `<button class="gear" data-act="settings" aria-label="設定">${ic('settings')}</button>` : ''}</div></header>`;
 }
 function render() {
   if (!D) return;
   const app = $('#app');
-  app.innerHTML = UI.tab === 'today' ? pageToday() : UI.tab === 'drawers' ? pageDrawers() : UI.tab === 'pocket' ? pagePocket() : UI.tab === 'review' ? pageReview() : pageSettings();
-  for (const b of $$('.tb')) { const on = b.dataset.tab === UI.tab; b.classList.toggle('on', on); b.setAttribute('aria-current', on ? 'page' : 'false'); }
+  app.innerHTML = UI.tab === 'today' ? pageToday() : UI.tab === 'drawers' ? pageDrawers() : UI.tab === 'pocket' ? pagePocket() : UI.tab === 'goals' ? pageGoals() : UI.tab === 'review' ? pageReview() : pageSettings();
+  const hl = UI.tab === 'pocket' ? 'drawers' : UI.tab;
+  for (const b of $$('.tb')) { const on = b.dataset.tab === hl; b.classList.toggle('on', on); b.setAttribute('aria-current', on ? 'page' : 'false'); }
   // 水位從上一次的高度流到現在的高度（第一次從零漲上來）
   const lq = $('#hero .liquid');
   if (lq) { const to = liqH(+lq.dataset.p); lq.style.height = (UI.liq ?? 0) + '%'; lq.getBoundingClientRect(); requestAnimationFrame(() => { lq.style.height = to + '%'; }); UI.liq = to; }
@@ -810,7 +1002,8 @@ function go(tab) { if (sheetOpen()) { STACK.length = 0; $('#sheet').classList.re
 /* ── 今天 ────────────────────────────────── */
 function itemRow(it, d, opts = {}) {
   const done = isDone(it, d), dr = drawerById(it.drawer), rec = done && live(D.recs).find(r => r.item === it.id && r.d === d && r.note);
-  const meta = rec ? `${hm(rec.at)} · ${rec.note}` : [opts.showDrawer && dr ? dr.name : '', whenLabel(it)].filter(Boolean).join(' · ');
+  const g = !opts.noGoal && it.goal && goalById(it.goal);
+  const meta = rec ? `${hm(rec.at)} · ${rec.note}` : [g ? `目標・${g.title}` : '', opts.showDrawer ? (it.drawer === 'pocket' ? '留白清單' : dr ? dr.name : '') : '', whenLabel(it)].filter(Boolean).join(' · ');
   return `<div class="it${done ? ' done' : ''}" data-id="${it.id}"${dr ? ` data-tone="${dr.tone}"` : ''}>
     <span class="it-del" aria-hidden="true">${ic('trash')}</span>
     <div class="it-row"><button class="ck${done ? ' on' : ''}" data-act="tick" data-id="${it.id}" data-d="${d}" aria-pressed="${done}" aria-label="${done ? '標回未完成' : '完成'}：${esc(it.title)}">${ic('check')}</button>
@@ -937,9 +1130,15 @@ function cabinetHTML() {
 }
 function pageToday() {
   const t = clock();
-  return head('時屜', `${t.getMonth() + 1} 月 ${t.getDate()} 日 · 週${WD[t.getDay() || 7]}`) + quoteCard() + heroHTML() + askHTML() + closeHTML()
+  return head('時屜', `${t.getMonth() + 1} 月 ${t.getDate()} 日 · 週${WD[t.getDay() || 7]}`) + quoteCard() + heroHTML() + top3HTML() + weekNudge() + askHTML() + closeHTML()
     + `<section class="block"><h2>今天的節奏</h2>${meterHTML(today())}</section>`
     + `<section class="block"><h2>${UI.cabDay ? '明天的櫃子' : '今天的櫃子'}<span class="seg"><button class="${UI.cabDay ? '' : 'on'}" data-act="cab" data-v="0">今天</button><button class="${UI.cabDay ? 'on' : ''}" data-act="cab" data-v="1">明天</button></span></h2>${cabinetHTML()}</section>`;
+}
+function weekNudge() {
+  const w = dow(today()); if (!coreGoals().length || (w !== 7 && w !== 1)) return '';
+  const wk = planWeek(); if (coreGoals().some(g => goalActs(g.id, wk).length)) return '';
+  return `<section class="panel ask"><div class="ask-q">${w === 7 ? '週日了，替下週安排往目標的一步' : '這週還沒安排往目標的一步'}</div><div class="s">你有 ${coreGoals().length} 個核心目標，每個想一件做得到的事就好。</div>
+    <button class="btn" data-act="week-plan" style="margin-top:10px">${ic('calendar-plus')}${w === 7 ? '安排下週' : '安排這週'}</button></section>`;
 }
 /* 每分鐘只更新主視覺的數字，不重畫整頁 */
 function refreshLive() {
@@ -975,7 +1174,7 @@ function pageDrawers() {
   }).join('');
   const list = UI.wkSel ? drawersOnDow(UI.wkSel) : [...ds].sort((a, b) => toMin(a.start) - toMin(b.start) || a.order - b.order);
   const groups = [['早上', 'sunrise', x => toMin(x.start) < 720], ['午後', 'sun', x => toMin(x.start) >= 720 && toMin(x.start) < 1080], ['晚上', 'moon', x => toMin(x.start) >= 1080]];
-  return head('抽屜', ds.length ? `${ds.length} 個抽屜 · 平日平均排 ${Math.round(avg * 100)}%` : '把一天分成幾段')
+  return head('抽屜', ds.length ? `${ds.length} 個抽屜 · 平日平均排 ${Math.round(avg * 100)}%` : '把一天分成幾段', drSeg('drawers'))
     + `<section class="panel"><div class="wkc">${axis}${cols}</div>
       <div class="wk-legend"><span><i style="background:var(--pool)"></i>抽屜</span><span><i style="background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)"></i>留白</span><span class="cap">每天上限 <b>${capName(cap)}</b><button class="lk" data-act="settings">調整</button></span></div></section>`
     + `<section class="block"><h2>${UI.wkSel ? `週${WD[UI.wkSel]}的抽屜` : '每個抽屜'}${UI.wkSel ? `<button class="lk" data-act="wk" data-w="${UI.wkSel}">顯示全部</button>` : `<small>點上面的星期可以只看那天</small>`}</h2>
@@ -988,7 +1187,7 @@ function pageDrawers() {
 function pagePocket() {
   const d = today(), all = live(D.items).filter(it => it.drawer === 'pocket' && showsOn(it, d));
   const groups = [['5 分鐘內', it => (it.mins || 5) <= 5], ['15 分鐘內', it => it.mins > 5 && it.mins <= 15], ['半小時以上', it => it.mins > 15]];
-  return head('留白', '空出來的時間，不必填滿')
+  return head('留白清單', '空出來的時間，不必填滿', drSeg('pocket'))
     + `<section class="panel"><p class="say" style="font-size:19px">留白不是剩下的時間，<br>是你選擇空下來的時間。</p>
       <p class="note" style="margin-top:8px">兩個抽屜之間的空檔，可以從這裡挑一件小事；什麼都不做也很好。只要是你選的，就不算流失。</p></section>`
     + `<section class="block"><h2>放一件小事</h2><div class="panel" style="padding:12px">
@@ -1005,8 +1204,8 @@ function pageReview() {
   const recs = live(D.recs).filter(r => set.has(r.d)).sort((a, b) => b.d.localeCompare(a.d) || b.at - a.at);
   const seg = `<span class="seg"><button class="${UI.rvWeek === 0 ? 'on' : ''}" data-act="rv" data-v="0">本週</button><button class="${UI.rvWeek === -1 ? 'on' : ''}" data-act="rv" data-v="-1">上週</button></span>`;
   const range = `${parseYmd(days[0]).getMonth() + 1}/${parseYmd(days[0]).getDate()}–${parseYmd(days[6]).getMonth() + 1}/${parseYmd(days[6]).getDate()}`;
-  if (!logs.length && recs.length) return head('回顧', range, seg) + journalHTML(recs);
-  if (!logs.length) return head('回顧', range, seg) + `<div class="panel empty"><div class="e-big">這週還沒有紀錄</div>每段時間結束後，「今天」頁會問一句：剛剛過得如何？<br>點一下就好。幾天後，這裡會告訴你時間都去哪了。</div>`;
+  if (!logs.length && recs.length) return head('回顧', range, seg) + goalsReviewHTML(days) + journalHTML(recs);
+  if (!logs.length) return head('回顧', range, seg) + goalsReviewHTML(days) + `<div class="panel empty" style="margin-top:20px"><div class="e-big">這週還沒有紀錄</div>每段時間結束後，「今天」頁會問一句：剛剛過得如何？<br>點一下就好。幾天後，這裡會告訴你時間都去哪了。</div>`;
   const tot = { plan: 0, rest: 0, other: 0, leak: 0 }, byDay = {}, hours = {};
   for (const l of logs) { const m = l.end - l.start; tot[l.kind] += m; (byDay[l.d] = byDay[l.d] || { plan: 0, rest: 0, other: 0, leak: 0 })[l.kind] += m;
     if (l.kind === 'leak') for (let h = Math.floor(l.start / 60); h * 60 < l.end; h++) hours[h] = (hours[h] || 0) + Math.min(l.end, (h + 1) * 60) - Math.max(l.start, h * 60); }
@@ -1034,6 +1233,7 @@ function pageReview() {
   return head('回顧', range + (D.demo && logs.some(l => l.demo) ? ' · 含示範紀錄' : ''), seg)
     + `<section class="panel"><p class="say">這週有 <b class="k-rest">${dur(tot.rest)}</b> 是用心留白，<b class="k-leak">${dur(tot.leak)}</b> 不知不覺流失了。抽屜照計畫走了 <b class="k-plan">${keep}%</b>。</p>
       <div class="stat-line"><span class="chip">${ic('check')}做完 <b class="num">${doneN}</b> 件事</span>${streak ? `<span class="chip streak">${ic('moon')}連續收抽屜 <b class="num">${streak}</b> 天</span>` : ''}</div></section>`
+    + goalsReviewHTML(days)
     + journalHTML(recs)
     + `<section class="block"><h2>每天的時間去哪了</h2><div class="panel"><div class="stack">${bars}</div>
       <div class="legend"><span><i class="k-plan-bg"></i>照計畫</span><span><i class="k-rest-bg"></i>用心留白</span><span><i class="k-other-bg"></i>做了別的</span><span><i class="k-leak-bg"></i>滑掉了</span></div></div></section>`
@@ -1044,6 +1244,14 @@ function pageReview() {
     + `<section class="block"><h2>給下週的你</h2><div class="panel ins">${ins.map(x => `<p>${x}</p>`).join('')}</div></section>`;
 }
 
+function goalsReviewHTML(days) {
+  const core = coreGoals(); if (!core.length) return '';
+  const set = new Set(days), wk = days[0];
+  const rows = core.map(g => { const acts = goalActs(g.id), n = live(D.recs).filter(r => set.has(r.d) && acts.some(a => a.id === r.item)).length, plan = goalActs(g.id, wk).length;
+    return { g, n, plan }; });
+  const moved = rows.filter(x => x.n).length;
+  return `<section class="block"><h2>離目標近了多少<small>${moved} / ${core.length} 個目標這週有前進</small></h2><div class="rows">${rows.map(({ g, n, plan }) => `<button class="an-row" data-act="goal" data-id="${g.id}" style="width:100%;text-align:left"><span class="ico" style="background:var(--gold-soft);color:var(--gold)">${ic('star')}</span><span class="mid"><span class="kv"><span>${esc(g.title)}</span><span class="num" style="font-weight:600;color:${n ? 'var(--ink)' : 'var(--ink-3)'}">${n ? `${n} 步` : '還沒動'}</span></span><span class="an-track"><i style="width:${plan ? Math.min(100, n / plan * 100) : n ? 100 : 0}%;background:var(--gold)"></i></span></span></button>`).join('')}</div></section>`;
+}
 function recRow(r, withDay) {
   const dd = parseYmd(r.d), day = withDay ? `${dd.getMonth() + 1}/${dd.getDate()} ` : '';
   return `<button class="row rec" data-act="rec" data-id="${r.id}"><span class="when">${day}${hm(r.at)}</span><span class="mid"><span class="t">${esc(r.title)}</span>${r.note ? `<span class="s note">${esc(r.note)}</span>` : wantsDetail(r.title, r.item && D.items.find(x => x.id === r.item)) ? `<span class="s empty-note">點一下補上細節</span>` : ''}</span></button>`;
@@ -1267,7 +1475,7 @@ function addSheet(pre = {}) {
 /* 單一事項 */
 function itemSheet(id) {
   const it = D.items.find(x => x.id === id); if (!it) return null;
-  const X = { title: it.title, drawer: it.drawer, when: /^\d/.test(it.when) ? 'date' : it.when, mins: it.mins || null, ask: !!it.ask, hint: it.hint || '' };
+  const X = { title: it.title, drawer: it.drawer, when: /^\d/.test(it.when) ? 'date' : it.when, mins: it.mins || null, ask: !!it.ask, hint: it.hint || '', goal: it.goal || null };
   const recs = live(D.recs).filter(r => r.item === it.id).sort((a, b) => b.d.localeCompare(a.d) || b.at - a.at).slice(0, 6);
   return {
     html: () => `<div class="sh-head"><h3>事項</h3></div>
@@ -1275,6 +1483,7 @@ function itemSheet(id) {
       <div class="field"><span>放在</span><div class="scroll-x">${live(D.drawers).sort((a, b) => toMin(a.start) - toMin(b.start)).map(x => `<button class="chip tone${X.drawer === x.id ? ' on' : ''}" data-tone="${x.tone}" data-act="it-dr" data-v="${x.id}">${ic(x.icon)}${esc(x.name)}</button>`).join('')}<button class="chip${X.drawer === 'pocket' ? ' on' : ''}" data-act="it-dr" data-v="pocket">${ic('leaf')}留白清單</button></div></div>
       <div class="field"><span>什麼時候</span><div class="seg wide" id="itWhen"></div></div>
       <div class="field"><span>大約要多久</span><div class="chips">${[null, 2, 5, 10, 15, 30, 60].map(m => `<button class="chip${X.mins === m ? ' on' : ''}" data-act="it-min" data-v="${m ?? ''}">${m ? `${m} 分` : '不估'}</button>`).join('')}</div></div>
+      ${coreGoals().length ? `<div class="field"><span>讓你更接近哪個目標</span><div class="scroll-x"><button class="chip${!X.goal ? ' on' : ''}" data-act="it-goal" data-v="">不屬於目標</button>${coreGoals().map(g => `<button class="chip${X.goal === g.id ? ' on' : ''}" data-act="it-goal" data-v="${g.id}">${ic('star')}${esc(g.title)}</button>`).join('')}</div></div>` : ''}
       <div class="rows" style="margin-top:16px"><button class="toggle" role="switch" aria-checked="${X.ask}" data-act="it-ask"><span>完成時記下細節<small>例如讀到第幾頁、跑了幾公里</small></span><span class="sw"></span></button></div>
       <input class="input" id="itHint" value="${esc(X.hint)}" placeholder="要記什麼？例如：書名、第幾頁" maxlength="30" style="margin-top:8px" ${X.ask ? '' : 'hidden'}>
       ${recs.length ? `<div class="field"><span>最近紀錄</span><div class="rows">${recs.map(r => recRow(r, true)).join('')}</div></div>` : ''}
@@ -1286,8 +1495,9 @@ function itemSheet(id) {
         if (act === 'it-dr') { X.drawer = el.dataset.v; $$('[data-act="it-dr"]', sh).forEach(b => b.classList.toggle('on', b === el)); drawW(); }
         if (act === 'it-when') { X.when = el.dataset.v; drawW(); }
         if (act === 'it-min') { X.mins = el.dataset.v ? +el.dataset.v : null; $$('[data-act="it-min"]', sh).forEach(b => b.classList.toggle('on', b === el)); }
+        if (act === 'it-goal') { X.goal = el.dataset.v || null; $$('[data-act="it-goal"]', sh).forEach(b => b.classList.toggle('on', b === el)); }
         if (act === 'it-ask') { X.ask = !X.ask; el.setAttribute('aria-checked', X.ask); $('#itHint', sh).hidden = !X.ask; }
-        if (act === 'it-save') { const tt = $('#itT', sh).value.trim(); if (!tt) return; Object.assign(it, { title: tt, drawer: X.drawer, mins: X.mins, ask: X.ask, hint: $('#itHint', sh).value.trim(), u: now() }); if (X.when !== 'date') { if (it.when !== X.when) { it.doneAt = null; it.doneOn = null; } it.when = X.when; } delete it.rolled; save(); toast('已儲存'); closeSheet(); }
+        if (act === 'it-save') { const tt = $('#itT', sh).value.trim(); if (!tt) return; if (X.goal && X.goal !== it.goal) it.week = weekStart(today()); Object.assign(it, { goal: X.goal || undefined, title: tt, drawer: X.drawer, mins: X.mins, ask: X.ask, hint: $('#itHint', sh).value.trim(), u: now() }); if (X.when !== 'date') { if (it.when !== X.when) { it.doneAt = null; it.doneOn = null; } it.when = X.when; } delete it.rolled; save(); toast('已儲存'); closeSheet(); }
         if (act === 'it-del') { delItem(it.id); closeSheet(); }
       };
       drawW();
@@ -1385,6 +1595,11 @@ function delItem(id) {
   toast(`刪掉了「${it.title}」`, '復原', () => { it.del = 0; it.u = now(); save(); rerender(); });
 }
 const rerender = () => sheetOpen() ? drawSheet() : render();
+function delGoal(id) {
+  const g = goalById(id); if (!g) return;
+  g.del = 1; g.u = now(); save(); rerender();
+  toast(`刪掉了「${g.title}」`, '復原', () => { g.del = 0; g.u = now(); save(); rerender(); });
+}
 function delPlan(id) {
   const p = D.plans.find(x => x.id === id); if (!p) return;
   p.del = 1; p.u = now(); save(); rerender();
@@ -1443,6 +1658,8 @@ document.addEventListener('click', e => {
   if (act.startsWith('it-') && sh.onItem) return sh.onItem(act, el);
   if (act.startsWith('rc-') && sh.onRec) return sh.onRec(act, el);
   if (act.startsWith('gp-') && sh.onGap) return sh.onGap(act, el);
+  if (act.startsWith('gs-') && sh.onGoal) return sh.onGoal(act, el);
+  if (act.startsWith('wp-') && sh.onWeek) return sh.onWeek(act, el);
   switch (act) {
     case 'close-sheet': return closeSheet();
     case 'confirm-ok': return sh.onConfirm && sh.onConfirm();
@@ -1472,6 +1689,14 @@ document.addEventListener('click', e => {
     case 'gap': { const s = gapSheet(el.dataset.d || d, el.dataset.key); if (s) openSheet(s); return; }
     case 'rec': { const s = recordSheet(el.dataset.id); if (s) openSheet(s); return; }
     case 'rv-all': UI.rvAll = true; return render();
+    case 'goal': { const s = goalSheet(el.dataset.id); if (s) openSheet(s); return; }
+    case 'gl-star': { const g = goalById(el.dataset.id); if (g && toggleCore(g)) { render(); if (g.core) toast(`「${g.title}」成為核心目標`); } return; }
+    case 'gl-add': return addGoalFromInput();
+    case 'gl-example': EXAMPLE_GOALS.forEach(t => addGoal(t, true)); D.demo = 1; save(); render(); return toast('放了 12 個範例，可以在設定清除');
+    case 'week-plan': if (!coreGoals().length) { go('goals'); return toast('先在人生清單選出核心目標'); } if (sheetOpen()) STACK.length = 0; return openSheet(weekSheet());
+    case 't3-pick': return openSheet(top3Sheet());
+    case 't3-add': { const ids = top3Of(d); if (ids.length < 3) { ids.push(el.dataset.id); D.top3[d] = ids; save(); } closeSheet(true); return; }
+    case 't3-rm': { D.top3[d] = top3Of(d).filter(x => x !== el.dataset.id); save(); return render(); }
     case 'dawn': return showDawn();
     case 'dawn-close': return hideDawn();
     case 'item': { const s = itemSheet(el.dataset.id); if (s) openSheet(s); return; }
@@ -1520,6 +1745,14 @@ document.addEventListener('input', e => {
   e.target.style.setProperty('--p', `${(v - min) / (max - min) * 100}%`); const o = $('#o-' + k); if (o) o.textContent = fmt(v);
   D.prefs[k] = v; save();
 });
+function addGoalFromInput() {
+  const inp = $('#glText'), t = inp.value.trim(); if (!t) return inp.focus();
+  addGoal(t); save(); render(); const n = live(D.goals).length;
+  toast(n === 50 ? '寫滿 50 件了！接著選出最重要的 10 個' : n === 10 ? '寫了 10 件，繼續寫，後面的才是真心話' : '加進人生清單了');
+  setTimeout(() => $('#glText')?.focus(), 50);
+}
+document.addEventListener('keydown', e => { if (e.target.id === 'glText' && e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addGoalFromInput(); } });
+document.addEventListener('change', e => { if (e.target.id === 'vision') { D.vision = { text: e.target.value.trim(), at: now() }; save(); toast('記下了'); } });
 document.addEventListener('keydown', e => { if (e.target.id === 'pkText' && e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addPocket(); } });
 function addPocket() {
   const inp = $('#pkText'), t = inp.value.trim(); if (!t) return inp.focus();
@@ -1537,7 +1770,7 @@ async function toggleNotify() {
 
 /* 往左滑刪除 */
 let SW = null;
-document.addEventListener('pointerdown', e => { const s = e.target.closest('.it'); if (!s || e.button > 0) return; SW = { el: s, row: s.querySelector('.it-row'), x: e.clientX, y: e.clientY, dx: 0, on: false }; }, { passive: true });
+document.addEventListener('pointerdown', e => { const s = e.target.closest('.it'); if (!s || s.classList.contains('t3') || e.button > 0) return; SW = { el: s, row: s.querySelector('.it-row'), x: e.clientX, y: e.clientY, dx: 0, on: false }; }, { passive: true });
 document.addEventListener('pointermove', e => {
   if (!SW) return; const dx = e.clientX - SW.x, dy = e.clientY - SW.y;
   if (!SW.on) { if (dx < -12 && Math.abs(dx) > Math.abs(dy) * 1.4) { SW.on = true; SW.el.classList.add('drag'); } else if (Math.abs(dy) > 10 || dx > 12) { SW = null; return; } else return; }
@@ -1546,7 +1779,7 @@ document.addEventListener('pointermove', e => {
 const swEnd = () => {
   if (!SW) return; const s = SW; SW = null; if (!s.on) return;
   SUPPRESS = true; setTimeout(() => SUPPRESS = false, 60);
-  if (s.dx < -96) { s.row.style.transform = 'translateX(-110%)'; setTimeout(() => s.el.dataset.plan ? delPlan(s.el.dataset.plan) : delItem(s.el.dataset.id), 160); }
+  if (s.dx < -96) { s.row.style.transform = 'translateX(-110%)'; setTimeout(() => s.el.dataset.plan ? delPlan(s.el.dataset.plan) : s.el.dataset.goal ? delGoal(s.el.dataset.goal) : delItem(s.el.dataset.id), 160); }
   else { s.el.classList.remove('drag'); s.row.style.transform = ''; }
 };
 document.addEventListener('pointerup', swEnd); document.addEventListener('pointercancel', swEnd);
