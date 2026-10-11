@@ -5,3 +5,5 @@ _test/
 .impeccable/review/
 .playwright-mcp/
 shots/
+tools/.venv-tts/
+tools/tts-models/

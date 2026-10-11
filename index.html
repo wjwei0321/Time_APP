@@ -1008,12 +1008,13 @@ function showDawn() {
   const el = $('#dawn'), q = quoteOf(); if (!q) return;
   const enIdx = q[0] === 'en' ? 1 : 2, zhIdx = enIdx === 1 ? 2 : 1;
   const line = i => i === enIdx ? wordsHTML(q[i]) : (langOf(q, i) === 'en' ? esc(q[i]) : esc(q[i]).replace(/([。！？；])(?=.)/g, '$1<br>'));
-  const canSay = 'speechSynthesis' in window;
+  const canSay = true;
   el.innerHTML = `<div class="dawn-in"><blockquote class="dawn-q"><p class="q1" lang="${langOf(q, 1)}">${line(1)}</p><p class="q2" lang="${langOf(q, 2)}">${line(2)}</p><footer>— ${quoteMeta(q)}</footer>
       <p class="dawn-hint">點英文單字，可以看中文解釋和發音</p></blockquote></div>
-    ${canSay ? `<div class="dawn-tools"><button class="sayb" data-act="say" data-i="${enIdx}" aria-label="朗讀英文">${ic('volume')}英文發音</button><button class="sayb" data-act="say" data-i="${zhIdx}" aria-label="朗讀中文">${ic('volume')}中文朗讀</button></div>` : ''}
+    ${canSay ? `<div class="dawn-tools"><button class="sayb" data-act="say" aria-label="播放英文發音">${ic('volume')}英文發音</button></div>` : ''}
     <button class="dawn-go" data-act="dawn-close" aria-label="進入時屜">${ic('chevron-right')}</button>`;
-  el.dataset.en = q[enIdx]; el.dataset.zh = q[zhIdx]; el.dataset.enI = enIdx;
+  el.dataset.en = q[enIdx]; delete el.dataset.audio;
+  Voice.prep(q[enIdx]).then(src => { if (src && el.dataset.en === q[enIdx]) el.dataset.audio = src; });
   el.hidden = false; el.getBoundingClientRect(); requestAnimationFrame(() => el.classList.add('in'));
   UIP.dawn = quoteKey(); saveUI();
 }
@@ -1037,17 +1038,49 @@ const Speech = {
   },
 };
 if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); } catch (e) {} }
+/* 英文發音：優先播放預先用 Kokoro 神經語音錄好的音檔（像真人說話），沒有音檔才退回瀏覽器內建語音 */
+const Voice = {
+  idx: null, cur: null,
+  load() { return this.idx || (this.idx = fetch('audio/index.json').then(r => r.ok ? r.json() : null).then(j => { if (j) j.wset = new Set(j.w || []); return j; }).catch(() => null)); },
+  async prep(text) {
+    const j = await this.load(); if (!j || !(window.crypto && crypto.subtle)) return null;
+    const b = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(text.trim()));
+    const id = [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 12);
+    return j.s && j.s[id] ? `audio/s/${id}.mp3` : null;
+  },
+  wordSrc(w) {
+    const set = (Voice.ready || {}).wset;
+    if (!set) return null;
+    for (const k of [w.toLowerCase().replace(/’/g, "'"), lemmaOf(w)]) if (set.has(k)) return `audio/w/${k.replace(/'/g, '_')}.mp3`;
+    return null;
+  },
+  stop() { if (this.cur) { this.cur.pause(); this.cur = null; } Speech.stop(); },
+  play(src, { onTime, onEnd, fallback } = {}) {
+    this.stop();
+    const a = new Audio(src); this.cur = a;
+    a.ontimeupdate = () => onTime && onTime(a.currentTime, a.duration);
+    a.onended = () => { if (this.cur === a) this.cur = null; onEnd && onEnd(); };
+    a.onerror = () => { if (this.cur === a) { this.cur = null; fallback && fallback(); } };
+    const p = a.play(); if (p && p.catch) p.catch(() => { if (this.cur === a) { this.cur = null; fallback && fallback(); } });
+  },
+};
+Voice.load().then(j => { Voice.ready = j; });
 function sayLine(btn) {
-  const el = $('#dawn'), i = +btn.dataset.i, isEn = String(i) === el.dataset.enI;
-  if (btn.classList.contains('on')) return Speech.stop();
-  const text = isEn ? el.dataset.en : el.dataset.zh;
-  let onWord = null;
-  if (isEn) {  // 唸到哪個字，就把那個字標出來
-    const ws = $$('#dawn .w'), starts = []; let k = 0;
-    for (const w of ws) { const at = text.indexOf(w.dataset.w, k); starts.push(at); k = at + w.dataset.w.length; }
-    onWord = ci => { let idx = -1; for (let j = 0; j < starts.length; j++) if (starts[j] <= ci) idx = j; ws.forEach((w, j) => w.classList.toggle('speaking', j === idx)); };
-  }
-  if (Speech.say(text, isEn ? 'en' : 'zh', { onWord })) btn.classList.add('on');
+  const el = $('#dawn'), text = el.dataset.en;
+  if (btn.classList.contains('on')) { Voice.stop(); btn.classList.remove('on'); $$('.w.speaking').forEach(w => w.classList.remove('speaking')); return; }
+  const ws = $$('#dawn .w'), starts = []; let k = 0;
+  for (const w of ws) { const at = text.indexOf(w.dataset.w, k); starts.push(at); k = at + w.dataset.w.length; }
+  const mark = ci => { let idx = -1; for (let j = 0; j < starts.length; j++) if (starts[j] <= ci) idx = j; ws.forEach((w, j) => w.classList.toggle('speaking', j === idx)); };
+  const done = () => { btn.classList.remove('on'); ws.forEach(w => w.classList.remove('speaking')); };
+  const robot = () => { if (Speech.say(text, 'en', { onWord: mark, done })) btn.classList.add('on'); else done(); };
+  if (!el.dataset.audio) return robot();
+  // 依播放進度估算唸到哪個字（音檔沒有逐字時間，用字數比例推算）
+  Voice.play(el.dataset.audio, { onTime: (t, d) => { if (d) mark(Math.max(0, (t - .08) / (d - .25)) * text.length); }, onEnd: done, fallback: robot });
+  btn.classList.add('on');
+}
+function sayWord(w) {
+  const src = Voice.wordSrc(w);
+  if (src) Voice.play(src, { fallback: () => Speech.say(w, 'en', { rate: .8 }) }); else Speech.say(w, 'en', { rate: .8 });
 }
 /* 單字解釋：先查內建的中文解釋，再上網補音標與英文釋義（查不到也沒關係） */
 const lemmaOf = w => {
@@ -1084,10 +1117,10 @@ function showWord(btn) {
   let x = Math.min(Math.max(16, r.left + r.width / 2 - pw / 2), innerWidth - pw - 16), y = r.bottom + 10;
   if (y + ph > innerHeight - 16) y = Math.max(16, r.top - ph - 10);
   pop.style.left = x + 'px'; pop.style.top = y + 'px';
-  Speech.say(raw, 'en', { rate: .8 });
+  sayWord(raw);
   lookupDict(base).then(d => { if (!d || !document.body.contains(pop)) return; if (d.ipa) $('#wpIpa', pop).textContent = d.ipa; if (d.def && !zh) $('#wpEn', pop).textContent = (d.pos ? d.pos + '. ' : '') + d.def; });
 }
-function hideDawn() { Speech.stop(); closeWord(); const el = $('#dawn'); el.classList.remove('in'); setTimeout(() => { el.hidden = true; }, 360); }
+function hideDawn() { Voice.stop(); closeWord(); const el = $('#dawn'); el.classList.remove('in'); setTimeout(() => { el.hidden = true; }, 360); }
 
 /* ── shell ───────────────────────────────── */
 const TABS = { today: ['今天', 'clock'], drawers: ['抽屜', 'layout-rows'], goals: ['目標', 'target'], review: ['回顧', 'chart-bar'] };
@@ -1948,7 +1981,7 @@ document.addEventListener('click', e => {
     case 't3-rm': { D.top3[d] = top3Of(d).filter(x => x !== el.dataset.id); save(); return render(); }
     case 'dawn': return showDawn();
     case 'word': return showWord(el);
-    case 'say-word': return Speech.say(el.dataset.w, 'en', { rate: .8 });
+    case 'say-word': return sayWord(el.dataset.w);
     case 'say': closeWord(); return sayLine(el);
     case 'dawn-close': return hideDawn();
     case 'item': { const s = itemSheet(el.dataset.id); if (s) openSheet(s); return; }
