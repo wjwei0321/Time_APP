@@ -97,6 +97,13 @@ button{background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:trans
 .head-r{display:flex;gap:8px;align-items:center}
 .gear{width:38px;height:38px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-2);flex:none}
 .gear .ti{width:19px;height:19px}
+.gear{position:relative}
+.gear[data-st="err"]::after{content:"";position:absolute;top:1px;right:1px;width:9px;height:9px;border-radius:50%;background:var(--vermilion);border:2px solid var(--paper)}
+.sync-dot{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-2)}
+.sync-dot i{width:8px;height:8px;border-radius:50%;background:var(--ink-3)}
+.sync-dot[data-st="ok"] i{background:#3BA57F} .sync-dot[data-st="busy"] i{background:var(--gold);animation:pulse 1s infinite} .sync-dot[data-st="err"] i{background:var(--vermilion)}
+@keyframes pulse{50%{opacity:.3}}
+.sync-code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:20px;font-weight:600;letter-spacing:.1em;color:var(--pool)}
 .back{display:inline-flex;align-items:center;gap:2px;color:var(--pool);font-size:15px;margin:0 0 6px -6px;padding:4px 6px}
 
 /* ── 此刻的抽屜（主視覺）──────────────────────── */
@@ -639,12 +646,19 @@ function clock() {
 const today = () => ymd(clock());
 const nowMin = () => { const d = clock(); return d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60; };
 
+/* ── 雲端同步（與細水長流相同：Supabase＋同步密語）──────── */
+const CONFIG = {
+  SUPA_URL: '',  // Supabase 專案網址，例如 https://xxxx.supabase.co
+  SUPA_KEY: '',  // Publishable key（sb_publishable_ 開頭，公開也安全；資料只能透過 shiti_get/put 加密語 id 存取）
+};
+
 /* ── data ────────────────────────────────── */
 const KEY = 'shiti.data.v1', UIKEY = 'shiti.ui.v1';
 let D = null;
 try { const d = JSON.parse(localStorage.getItem(KEY)); if (d && d.v === 1) D = d; } catch (e) {}
 let UIP = {}; try { UIP = JSON.parse(localStorage.getItem(UIKEY)) || {}; } catch (e) {}
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} };
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} if (typeof Sync !== 'undefined') Sync.schedule(); };
+const touchPrefs = () => { D.prefs.u = now(); };
 const saveUI = () => { try { localStorage.setItem(UIKEY, JSON.stringify(UIP)); } catch (e) {} };
 const UI = { tab: 'today', cabDay: 0, wkSel: null, rvWeek: 0, opened: false, lastSeg: undefined };
 
@@ -1292,7 +1306,8 @@ function pageSettings() {
     + `<section class="block"><h2>外觀</h2><div class="panel"><div class="swatches">${THEMES.map(([k, l, c]) => `<button class="sw-btn${(UIP.theme || 'celadon') === k ? ' on' : ''}" data-act="theme" data-v="${k}"><i style="background:${c}"></i>${l}</button>`).join('')}</div>
       <div class="seg wide" style="margin-top:16px">${[['auto', '跟系統'], ['light', '白天'], ['dark', '夜晚']].map(([k, l]) => `<button class="${(UIP.mode || 'auto') === k ? 'on' : ''}" data-act="mode" data-v="${k}">${l}</button>`).join('')}</div></div></section>`
     + `<section class="block"><h2>資料</h2><div class="rows">
-      <button class="set-row" data-act="export"><span>匯出備份<small>資料只存在這台裝置</small></span>${ic('download')}</button>
+      <button class="set-row" data-act="sync"><span>雲端同步<small>手機和電腦用同一組密語，資料自動合併</small></span>${syncDot()}</button>
+      <button class="set-row" data-act="export"><span>匯出備份<small>${Sync.ready() ? '另存一份在這台裝置' : '資料只存在這台裝置'}</small></span>${ic('download')}</button>
       <label class="set-row" style="cursor:pointer"><span>匯入備份</span>${ic('upload')}<input type="file" accept="application/json,.json" data-act="import" hidden></label>
       ${D.demo ? `<button class="set-row" data-act="clear-demo"><span>清除示範紀錄<small>只刪掉範例回顧資料，抽屜與事項都留著</small></span>${ic('trash')}</button>` : `<button class="set-row" data-act="seed-demo"><span>放入一週示範紀錄<small>看看回顧頁的樣子，之後可清除</small></span>${ic('sparkles')}</button>`}
       <button class="set-row" data-act="reset" style="color:var(--vermilion)"><span>全部重來</span>${ic('refresh')}</button></div></section>`
@@ -1567,6 +1582,106 @@ function confirmSheet(title, body, okLabel, fn) {
     mount: sh => { sh.onConfirm = () => { closeSheet(true); fn(); }; } });
 }
 
+/* ── 同步：資料先存在本機；連上雲端後，每台裝置輸入同一組同步密語就會自動合併 ── */
+const LS_SYNC = 'shiti.sync.v1';
+const lsGetJ = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
+const lsSetJ = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+async function hashId(pass) {
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('shiti:' + pass));
+  return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+const syncCode = id => id ? id.slice(0, 6).toUpperCase().replace(/(...)(...)/, '$1 $2') : '—';
+function mergeList(a = [], b = []) {
+  const m = new Map(a.map(x => [x.id, x]));
+  for (const y of b) { const x = m.get(y.id); if (!x || (y.u || 0) > (x.u || 0)) m.set(y.id, y); }
+  return [...m.values()];
+}
+function mergeDoc(a, b) {
+  const newer = (x, y, k = 'u') => ((y && y[k]) || 0) > ((x && x[k]) || 0) ? y : x;
+  const prefs = { ...newer(a.prefs, b.prefs) };
+  prefs.closed = { ...(a.prefs.closed || {}), ...(b.prefs.closed || {}) };
+  const out = { v: 1, prefs, skips: { ...(a.skips || {}), ...(b.skips || {}) }, top3: { ...(a.top3 || {}), ...(b.top3 || {}) },
+    vision: newer(a.vision || {}, b.vision || {}, 'at') };
+  for (const k of ['drawers', 'items', 'logs', 'plans', 'recs', 'goals']) out[k] = mergeList(a[k], b[k]);
+  if (a.demo || b.demo) out.demo = 1;
+  return out;
+}
+function stable(o) {
+  if (Array.isArray(o)) return '[' + o.map(stable).join(',') + ']';
+  if (o && typeof o === 'object') return '{' + Object.keys(o).sort().map(k => JSON.stringify(k) + ':' + stable(o[k])).join(',') + '}';
+  return JSON.stringify(o);
+}
+const SYNC_LBL = { off: '只在這台裝置', ok: '已同步', busy: '同步中', err: '沒有同步成功' };
+const Sync = {
+  st: 'off', busy: false, dirty: false, timer: null, err: '', at: 0,
+  cfg() { const c = lsGetJ(LS_SYNC) || {}; return { url: (c.url || CONFIG.SUPA_URL || '').replace(/\/+$/, ''), key: c.key || CONFIG.SUPA_KEY || '', id: c.id || '' }; },
+  ready() { const c = this.cfg(); return !!(c.url && c.key && c.id); },
+  set(st) { this.st = st; $$('.gear').forEach(g => { g.dataset.st = st; }); $$('.sync-dot').forEach(el => { el.dataset.st = st; el.lastChild.textContent = SYNC_LBL[st]; }); },
+  async rpc(fn, body) {
+    const c = this.cfg(), h = { 'Content-Type': 'application/json', apikey: c.key };
+    if (!c.key.startsWith('sb_')) h.Authorization = 'Bearer ' + c.key;
+    const r = await fetch(`${c.url}/rest/v1/rpc/${fn}`, { method: 'POST', headers: h, body: JSON.stringify(body) });
+    const text = await r.text();
+    if (!r.ok) throw new Error(`${r.status} ${text.slice(0, 160)}`);
+    return text ? JSON.parse(text) : null;
+  },
+  schedule() { if (!this.ready() || !D) return; this.dirty = true; clearTimeout(this.timer); this.timer = setTimeout(() => this.run(), 1500); },
+  async run(force) {
+    if (!this.ready() || !D || (this.busy && !force)) return false;
+    this.busy = true; this.set('busy');
+    try {
+      const id = this.cfg().id, remote = await this.rpc('shiti_get', { p_id: id }), before = stable(D);
+      if (remote && remote.v === 1) { D = mergeDoc(D, remote); migrate(); }
+      const after = stable(D);
+      if (after !== before) { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} if (!sheetOpen()) render(); }
+      if (!remote || stable(remote) !== after) await this.rpc('shiti_put', { p_id: id, p_payload: D });
+      this.dirty = false; this.err = ''; this.at = Date.now(); this.set('ok'); return true;
+    } catch (e) { console.warn('sync', e); this.err = String(e.message || e); this.set('err'); return false; }
+    finally { this.busy = false; if (this.dirty) this.schedule(); }
+  },
+};
+const syncDot = () => `<span class="sync-dot" data-st="${Sync.st}"><i></i>${SYNC_LBL[Sync.st]}</span>`;
+function syncSheet() {
+  let confirmNew = false;
+  return {
+    html: () => {
+      const c = Sync.cfg();
+      if (!c.url || !c.key) return `<div class="sh-head"><h3>雲端同步</h3></div><p class="note">雲端資料庫還沒設定好。設定完成後，這裡就能輸入同步密語，讓手機和電腦看到同一份抽屜與紀錄。</p>`;
+      if (Sync.ready()) return `<div class="sh-head"><h3>雲端同步</h3></div>
+        <div class="panel"><div class="kv" style="display:flex;justify-content:space-between;align-items:center"><span>${Sync.st === 'err' ? '連線失敗' : '已連接'}</span>${syncDot()}</div>
+          ${Sync.err ? `<p class="note" style="color:var(--vermilion)">${esc(Sync.err)}</p>` : ''}${Sync.at ? `<p class="note">上次同步 ${new Date(Sync.at).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}</p>` : ''}
+          <p class="note" style="margin-top:10px">裝置代碼 <span class="sync-code">${syncCode(c.id)}</span></p>
+          <p class="note">其他裝置要看到一模一樣的代碼，才是同一份資料。代碼不同，代表密語有一點不一樣（大小寫、空格）。</p></div>
+        <div class="two-btn" style="margin-top:16px"><button class="btn ghost" data-act="sy-off">中斷同步</button><button class="btn" data-act="sy-now">立即同步</button></div>`;
+      return `<div class="sh-head"><h3>雲端同步</h3></div>
+        <p class="note">資料一直都先存在這台裝置。手機和電腦輸入同一組「同步密語」，抽屜、目標和紀錄就會自動合併。密語不會上傳，只有它算出來的代碼會。</p>
+        <label class="field"><span>同步密語（至少 8 個字，每台裝置輸入相同的）</span><input class="input" id="syPass" type="password" autocomplete="off" placeholder="例如：一句只有你知道的話"></label>
+        <button class="linkbtn" data-act="sy-show" style="color:var(--pool);font-size:13px;margin:8px 4px 0">顯示密語</button>
+        <p class="note" id="syErr" style="color:var(--vermilion);min-height:20px"></p>
+        <button class="btn" data-act="sy-on" style="margin-top:8px">連接</button>`;
+    },
+    mount: sh => {
+      const p = $('#syPass', sh); if (p) { setTimeout(() => p.focus(), 380); p.addEventListener('input', () => { confirmNew = false; $('[data-act="sy-on"]', sh).textContent = '連接'; }); }
+      sh.onSync = async (act, el) => {
+        if (act === 'sy-show') { p.type = p.type === 'password' ? 'text' : 'password'; el.textContent = p.type === 'password' ? '顯示密語' : '隱藏密語'; }
+        if (act === 'sy-now') { await Sync.run(true); drawSheet(); }
+        if (act === 'sy-off') { const c = lsGetJ(LS_SYNC) || {}; delete c.id; lsSetJ(LS_SYNC, c); Sync.set('off'); closeSheet(); toast('已中斷，資料留在這台裝置'); }
+        if (act === 'sy-on') {
+          const pass = p.value, err = $('#syErr', sh);
+          if (pass.length < 8) { err.textContent = '同步密語至少 8 個字。'; return; }
+          if (!(window.crypto && crypto.subtle)) { err.textContent = '這個瀏覽器不支援加密雜湊，請用 https 網址開啟。'; return; }
+          el.textContent = '連接中…'; const id = await hashId(pass), c = lsGetJ(LS_SYNC) || {};
+          let found = null; try { lsSetJ(LS_SYNC, { ...c, id }); found = await Sync.rpc('shiti_get', { p_id: id }); } catch (e) { lsSetJ(LS_SYNC, c); err.textContent = '連不上資料庫：' + e.message; el.textContent = '連接'; return; }
+          if (!found && !confirmNew) { lsSetJ(LS_SYNC, c); confirmNew = true; err.innerHTML = '雲端還沒有用這組密語的資料。<br>如果另一台裝置已經在用，代表密語不一樣，請按「顯示密語」逐字對照。<br>確定是第一次設定，再按一次下面的按鈕。'; el.textContent = '用這組密語開始同步'; return; }
+          const ok = await Sync.run(true);
+          if (ok) { closeSheet(); toast(found ? '已連接，資料合併好了' : '已建立雲端資料，其他裝置輸入同一組密語即可'); }
+          else { lsSetJ(LS_SYNC, c); Sync.set('off'); err.textContent = '同步失敗：' + Sync.err; el.textContent = '連接'; }
+        }
+      };
+    },
+  };
+}
+
 /* ── 語音（Web Speech，zh-TW）──────────────── */
 let REC = null;
 function stopVoice() { if (REC) { try { REC.stop(); } catch (e) {} REC = null; } $$('.mic.on').forEach(b => b.classList.remove('on')); }
@@ -1660,6 +1775,7 @@ document.addEventListener('click', e => {
   if (act.startsWith('gp-') && sh.onGap) return sh.onGap(act, el);
   if (act.startsWith('gs-') && sh.onGoal) return sh.onGoal(act, el);
   if (act.startsWith('wp-') && sh.onWeek) return sh.onWeek(act, el);
+  if (act.startsWith('sy-') && sh.onSync) return sh.onSync(act, el);
   switch (act) {
     case 'close-sheet': return closeSheet();
     case 'confirm-ok': return sh.onConfirm && sh.onConfirm();
@@ -1689,6 +1805,7 @@ document.addEventListener('click', e => {
     case 'gap': { const s = gapSheet(el.dataset.d || d, el.dataset.key); if (s) openSheet(s); return; }
     case 'rec': { const s = recordSheet(el.dataset.id); if (s) openSheet(s); return; }
     case 'rv-all': UI.rvAll = true; return render();
+    case 'sync': return openSheet(syncSheet());
     case 'goal': { const s = goalSheet(el.dataset.id); if (s) openSheet(s); return; }
     case 'gl-star': { const g = goalById(el.dataset.id); if (g && toggleCore(g)) { render(); if (g.core) toast(`「${g.title}」成為核心目標`); } return; }
     case 'gl-add': return addGoalFromInput();
@@ -1716,7 +1833,7 @@ document.addEventListener('click', e => {
       it.when = el.dataset.to === 'tomorrow' && x && x.days.includes(dow(tm)) ? tm : 'next'; it.u = now(); save(); UI.opened = true; render();
       return toast(it.when === 'next' ? `放回「${x ? x.name : ''}」，下次打開時再做` : '移到明天了');
     }
-    case 'close-day': D.prefs.closed[d] = now(); save(); UI.opened = true; render(); return toast('收好了。晚安');
+    case 'close-day': D.prefs.closed[d] = now(); touchPrefs(); save(); UI.opened = true; render(); return toast('收好了。晚安');
     case 'wk': UI.wkSel = UI.wkSel === +el.dataset.w ? null : +el.dataset.w; return render();
     case 'ics': return exportICS();
     case 'pk-min': $$('#pkMins .chip').forEach(b => b.classList.toggle('on', b === el)); return;
@@ -1732,7 +1849,7 @@ document.addEventListener('click', e => {
   }
 });
 document.addEventListener('change', e => {
-  const p = e.target.dataset.pref; if (p) { if (e.target.value) { D.prefs[p] = e.target.value; save(); toast('已更新'); } return; }
+  const p = e.target.dataset.pref; if (p) { if (e.target.value) { D.prefs[p] = e.target.value; touchPrefs(); save(); toast('已更新'); } return; }
   if (e.target.dataset.act === 'import') {
     const f = e.target.files[0]; if (!f) return;
     f.text().then(t => { const d = JSON.parse(t); if (!d || d.v !== 1 || !Array.isArray(d.drawers)) throw 0; D = d; migrate(); save(); render(); toast('匯入完成'); }).catch(() => toast('這不是時屜的備份檔'));
@@ -1743,7 +1860,7 @@ document.addEventListener('input', e => {
   const k = e.target.dataset.range; if (!k) return;
   const [, , min, max, , fmt] = RANGES[k], v = +e.target.value;
   e.target.style.setProperty('--p', `${(v - min) / (max - min) * 100}%`); const o = $('#o-' + k); if (o) o.textContent = fmt(v);
-  D.prefs[k] = v; save();
+  D.prefs[k] = v; touchPrefs(); save();
 });
 function addGoalFromInput() {
   const inp = $('#glText'), t = inp.value.trim(); if (!t) return inp.focus();
@@ -1761,11 +1878,11 @@ function addPocket() {
   toast('放進留白清單了'); setTimeout(() => $('#pkText')?.focus(), 50);
 }
 async function toggleNotify() {
-  if (D.prefs.notify) { D.prefs.notify = false; save(); return render(); }
+  if (D.prefs.notify) { D.prefs.notify = false; touchPrefs(); save(); return render(); }
   if (!('Notification' in window)) return toast('這個瀏覽器不支援通知，請改用匯出到行事曆');
   let p = Notification.permission; if (p === 'default') { try { p = await Notification.requestPermission(); } catch (e) {} }
   if (p !== 'granted') return toast('通知被封鎖了，可以改用匯出到行事曆');
-  D.prefs.notify = true; save(); render(); toast('抽屜打開時會通知你');
+  D.prefs.notify = true; touchPrefs(); save(); render(); toast('抽屜打開時會通知你');
 }
 
 /* 往左滑刪除 */
@@ -1838,8 +1955,9 @@ function showOnboarding() {
 applyTheme();
 if (!D) showOnboarding();
 else { migrate(); save(); rollOver(); render(); UI.opened = true; UI.lastSeg = curSeg()?.key || 'none'; if (UIP.dawn !== today()) showDawn(); }
-setInterval(() => { if (!D) return; refreshLive(); checkNotify(); }, 20000);
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && D && !sheetOpen()) { rollOver(); UI.opened = true; render(); if (UIP.dawn !== today() && $('#ob').hidden) showDawn(); } });
+setInterval(() => { if (!D) return; refreshLive(); checkNotify(); if (document.visibilityState === 'visible' && !Sync.dirty) Sync.run(); }, 20000);
+if (Sync.ready()) Sync.run(); else Sync.set('off');
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && D) Sync.run(); if (document.visibilityState === 'visible' && D && !sheetOpen()) { rollOver(); UI.opened = true; render(); if (UIP.dawn !== today() && $('#ob').hidden) showDawn(); } });
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>

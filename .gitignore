@@ -3,3 +3,5 @@ Thumbs.db
 _test/
 .vercel
 .impeccable/review/
+.playwright-mcp/
+shots/
