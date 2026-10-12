@@ -379,8 +379,9 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area
 .fab .ti{width:28px;height:28px;stroke-width:2.4}
 
 /* sheets */
-.scrim{position:fixed;inset:0;background:var(--scrim);opacity:0;pointer-events:none;transition:opacity .28s;z-index:71}
-.scrim.open{opacity:1;pointer-events:auto}
+/* 關閉時連底色一起拿掉並隱藏：iOS Safari 會拿全螢幕固定元素的底色去染頂部狀態列，透明度 0 也會被取樣 */
+.scrim{position:fixed;inset:0;background:transparent;visibility:hidden;pointer-events:none;transition:background-color .28s,visibility 0s .28s;z-index:71}
+.scrim.open{background:var(--scrim);visibility:visible;pointer-events:auto;transition:background-color .28s}
 .sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:480px;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain;background:var(--paper);border-radius:30px 30px 0 0;transform:translateY(105%);transition:transform .38s var(--ease);z-index:72;padding:0 16px calc(18px + env(safe-area-inset-bottom));scrollbar-width:none}
 .sheet::-webkit-scrollbar{display:none}
 .sheet.open{transform:none}
