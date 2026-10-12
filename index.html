@@ -32,9 +32,9 @@ html{
 }
 /* 四種色系 × 白天／夜晚（與細水長流相同）。朱色＝超量／流失，金色＝用心留白 */
 html[data-mode="light"]{--vermilion:#C2412A;--vermilion-soft:#F7E0D9;--gold:#9A7522;--gold-soft:#F1E7CC;--scrim:rgba(14,22,28,.42);color-scheme:light;
-  --t-moss:#5E7F3A;--t-amber:#9A7522;--t-slate:#4E6385;--t-plum:#7D4F7A;--t-ink:#5B6470;--shade:rgba(20,30,28,.16)}
+  --t-moss:#5E7F3A;--t-amber:#9A7522;--t-slate:#4E6385;--t-plum:#7D4F7A;--t-ink:#5B6470;--t-sky:#2E7DA1;--t-rose:#B0507A;--shade:rgba(20,30,28,.16)}
 html[data-mode="dark"]{--vermilion:#F0826B;--vermilion-soft:#3A201A;--gold:#DDBB62;--gold-soft:#30291A;--scrim:rgba(0,0,0,.55);color-scheme:dark;
-  --t-moss:#A8C77E;--t-amber:#DDBB62;--t-slate:#9DB2D8;--t-plum:#CFA0CB;--t-ink:#AEB6C0;--shade:rgba(0,0,0,.5)}
+  --t-moss:#A8C77E;--t-amber:#DDBB62;--t-slate:#9DB2D8;--t-plum:#CFA0CB;--t-ink:#AEB6C0;--t-sky:#8EC9E6;--t-rose:#E7A2BE;--shade:rgba(0,0,0,.5)}
 /* 青瓷 celadon (default) */
 html[data-mode="light"]{
   --paper:#F1F4F0;--surface:#FFFFFF;--surface-2:#E5ECE7;--ink:#1D2B28;--ink-2:#51625C;--ink-3:#6E7D78;--line:#DAE2DD;
@@ -71,9 +71,14 @@ html[data-palette="ginkgo"][data-mode="dark"]{
   --paper:#16140C;--surface:#1F1C11;--surface-2:#2A2616;--ink:#F2EDDC;--ink-2:#C2BA9C;--ink-3:#958D70;--line:#353020;
   --pool:#F0C94A;--pool-ink:#16140C;--pool-soft:#3A3115;--celadon:#6B5A1E;--celadon-2:#57491A;--gold:#7FC7B8;--gold-soft:#17302B}
 html{--t-pool:var(--pool)}
-[data-tone="pool"]{--tone:var(--pool)} [data-tone="moss"]{--tone:var(--t-moss)} [data-tone="amber"]{--tone:var(--t-amber)}
-[data-tone="slate"]{--tone:var(--t-slate)} [data-tone="plum"]{--tone:var(--t-plum)} [data-tone="ink"]{--tone:var(--t-ink)}
+[data-tone^="pool"]{--tone:var(--pool)} [data-tone^="moss"]{--tone:var(--t-moss)} [data-tone^="amber"]{--tone:var(--t-amber)}
+[data-tone^="slate"]{--tone:var(--t-slate)} [data-tone^="plum"]{--tone:var(--t-plum)} [data-tone^="ink"]{--tone:var(--t-ink)}
+[data-tone^="sky"]{--tone:var(--t-sky)} [data-tone^="rose"]{--tone:var(--t-rose)}
 [data-tone]{--tone-soft:color-mix(in srgb,var(--tone) 14%,var(--surface))}
+/* 外框款（色名後加 -o）：白底＋同色外框 */
+[data-tone$="-o"]{--tone-soft:var(--surface)}
+[data-tone$="-o"] .ico,.ico[data-tone$="-o"],[data-tone$="-o"] .ebtn{box-shadow:inset 0 0 0 1.5px var(--tone)}
+.ribbon i[data-tone$="-o"],.wk .col i[data-tone$="-o"],.wkc .col i[data-tone$="-o"]{background:var(--surface);box-shadow:inset 0 0 0 2px var(--tone)}
 
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
@@ -406,9 +411,11 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area
 .days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
 .days button{height:42px;border-radius:13px;background:var(--surface);border:1px solid var(--line);font-size:15px;color:var(--ink-2)}
 .days button.on{background:var(--tone,var(--pool));border-color:transparent;color:var(--surface);font-weight:600}
-.tones{display:flex;gap:12px}
-.tones button{width:36px;height:36px;border-radius:50%;background:var(--tone);box-shadow:0 0 0 1px var(--line)}
+.tones{display:grid;grid-template-columns:repeat(8,minmax(0,34px));gap:12px 10px;justify-content:start}
+.tones button{width:100%;aspect-ratio:1;border-radius:50%;background:var(--tone);box-shadow:0 0 0 1px var(--line)}
 .tones button.on{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}
+.tones button[data-tone$="-o"]{background:var(--surface);box-shadow:inset 0 0 0 3px var(--tone)}
+.tones button[data-tone$="-o"].on{box-shadow:inset 0 0 0 3px var(--tone),0 0 0 2px var(--paper),0 0 0 4px var(--ink)}
 .igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:4px;max-height:200px;overflow-y:auto;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:8px;scrollbar-width:none}
 .igrid button{aspect-ratio:1;border-radius:12px;display:grid;place-items:center;color:var(--ink-2)}
 .igrid button.on{background:var(--tone);color:var(--surface)}
@@ -1329,13 +1336,13 @@ function pageDrawers() {
 /* ── 留白 ────────────────────────────────── */
 function pagePocket() {
   const d = today(), all = live(D.items).filter(it => it.drawer === 'pocket' && showsOn(it, d));
-  const groups = [['5 分鐘內', it => (it.mins || 5) <= 5], ['15 分鐘內', it => it.mins > 5 && it.mins <= 15], ['半小時以上', it => it.mins > 15]];
+  const groups = [['5 分鐘內', it => (it.mins || 5) <= 5], ['15 分鐘內', it => it.mins > 5 && it.mins <= 15], ['20 分鐘以上', it => it.mins > 15]];
   return head('留白清單', '空出來的時間，不必填滿', drSeg('pocket'))
     + `<section class="panel"><p class="say" style="font-size:19px">留白不是剩下的時間，<br>是你選擇空下來的時間。</p>
       <p class="note" style="margin-top:8px">兩個抽屜之間的空檔，可以從這裡挑一件小事；什麼都不做也很好。只要是你選的，就不算流失。</p></section>`
     + `<section class="block"><h2>放一件小事</h2><div class="panel" style="padding:12px">
       <div class="qa-in"><input class="input" id="pkText" placeholder="例如：伸展、回一則訊息" maxlength="40" enterkeyhint="done"><button class="mic" data-act="pk-add" aria-label="加入留白清單">${ic('plus')}</button></div>
-      <div class="chips" id="pkMins" style="margin-top:10px">${[2, 5, 10, 15, 30].map(m => `<button class="chip${m === 5 ? ' on' : ''}" data-act="pk-min" data-m="${m}">${m} 分</button>`).join('')}</div></div></section>`
+      <div class="chips" id="pkMins" style="margin-top:10px">${[2, 5, 10, 15, 20, 30].map(m => `<button class="chip${m === 5 ? ' on' : ''}" data-act="pk-min" data-m="${m}">${m} 分</button>`).join('')}</div></div></section>`
     + groups.map(([l, f]) => { const xs = all.filter(f).sort((a, b) => (isDone(a, d) - isDone(b, d)) || (a.mins || 0) - (b.mins || 0)); return xs.length ? `<section class="block"><h2>${l}<small>${xs.length} 件</small></h2><div class="rows">${xs.map(it => itemRow(it, d)).join('')}</div></section>` : ''; }).join('')
     + (all.length ? `<p class="note faint" style="margin:14px 6px 0;font-size:12px">往左滑可以刪除。「常備」的事每天都會回來。</p>` : `<div class="panel empty" style="margin-top:20px"><div class="e-big">清單是空的</div>放幾件 5 到 15 分鐘的小事，留白時就不必拿起手機想。</div>`);
 }
@@ -1477,7 +1484,9 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheetOpen(
 })();
 
 /* 抽屜設定 */
-const TONES = ['pool', 'moss', 'amber', 'slate', 'plum', 'ink'];
+const TONES_SOLID = ['pool', 'moss', 'amber', 'slate', 'plum', 'ink', 'sky', 'rose'];
+const TONES = [...TONES_SOLID, ...TONES_SOLID.map(t => t + '-o')];  // 第二排：同色外框、白底
+const TONE_ZH = { pool: '主色', moss: '苔綠', amber: '琥珀', slate: '石藍', plum: '梅紫', ink: '墨灰', sky: '天青', rose: '玫瑰' };
 const DR_ICONS = ['sunrise', 'coffee', 'focus-2', 'briefcase', 'brain', 'book', 'book-2', 'notebook', 'writing', 'school', 'code', 'device-laptop', 'presentation', 'message', 'mail', 'phone', 'users', 'users-group', 'heart', 'home', 'baby-carriage', 'dog', 'tools-kitchen-2', 'bowl', 'salad', 'walk', 'run', 'bike', 'barbell', 'yoga', 'stretching', 'swimming', 'plant', 'tree', 'leaf', 'palette', 'music', 'headphones', 'camera', 'brush', 'checklist', 'clipboard-list', 'report-analytics', 'calculator', 'wallet', 'shopping-cart', 'car', 'bath', 'bed', 'moon', 'sunset', 'sparkles', 'droplet', 'pray', 'armchair', 'device-tv', 'device-gamepad-2', 'target', 'bulb'].filter(n => ICONS[n]);
 function drawerChecks(x) {
   const out = [], a = toMin(x.start), b = toMin(x.end), P = D.prefs;
@@ -1517,7 +1526,7 @@ function drawerSheet(id) {
       <div class="igrid" id="drIcons" ${pick ? '' : 'hidden'} style="margin-top:10px">${DR_ICONS.map(n => `<button class="${n === X.icon ? 'on' : ''}" data-act="dr-icon" data-v="${n}" aria-label="${n}">${ic(n)}</button>`).join('')}</div>
       <label class="field"><span>時間</span><div class="times"><input class="input" type="time" id="drStart" value="${X.start}" step="300"><span class="to">到</span><input class="input" type="time" id="drEnd" value="${X.end}" step="300"></div></label>
       <div class="field"><span>哪幾天打開</span><div class="days">${[1, 2, 3, 4, 5, 6, 7].map(w => `<button class="${X.days.includes(w) ? 'on' : ''}" data-act="dr-day" data-w="${w}" aria-pressed="${X.days.includes(w)}">${WD[w]}</button>`).join('')}</div></div>
-      <div class="field"><span>顏色</span><div class="tones">${TONES.map(t => `<button data-tone="${t}" class="${t === X.tone ? 'on' : ''}" data-act="dr-tone" data-v="${t}" aria-label="${t}"></button>`).join('')}</div></div>
+      <div class="field"><span>顏色</span><div class="tones">${TONES.map(t => `<button data-tone="${t}" class="${t === X.tone ? 'on' : ''}" data-act="dr-tone" data-v="${t}" aria-label="${TONE_ZH[t.replace('-o', '')]}${t.endsWith('-o') ? '外框' : ''}"></button>`).join('')}</div></div>
       <div class="checks" id="drChecks" aria-live="polite">${checksHTML()}</div>
       ${src ? `<div class="field"><span>抽屜裡的事</span><div class="rows">${items.map(it => itemRow(it, today())).join('')}<button class="row" data-act="add" data-drawer="${X.id}" style="color:var(--pool)">${ic('plus')}<span class="mid">放一件事進來</span></button></div></div>` : `<p class="note faint" style="margin-top:12px">存好之後，就能往抽屜裡放事情。</p>`}
       <div style="margin-top:20px"><button class="btn" data-act="dr-save">${src ? '儲存' : '放進櫃子'}</button>${src ? `<button class="btn danger" data-act="dr-del">${ic('trash')}刪掉這個抽屜</button>` : ''}</div></div>`;
@@ -1581,7 +1590,7 @@ function addSheet(pre = {}) {
       <div class="parsed" id="qaParsed"></div>
       <div class="field"><span>放進</span><div class="scroll-x" id="qaDr">${order.map(id => { const x = drawerById(id); return `<button class="chip tone${S.dr === id ? ' on' : ''}" data-tone="${x.tone}" data-act="qa-dr" data-v="${id}">${ic(x.icon)}${esc(x.name)}</button>`; }).join('')}<button class="chip${S.dr === 'pocket' ? ' on' : ''}" data-act="qa-dr" data-v="pocket">${ic('leaf')}留白清單</button></div></div>
       <div class="field"><span>什麼時候</span><div class="seg wide" id="qaWhen"></div></div>
-      <div class="field"><span>大約要多久</span><div class="chips" id="qaMins">${[null, 5, 15, 30, 60].map(m => `<button class="chip${S.mins === m ? ' on' : ''}" data-act="qa-min" data-v="${m ?? ''}">${m ? `${m} 分` : '不估'}</button>`).join('')}</div></div>
+      <div class="field"><span>大約要多久</span><div class="chips" id="qaMins">${[null, 5, 15, 20, 30, 60].map(m => `<button class="chip${S.mins === m ? ' on' : ''}" data-act="qa-min" data-v="${m ?? ''}">${m ? `${m} 分` : '不估'}</button>`).join('')}</div></div>
       <p class="note faint" id="qaHint" style="margin:12px 4px 0;font-size:12px;min-height:18px"></p>
       <button class="btn" data-act="qa-save" style="margin-top:10px">放進抽屜</button>`,
     mount: sh => {
@@ -1626,7 +1635,7 @@ function itemSheet(id) {
       <input class="input" id="itT" value="${esc(X.title)}" maxlength="60">
       <div class="field"><span>放在</span><div class="scroll-x">${live(D.drawers).sort((a, b) => toMin(a.start) - toMin(b.start)).map(x => `<button class="chip tone${X.drawer === x.id ? ' on' : ''}" data-tone="${x.tone}" data-act="it-dr" data-v="${x.id}">${ic(x.icon)}${esc(x.name)}</button>`).join('')}<button class="chip${X.drawer === 'pocket' ? ' on' : ''}" data-act="it-dr" data-v="pocket">${ic('leaf')}留白清單</button></div></div>
       <div class="field"><span>什麼時候</span><div class="seg wide" id="itWhen"></div></div>
-      <div class="field"><span>大約要多久</span><div class="chips">${[null, 2, 5, 10, 15, 30, 60].map(m => `<button class="chip${X.mins === m ? ' on' : ''}" data-act="it-min" data-v="${m ?? ''}">${m ? `${m} 分` : '不估'}</button>`).join('')}</div></div>
+      <div class="field"><span>大約要多久</span><div class="chips">${[null, 2, 5, 10, 15, 20, 30, 60].map(m => `<button class="chip${X.mins === m ? ' on' : ''}" data-act="it-min" data-v="${m ?? ''}">${m ? `${m} 分` : '不估'}</button>`).join('')}</div></div>
       ${coreGoals().length ? `<div class="field"><span>讓你更接近哪個目標</span><div class="scroll-x"><button class="chip${!X.goal ? ' on' : ''}" data-act="it-goal" data-v="">不屬於目標</button>${coreGoals().map(g => `<button class="chip${X.goal === g.id ? ' on' : ''}" data-act="it-goal" data-v="${g.id}">${ic('star')}${esc(g.title)}</button>`).join('')}</div></div>` : ''}
       <div class="rows" style="margin-top:16px"><button class="toggle" role="switch" aria-checked="${X.ask}" data-act="it-ask"><span>完成時記下細節<small>例如讀到第幾頁、跑了幾公里</small></span><span class="sw"></span></button></div>
       <input class="input" id="itHint" value="${esc(X.hint)}" placeholder="要記什麼？例如：書名、第幾頁" maxlength="30" style="margin-top:8px" ${X.ask ? '' : 'hidden'}>
