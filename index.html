@@ -500,7 +500,7 @@ html[data-mode="light"] .toast button{color:var(--celadon)}
 .dawn-q .q1{font-family:var(--kai);font-size:clamp(26px,7.6vw,36px);line-height:1.6;letter-spacing:.02em;color:var(--ink);text-wrap:balance}
 .dawn-q .q1[lang="en"]{letter-spacing:0;line-height:1.5}
 .dawn-q .q1[lang="zh-Hant"]{text-wrap:pretty}
-.dawn-q .q2{font-size:16px;line-height:1.75;color:var(--ink-2);margin-top:22px;text-wrap:pretty}
+.dawn-q .q2{font-size:16px;line-height:1.75;color:var(--ink-2);margin-top:22px;text-wrap:balance}
 .dawn-q footer{font-size:13px;color:var(--ink-3);margin-top:26px}
 .dawn-go{position:fixed;right:max(24px,calc(50% - 256px));bottom:calc(env(safe-area-inset-bottom) + 32px);width:60px;height:60px;border-radius:50%;background:var(--pool);color:var(--pool-ink);display:grid;place-items:center;box-shadow:0 10px 24px -10px color-mix(in srgb,var(--pool) 70%,transparent);transition:transform .15s}
 .dawn-go .ti{width:28px;height:28px;stroke-width:2.2}
@@ -509,6 +509,7 @@ html[data-mode="light"] .toast button{color:var(--celadon)}
 .dawn.in .dawn-q > :nth-child(2){animation-delay:.18s} .dawn.in .dawn-q > :nth-child(3){animation-delay:.32s}
 .dawn.in .dawn-go{animation:rise .9s var(--ease) .45s both}
 /* 點英文單字看解釋；朗讀 */
+.dawn-q .wc{white-space:nowrap}
 .dawn-q .w{font:inherit;color:inherit;letter-spacing:inherit;padding:0;border-radius:4px;cursor:pointer;transition:background-color .15s,color .15s;-webkit-tap-highlight-color:transparent}
 .dawn-q .w:hover,.dawn-q .w.on{background:color-mix(in srgb,var(--pool) 16%,transparent)}
 .dawn-q .w.speaking{background:var(--pool);color:var(--pool-ink)}
@@ -1010,7 +1011,14 @@ function quoteCard() {
 const WAVES = `<svg class="wave back" viewBox="0 0 200 16" preserveAspectRatio="none"><path d="M0 8 Q12.5 0 25 8 T50 8 T75 8 T100 8 T125 8 T150 8 T175 8 T200 8 V16 H0Z"/></svg><svg class="wave" viewBox="0 0 200 16" preserveAspectRatio="none"><path d="M0 8 Q12.5 16 25 8 T50 8 T75 8 T100 8 T125 8 T150 8 T175 8 T200 8 V16 H0Z"/></svg>`;
 /* 每次打開 App 先出現今日一句；按右下角的 > 才進入。英文單字可以點，看中文解釋與發音 */
 function wordsHTML(text) {
-  return String(text).split(/([A-Za-z]+(?:['’][A-Za-z]+)*)/).map((p, i) => i % 2 ? `<button class="w" data-act="word" data-w="${esc(p)}">${esc(p)}</button>` : esc(p)).join('');
+  const btns = t => t.split(/([A-Za-z]+(?:['’][A-Za-z]+)*)/).map((p, i) => i % 2 ? `<button class="w" data-act="word" data-w="${esc(p)}">${esc(p)}</button>` : esc(p)).join('');
+  // 以空白切成「詞塊」，單字和緊貼的標點（引號、句號、逗號…）包在同一個不換行的塊裡，避免句號被擠到下一行開頭；
+  // 單獨的標點（如 — ）黏到前一個詞塊後面
+  const chunks = [];
+  for (const c of String(text).trim().split(/\s+/)) {
+    if (chunks.length && !/[A-Za-z0-9]/.test(c) && !/^[“"'‘(（\[]+$/.test(c)) chunks[chunks.length - 1] += ' ' + c; else chunks.push(c);
+  }
+  return chunks.map(c => `<span class="wc">${btns(c)}</span>`).join(' ');
 }
 function showDawn() {
   const el = $('#dawn'), q = quoteOf(); if (!q) return;
