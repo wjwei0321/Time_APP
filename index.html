@@ -14,9 +14,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="時屜">
-<meta name="description" content="時屜：每段時間都有它的抽屜，時間到了打開，抽屜之間留白。">
-<title>時屜</title>
+<meta name="apple-mobile-web-app-title" content="時序">
+<meta name="description" content="時序：每段時間都有它的抽屜，時間到了打開，抽屜之間留白。">
+<title>時序</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png?v=2" type="image/png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=2">
@@ -1007,7 +1007,7 @@ function showDawn() {
   const canSay = true;
   el.innerHTML = `<div class="dawn-in"><blockquote class="dawn-q"><p class="q1" lang="${langOf(q, 1)}">${line(1)}</p><p class="q2" lang="${langOf(q, 2)}">${line(2)}</p><footer>— ${quoteMeta(q)}</footer></blockquote></div>
     ${canSay ? `<div class="dawn-tools"><button class="sayb" data-act="say" aria-label="播放英文發音" title="英文發音">${ic('volume')}</button></div>` : ''}
-    <button class="dawn-go" data-act="dawn-close" aria-label="進入時屜">${ic('chevron-right')}</button>`;
+    <button class="dawn-go" data-act="dawn-close" aria-label="進入時序">${ic('chevron-right')}</button>`;
   el.dataset.en = q[enIdx]; delete el.dataset.audio;
   Voice.prep(q[enIdx]).then(src => { if (src && el.dataset.en === q[enIdx]) el.dataset.audio = src; });
   el.hidden = false; el.getBoundingClientRect(); requestAnimationFrame(() => el.classList.add('in'));
@@ -1269,7 +1269,7 @@ function cabinetHTML() {
 }
 function pageToday() {
   const t = clock();
-  return head('時屜', `${t.getMonth() + 1} 月 ${t.getDate()} 日 · 週${WD[t.getDay() || 7]}`) + heroHTML() + top3HTML() + weekNudge() + askHTML() + closeHTML()
+  return head('時序', `${t.getMonth() + 1} 月 ${t.getDate()} 日 · 週${WD[t.getDay() || 7]}`) + heroHTML() + top3HTML() + weekNudge() + askHTML() + closeHTML()
     + `<section class="block"><h2>今天的節奏</h2>${meterHTML(today())}</section>`
     + `<section class="block"><h2>${UI.cabDay ? '明天的櫃子' : '今天的櫃子'}<span class="seg"><button class="${UI.cabDay ? '' : 'on'}" data-act="cab" data-v="0">今天</button><button class="${UI.cabDay ? 'on' : ''}" data-act="cab" data-v="1">明天</button></span></h2>${cabinetHTML()}</section>`;
 }
@@ -1434,7 +1434,7 @@ function pageSettings() {
       <label class="set-row" style="cursor:pointer"><span>匯入備份</span>${ic('upload')}<input type="file" accept="application/json,.json" data-act="import" hidden></label>
       ${D.demo ? `<button class="set-row" data-act="clear-demo"><span>清除示範紀錄<small>只刪掉範例回顧資料，抽屜與事項都留著</small></span>${ic('trash')}</button>` : `<button class="set-row" data-act="seed-demo"><span>放入一週示範紀錄<small>看看回顧頁的樣子，之後可清除</small></span>${ic('sparkles')}</button>`}
       <button class="set-row" data-act="reset" style="color:var(--vermilion)"><span>全部重來</span>${ic('refresh')}</button></div></section>`
-    + `<section class="block"><div class="panel about">${LOGO}<div><div style="font-family:var(--kai);font-size:20px;font-weight:700">時屜</div><p class="note">每段時間，都有它的抽屜。<br>與「細水長流」同一個家族。</p></div></div></section>`;
+    + `<section class="block"><div class="panel about">${LOGO}<div><div style="font-family:var(--kai);font-size:20px;font-weight:700">時序</div><p class="note">每段時間，都有它的抽屜。<br>與「細水長流」同一個家族。</p></div></div></section>`;
 }
 function applyTheme() {
   const host = document.documentElement.getAttribute('data-theme'), m = UIP.mode || 'auto';
@@ -1865,15 +1865,15 @@ function download(name, text, type) {
 function exportICS() {
   const BY = ['', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'], e = s => String(s).replace(/[\\;,]/g, m => '\\' + m).replace(/\n/g, '\\n');
   const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, ''), lead = D.prefs.lead || 0;
-  const L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Shiti//ZH-TW', 'CALSCALE:GREGORIAN', 'X-WR-CALNAME:時屜'];
+  const L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Shiti//ZH-TW', 'CALSCALE:GREGORIAN', 'X-WR-CALNAME:時序'];
   for (const x of live(D.drawers)) {
     let d = today(); for (let k = 0; k < 7 && !x.days.includes(dow(d)); k++) d = addDays(d, 1);
     const ds = d.replace(/-/g, ''), items = live(D.items).filter(it => it.drawer === x.id && it.when === 'every').map(it => '・' + it.title).join('\n');
     L.push('BEGIN:VEVENT', `UID:${x.id}@shiti`, `DTSTAMP:${stamp}`, `DTSTART:${ds}T${x.start.replace(':', '')}00`, `DTEND:${ds}T${x.end.replace(':', '')}00`,
-      `RRULE:FREQ=WEEKLY;BYDAY=${x.days.map(w => BY[w]).join(',')}`, `SUMMARY:${e('抽屜｜' + x.name)}`, `DESCRIPTION:${e(items || '打開時屜，看看抽屜裡有什麼。')}`,
+      `RRULE:FREQ=WEEKLY;BYDAY=${x.days.map(w => BY[w]).join(',')}`, `SUMMARY:${e('抽屜｜' + x.name)}`, `DESCRIPTION:${e(items || '打開時序，看看抽屜裡有什麼。')}`,
       'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${e(`「${x.name}」打開了`)}`, `TRIGGER:${lead ? `-PT${lead}M` : 'PT0S'}`, 'END:VALARM', 'END:VEVENT');
   }
-  L.push('END:VCALENDAR'); download('時屜.ics', L.join('\r\n'), 'text/calendar');
+  L.push('END:VCALENDAR'); download('時序.ics', L.join('\r\n'), 'text/calendar');
   if (!window.__NO_DL) toast('已下載。用行事曆打開就會每週提醒（之後抽屜改了不會自動更新）');
 }
 /* 訂閱行事曆：由 /api/ics 依雲端同步的資料產生，抽屜改了行事曆會自動更新；App 關著也會準時提醒 */
@@ -2006,7 +2006,7 @@ document.addEventListener('click', e => {
     case 'rv': UI.rvWeek = +el.dataset.v; return render();
     case 'notify': return toggleNotify();
     case 'mode': UIP.mode = el.dataset.v; saveUI(); applyTheme(); return render();
-    case 'export': download(`時屜備份-${d}.json`, JSON.stringify(D), 'application/json'); if (!window.__NO_DL) toast('已匯出備份'); return;
+    case 'export': download(`時序備份-${d}.json`, JSON.stringify(D), 'application/json'); if (!window.__NO_DL) toast('已匯出備份'); return;
     case 'seed-demo': seedDemo(); render(); return toast('放好了，到「回顧」看看');
     case 'clear-demo': clearDemo(); render(); return toast('示範紀錄清掉了');
     case 'reset': return confirmSheet('全部重來？', '所有抽屜、事項與紀錄都會刪除，無法復原。建議先匯出備份。', '全部刪除', () => { try { localStorage.removeItem(KEY); } catch (e) {} D = null; UI.tab = 'today'; showOnboarding(); });
@@ -2016,7 +2016,7 @@ document.addEventListener('change', e => {
   const p = e.target.dataset.pref; if (p) { if (e.target.value) { D.prefs[p] = e.target.value; touchPrefs(); save(); toast('已更新'); } return; }
   if (e.target.dataset.act === 'import') {
     const f = e.target.files[0]; if (!f) return;
-    f.text().then(t => { const d = JSON.parse(t); if (!d || d.v !== 1 || !Array.isArray(d.drawers)) throw 0; D = d; migrate(); save(); render(); toast('匯入完成'); }).catch(() => toast('這不是時屜的備份檔'));
+    f.text().then(t => { const d = JSON.parse(t); if (!d || d.v !== 1 || !Array.isArray(d.drawers)) throw 0; D = d; migrate(); save(); render(); toast('匯入完成'); }).catch(() => toast('這不是時序的備份檔'));
   }
 });
 /* 設定的滑桿：拖動時即時顯示，放開時存檔 */
@@ -2080,7 +2080,7 @@ function showOnboarding() {
     return `<div class="ribbon">${T.d.filter(x => x[5].includes(1)).map(x => `<i data-tone="${x[2]}" style="left:${clamp((toMin(x[3]) - W) / span * 100, 0, 100)}%;width:${(toMin(x[4]) - toMin(x[3])) / span * 100}%"></i>`).join('')}</div>`; };
   const draw = () => {
     ob.innerHTML = `<div class="ob-in">${[
-      () => `${LOGO.replace('<svg', '<svg class="mark"')}<h1>時屜</h1><p class="lead">每段時間，都有它的抽屜。<br>時間到了，抽屜打開；抽屜之間，留一點白。</p>
+      () => `${LOGO.replace('<svg', '<svg class="mark"')}<h1>時序</h1><p class="lead">每段時間，都有它的抽屜。<br>時間到了，抽屜打開；抽屜之間，留一點白。</p>
         <div class="ob-pts">
           <div><span class="ico">${ic('layout-rows')}</span><p><b>把一天分成幾個抽屜</b><span>晨間、深度工作、收尾……每個抽屜裝著屬於它的事。</span></p></div>
           <div><span class="ico" data-tone="amber">${ic('bell-ringing')}</span><p><b>時間到了才提醒你</b><span>抽屜打開時通知，其餘時候安安靜靜。</span></p></div>

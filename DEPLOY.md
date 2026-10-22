@@ -1,4 +1,4 @@
-# 部署指示：時屜（Time_APP）→ GitHub + Supabase + Vercel
+# 部署指示：時序（Time_APP）→ GitHub + Supabase + Vercel
 
 > ✅ 已於 2026-10-11 完成：GitHub push、Vercel 自動部署、Supabase schema、正式網址 https://timeapp-wei.vercel.app 雲端同步實測成功。以下保留做為重建參考。
 
@@ -39,7 +39,7 @@
 | 分支 | `main` |
 | Vercel | 帳號 atw007wj，team **WEI（wei-08fb）**，project **time_app**，連到上面的 repo |
 | 正式網址 | **https://timeapp-wei.vercel.app** |
-| Supabase | 帳號 wjwei0321，**與細水長流共用 project Work&Life_Balance**（原名 Budget_APP，ref `tbukohrgpxxhmtsqgzon`，Tokyo）。時屜用 `shiti_doc`／`shiti_get`／`shiti_put`，與 `budget_*` 互不影響。同步以 email 當識別碼：id = SHA-256("shiti:"+小寫 email)，不寄信、不用密碼（使用者選擇的簡便做法；知道 email 的人理論上能讀寫這份資料） |
+| Supabase | 帳號 wjwei0321，**與細水長流共用 project Work&Life_Balance**（原名 Budget_APP，ref `tbukohrgpxxhmtsqgzon`，Tokyo）。時序用 `shiti_doc`／`shiti_get`／`shiti_put`，與 `budget_*` 互不影響。同步以 email 當識別碼：id = SHA-256("shiti:"+小寫 email)，不寄信、不用密碼（使用者選擇的簡便做法；知道 email 的人理論上能讀寫這份資料） |
 
 ### 帳號檢查（每次推送前）
 
@@ -82,7 +82,7 @@ push 到 `main` 就會自動部署。正式網址 `https://timeapp-wei.vercel.ap
 
 ## 4. 驗收
 
-1. 打開正式網址 → 出現「時屜」歡迎畫面。
+1. 打開正式網址 → 出現「時序」歡迎畫面。
 2. 設定 → 資料 → 用 email 同步 → 輸入 email（第一次要按兩次確認）→ 狀態變成「已同步」。
 3. 手機開同一網址，在歡迎畫面按「已經在別台裝置用過？登入」→ 輸入同一個 email → 資料出現。
 4. 手機 Safari「分享 → 加入主畫面」。

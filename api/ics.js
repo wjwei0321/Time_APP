@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
   const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
   const t0 = todayIn(tz);
   const L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Shiti//ZH-TW', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
-    'X-WR-CALNAME:時屜', `X-WR-TIMEZONE:${tz}`, 'REFRESH-INTERVAL;VALUE=DURATION:PT4H', 'X-PUBLISHED-TTL:PT4H'];
+    'X-WR-CALNAME:時序', `X-WR-TIMEZONE:${tz}`, 'REFRESH-INTERVAL;VALUE=DURATION:PT4H', 'X-PUBLISHED-TTL:PT4H'];
   for (const x of live(doc.drawers)) {
     if (!x.days || !x.days.length || !/^\d{1,2}:\d{2}$/.test(x.start) || !/^\d{1,2}:\d{2}$/.test(x.end)) continue;
     // 第一次打開的日期：從今天起第一個符合的星期
@@ -48,7 +48,7 @@ module.exports = async (req, res) => {
     const ds = d.toISOString().slice(0, 10).replace(/-/g, ''), hhmm = t => t.padStart(5, '0').replace(':', '');
     const items = live(doc.items).filter(it => it.drawer === x.id && it.when === 'every').map(it => '・' + it.title).join('\n');
     L.push('BEGIN:VEVENT', `UID:${x.id}@shiti`, `DTSTAMP:${stamp}`, `DTSTART:${ds}T${hhmm(x.start)}00`, `DTEND:${ds}T${hhmm(x.end)}00`,
-      `RRULE:FREQ=WEEKLY;BYDAY=${x.days.map(w => BY[w]).join(',')}`, `SUMMARY:${esc('抽屜｜' + x.name)}`, `DESCRIPTION:${esc(items || '打開時屜，看看抽屜裡有什麼。')}`,
+      `RRULE:FREQ=WEEKLY;BYDAY=${x.days.map(w => BY[w]).join(',')}`, `SUMMARY:${esc('抽屜｜' + x.name)}`, `DESCRIPTION:${esc(items || '打開時序，看看抽屜裡有什麼。')}`,
       'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${esc(`「${x.name}」打開了`)}`, `TRIGGER:${lead ? `-PT${lead}M` : 'PT0S'}`, 'END:VALARM', 'END:VEVENT');
   }
   L.push('END:VCALENDAR');

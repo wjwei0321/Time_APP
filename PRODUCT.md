@@ -35,7 +35,7 @@ delegated: 單一 `index.html`（HTML/CSS/JS 無 build 步驟）＋ `sw.js` ＋ 
 
 ## Brand Commitments
 
-- 名稱：時屜（時間＋抽屜）。
+- 名稱：時序（四時有序，與「細水」「長流」排在一起成套；原名「時屜」＝時間＋抽屜，2026-10-22 改名）。內部的 `shiti` 鍵名（localStorage、Supabase RPC、快取名）不改，避免資料斷掉。
 - 與「細水長流」同一家族：沿用其字體（標題 LXGW WenKai TC 楷體，數字與內文系統無襯線、等寬數字）、長流橘單一色系 × 白天／夜晚、Tabler outline 圖示、不使用 emoji。（使用者明確要求）
 - 語氣：繁體中文、短句、溫和不說教。
 
