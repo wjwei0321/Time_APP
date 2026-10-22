@@ -342,8 +342,8 @@ button.row:active{background:var(--surface-2)}
 
 /* tab bar */
 body::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:var(--paper);z-index:19;pointer-events:none}
-.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:0 12px env(safe-area-inset-bottom);background:color-mix(in srgb,var(--paper) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line)}
-.tabs .in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 84px 1fr 1fr;align-items:center;height:64px}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:0 12px max(8px,calc(env(safe-area-inset-bottom) - 14px));background:color-mix(in srgb,var(--paper) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.tabs .in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 84px 1fr 1fr;align-items:center;height:56px}
 .tabs .tb{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--ink-3);padding:6px 0;transition:color .2s}
 .tabs .tb .ti{width:23px;height:23px}
 .tabs .tb.on{color:var(--pool);font-weight:600}
