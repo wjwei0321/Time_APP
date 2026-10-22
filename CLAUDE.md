@@ -1,6 +1,6 @@
 # 時屜（時間抽屜 App，專案資料夾 Time_APP）— 給 AI 助理的常駐指示
 
-- 回覆使用者用繁體中文。姊妹作是 `../Budget_APP`（細水長流），設計語言沿用它：字體、四色系 × 日夜、Tabler outline 圖示、元件樣式。
+- 回覆使用者用繁體中文。姊妹作是 `../Budget_APP`（細水長流），設計語言沿用它：字體、長流橘單一色系 × 日夜、Tabler outline 圖示、元件樣式。
 - 帳號一律個人：GitHub `wjwei0321/Time_APP`、Vercel team WEI／project time_app（正式網址 https://timeapp-wei.vercel.app）、Supabase 與細水長流共用 project Work&Life_Balance（ref `tbukohrgpxxhmtsqgzon`，時屜用 `shiti_doc`＋`shiti_get/put`；同步以 email 當識別碼，不寄信、不用密碼，使用者明確選擇此做法）。git 作者 `atw007wj`；push 到 main 會自動部署。細節見 `DEPLOY.md`。
 - 不要用這台電腦 `~/.git-credentials` 裡的 SENSESOIL token。
 - 產品定義見 `PRODUCT.md`。
@@ -46,9 +46,9 @@
 
 - 主視覺是「此刻的抽屜」：面板＋把手＋拉出來的內盒（`.face`/`.pull`/`.tray`）。面板裡的水位（`.liquid`，沿用細水長流）＝這段還剩多少時間，會隨時間下降。
 - 每次打開 App（以及離開超過 30 分鐘、或換日後回來）都先出現滿版「今日一句」，只有金句，按右下角 > 才進入（`showDawn`）。英文單字可點：顯示中文解釋（`GLOSS`，找不到原字會試著去掉 s/ed/ing 等）、音標與英文釋義（dictionaryapi.dev，查不到不影響），發音優先播放 `audio/` 的音檔（像真人說話），沒有音檔才退回瀏覽器內建語音；底部「英文發音」播放整句並標出唸到的字（依進度比例估算）。只有英文發音，沒有中文朗讀。今天頁不再放金句卡。
-- 五種色系：青瓷、靛藍、烏龍、紫藤、銀杏（黃；留白色改青綠）。
+- 單一色系「長流橘」（與長流、細水同一個橘 #F2711C，App 圖示也是橘底）× 白天／夜晚，預設跟系統；設定裡用圖示切換（半圓＝跟系統、太陽、月亮），不提供色系選擇。超量／流失用覆盆子紅、留白用金色（偏黃褐，和橘色分得開）。
 - 朱色＝超量／流失；金色＝用心留白。
-- 色系屬性是 `data-palette`（不是 `data-theme`，因為嵌在 Artifact 時外層會蓋 `data-theme=light|dark`）。
+- 已經沒有色系屬性；只有 `data-mode`（嵌在 Artifact 時外層的 `data-theme=light|dark` 在「跟系統」時會被採用）。
 - 網頁無法在關閉後排程通知：通知只在 App 開著時有效，可靠提醒靠行事曆訂閱（`api/ics.js`，需先用 email 同步）。
 
 ## 目標（王永福「便利貼思考法」簡化版，來源：Cheers 2023-07-15）

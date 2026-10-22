@@ -36,7 +36,7 @@ delegated: 單一 `index.html`（HTML/CSS/JS 無 build 步驟）＋ `sw.js` ＋ 
 ## Brand Commitments
 
 - 名稱：時屜（時間＋抽屜）。
-- 與「細水長流」同一家族：沿用其字體（標題 LXGW WenKai TC 楷體，數字與內文系統無襯線、等寬數字）、四色系（青瓷／靛藍／烏龍／紫藤）× 白天／夜晚、Tabler outline 圖示、不使用 emoji。（使用者明確要求）
+- 與「細水長流」同一家族：沿用其字體（標題 LXGW WenKai TC 楷體，數字與內文系統無襯線、等寬數字）、長流橘單一色系 × 白天／夜晚、Tabler outline 圖示、不使用 emoji。（使用者明確要求）
 - 語氣：繁體中文、短句、溫和不說教。
 
 ## Evidence on Hand

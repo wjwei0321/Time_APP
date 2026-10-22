@@ -8,7 +8,7 @@
   icons/maskable-512.png                   滿版、主體縮到 80%（Android 自適應圖示會再裁成圓形）
   icons/apple-touch-icon.png               180x180 滿版（iOS 會自己加圓角）
 
-圖形：三個抽屜，抽屜之間留白；中間那格被拉出來（＝此刻打開的抽屜），把手是金色。
+圖形：三個抽屜，抽屜之間留白；中間那格被拉出來（＝此刻打開的抽屜），把手是橘色。
 """
 from pathlib import Path
 
@@ -30,8 +30,8 @@ def draw(size=1024, inset=1.0):
     off = S * (1 - inset) / 2
     R = lambda x0, y0, x1, y1: [off + x0 * k, off + y0 * k, off + x1 * k, off + y1 * k]
 
-    # 底色：青瓷深綠，上淺下深
-    top, bot = hexrgb('#24695F'), hexrgb('#174842')
+    # 底色：長流橘（與長流、細水同一個橘），上淺下深
+    top, bot = hexrgb('#FB9042'), hexrgb('#EC6512')
     img = Image.new('RGBA', (S, S))
     px = ImageDraw.Draw(img)
     for y in range(S):
@@ -47,12 +47,12 @@ def draw(size=1024, inset=1.0):
 
     # 上下兩格：收著的抽屜
     for y0 in (232, 642):
-        layer(lambda d, y0=y0: d.rounded_rectangle(R(236, y0, 788, y0 + 150), radius=44 * k, fill=hexrgb('#9FD1C0', 128)))
-        layer(lambda d, y0=y0: d.rounded_rectangle(R(452, y0 + 64, 572, y0 + 86), radius=11 * k, fill=hexrgb('#174842', 140)))
+        layer(lambda d, y0=y0: d.rounded_rectangle(R(236, y0, 788, y0 + 150), radius=44 * k, fill=hexrgb('#FFF4EA', 128)))
+        layer(lambda d, y0=y0: d.rounded_rectangle(R(452, y0 + 64, 572, y0 + 86), radius=11 * k, fill=hexrgb('#C85A0E', 140)))
     # 中間：拉出來的抽屜（陰影＋面板＋金色把手）
-    layer(lambda d: d.rounded_rectangle(R(200, 440, 824, 620), radius=50 * k, fill=hexrgb('#0B2622', 110)), blur=26)
-    layer(lambda d: d.rounded_rectangle(R(190, 414, 834, 600), radius=50 * k, fill=hexrgb('#F4F7F3')))
-    layer(lambda d: d.rounded_rectangle(R(427, 492, 597, 522), radius=15 * k, fill=hexrgb('#D9B45A')))
+    layer(lambda d: d.rounded_rectangle(R(200, 440, 824, 620), radius=50 * k, fill=hexrgb('#7A2E05', 90)), blur=26)
+    layer(lambda d: d.rounded_rectangle(R(190, 414, 834, 600), radius=50 * k, fill=hexrgb('#FFF4EA')))
+    layer(lambda d: d.rounded_rectangle(R(427, 492, 597, 522), radius=15 * k, fill=hexrgb('#F2711C')))
     return img.resize((size, size), Image.LANCZOS)
 
 

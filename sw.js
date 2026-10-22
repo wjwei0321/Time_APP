@@ -1,5 +1,5 @@
 // 時屜 service worker：頁面走 network-first（離線時用快取），字型 cache-first；點通知時回到 App。
-const CACHE = 'shiti-v7';
+const CACHE = 'shiti-v8';
 const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/quotes.js', '/glossary.js', '/icons/icon-192.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => {
