@@ -581,7 +581,7 @@ input[type="time"]{-webkit-appearance:none;appearance:none;min-width:0}
 .ptr svg{width:28px;height:28px;display:block}
 .ptr line{stroke:var(--ink-3);stroke-width:2.6;stroke-linecap:round;transition:opacity .12s}
 .ptr line.off{opacity:0!important}
-.ptr.back,main.back{transition:transform .3s cubic-bezier(.2,.9,.25,1),opacity .25s}
+.ptr.ptr-back,main.ptr-back{transition:transform .3s cubic-bezier(.2,.9,.25,1),opacity .25s}
 .ptr.spin svg{animation:ptr-step .8s steps(8) infinite}
 @keyframes ptr-step{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.ptr.spin svg{animation-duration:2.4s}}
@@ -2145,16 +2145,16 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
     if (y0 == null) return;
     dy = e.touches[0].clientY - y0;
     if (dy <= 0 || window.scrollY > 0) { set(0); return; }
-    ind.classList.remove('back'); main.classList.remove('back'); set(dy * 0.6);
+    ind.classList.remove('ptr-back'); main.classList.remove('ptr-back'); set(dy * 0.6);
   }, { passive: true });
   document.addEventListener('touchend', async () => {
     if (y0 == null) return;
     const go = dy * 0.6 > 72; y0 = null;
-    ind.classList.add('back'); main.classList.add('back');
+    ind.classList.add('ptr-back'); main.classList.add('ptr-back');
     if (!go) { set(0); return; }
     busy = true; set(72); ind.style.transform = 'translate(-50%, 22px)'; main.style.transform = 'translateY(64px)'; ind.classList.add('spin');
     try { const ok = Sync.ready() ? await Sync.run(true) : true; rollOver(); if (!sheetOpen()) render(); toast(ok === false ? '同步暫時失敗，稍後再試' : '已更新'); }
-    finally { busy = false; ind.classList.remove('spin'); set(0); }
+    finally { busy = false; ind.classList.remove('spin'); set(0); setTimeout(() => { if (y0 == null) main.classList.remove('ptr-back'); }, 400); }
   });
 })();
 let HIDDEN_AT = 0;
