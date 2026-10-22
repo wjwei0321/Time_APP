@@ -576,6 +576,13 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px color
 .week-g .rows{margin-bottom:8px}
 input,select,textarea{font-size:max(16px,1em)}
 input[type="time"]{-webkit-appearance:none;appearance:none;min-width:0}
+/* 下拉更新（與長流相同）：頂部浮出一顆小膠囊，拉過門檻放開就同步 */
+.ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 6px);z-index:30;display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:99px;background:var(--surface);border:1px solid var(--line);box-shadow:0 6px 18px -8px rgba(0,0,0,.35);font-size:13px;color:var(--ink-2);opacity:0;transform:translate(-50%,-60px);pointer-events:none}
+.ptr.back{transition:transform .25s,opacity .25s}
+.ptr-ic .ti{width:16px;height:16px;color:var(--pool)}
+.ptr.spin .ptr-ic .ti{animation:ptr-spin 1s linear infinite}
+@keyframes ptr-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.ptr.spin .ptr-ic .ti{animation:none}}
 html{overscroll-behavior:none;scrollbar-width:none}
 html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}
 html,body{overflow-x:clip}
@@ -2116,6 +2123,29 @@ else { migrate(); save(); rollOver(); render(); UI.opened = true; UI.lastSeg = c
 setInterval(() => { if (!D) return; refreshLive(); checkNotify(); if (document.visibilityState === 'visible' && !Sync.dirty) Sync.run(); }, 20000);
 if (Sync.ready()) Sync.run(); else Sync.set('off');
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && D) Sync.run(); if (document.visibilityState === 'visible' && D && !sheetOpen()) { rollOver(); UI.opened = true; render(); if ((UIP.dawn !== quoteKey() || Date.now() - HIDDEN_AT > 30 * 60000) && HIDDEN_AT && $('#ob').hidden && $('#dawn').hidden) showDawn(); } });
+// 下拉更新（與長流相同）：任何頁面在最上方往下拉，放開後同步一次並重畫
+(() => {
+  let y0 = null, dy = 0, busy = false;
+  const ind = document.createElement('div'); ind.className = 'ptr'; ind.innerHTML = `<span class="ptr-ic">${ic('refresh')}</span><span class="ptr-t">下拉更新</span>`;
+  document.body.append(ind);
+  const set = (h, txt) => { ind.style.transform = `translate(-50%, ${Math.min(h, 90) - 60}px)`; ind.style.opacity = Math.min(1, h / 70); if (txt) ind.querySelector('.ptr-t').textContent = txt; };
+  document.addEventListener('touchstart', e => { y0 = D && !busy && !sheetOpen() && $('#dawn').hidden && $('#ob').hidden && window.scrollY <= 0 && e.touches.length === 1 ? e.touches[0].clientY : null; dy = 0; }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    if (y0 == null) return;
+    dy = e.touches[0].clientY - y0;
+    if (dy <= 0 || window.scrollY > 0) { set(0); return; }
+    ind.classList.remove('back'); set(dy * 0.6, dy * 0.6 > 70 ? '放開更新' : '下拉更新');
+  }, { passive: true });
+  document.addEventListener('touchend', async () => {
+    if (y0 == null) return;
+    const go = dy * 0.6 > 70; y0 = null;
+    ind.classList.add('back');
+    if (!go) { set(0); return; }
+    busy = true; set(80, '更新中…'); ind.classList.add('spin');
+    try { const ok = Sync.ready() ? await Sync.run(true) : true; rollOver(); if (!sheetOpen()) render(); toast(ok === false ? '同步暫時失敗，稍後再試' : '已更新'); }
+    finally { busy = false; ind.classList.remove('spin'); set(0); }
+  });
+})();
 let HIDDEN_AT = 0;
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') HIDDEN_AT = Date.now(); });
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
